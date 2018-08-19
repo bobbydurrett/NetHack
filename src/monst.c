@@ -141,6 +141,12 @@ NEARDATA struct permonst mons[] = {
         SIZ(1, 5, MS_BUZZ, MZ_TINY), MR_POISON, MR_POISON,
         M1_ANIMAL | M1_FLY | M1_NOHANDS | M1_OVIPAROUS | M1_POIS,
         M2_HOSTILE | M2_FEMALE | M2_PRINCE, 0, HI_LORD),
+    MON("crazy ant", S_ANT, LVL(1, 24, 5, 0, 0), (G_GENO | G_LGROUP | 2),
+        A(ATTK(AT_BITE, AD_PHYS, 1, 2), NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK,
+          NO_ATTK),
+        SIZ(5, 5, MS_SILENT, MZ_TINY), 0, 0,
+        M1_ANIMAL | M1_NOHANDS | M1_OVIPAROUS | M1_CARNIVORE, M2_HOSTILE, 0,
+        CLR_BRIGHT_MAGENTA),
     /*
      * blobs
      */
