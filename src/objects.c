@@ -205,6 +205,8 @@ WEAPON("elven broadsword", "runed broadsword",
         /* +d4 small, +1 large */
 WEAPON("long sword", None,
        1, 0, 0, 50,  40,  15,  8, 12, 0, S,   P_LONG_SWORD, IRON, HI_METAL),
+WEAPON("silver sword", None,
+       1, 0, 0,  4,  40,  90,  8, 12, 0, S,   P_LONG_SWORD, SILVER, HI_SILVER),
 WEAPON("two-handed sword", None,
        1, 0, 1, 22, 150,  50, 12,  6, 0, S,   P_TWO_HANDED_SWORD,
                                                             IRON, HI_METAL),
