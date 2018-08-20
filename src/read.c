@@ -1711,6 +1711,16 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                                 8 + 4 * bcsign(sobj));
         break;
     }
+    case SCR_BUILDING: {
+        int rx, ry;
+        if (!getdir("Build in what direction?") || u.dz != 0)
+             pline("Invalid direction");
+        else {
+            rx = u.ux + u.dx;
+            ry = u.uy + u.dy;
+        }
+        break;
+    }
     default:
         impossible("What weird effect is this? (%u)", otyp);
     }
