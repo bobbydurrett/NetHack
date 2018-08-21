@@ -1712,12 +1712,52 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
         break;
     }
     case SCR_BUILDING: {
-        int rx, ry;
+        int bx, by; /* bx,by is the square you are building on */
+        struct rm *build_square; /* struct for square */
         if (!getdir("Build in what direction?") || u.dz != 0)
              pline("Invalid direction");
         else {
-            rx = u.ux + u.dx;
-            ry = u.uy + u.dy;
+            bx = u.ux + u.dx;
+            by = u.uy + u.dy;
+            build_square = &(level.locations[bx][by]);
+
+/* code to print one struct rm */
+            
+            int pglyph;
+	    int ptyp;
+	    int pseenv;
+	    int pflags;
+	    int phorizontal;
+	    int plit;
+	    int pwaslit;
+	    int proomno;
+	    int pedge;
+	    int pcandig;
+
+            pglyph = build_square->glyph;
+	    ptyp = build_square->typ;
+	    pseenv = build_square->seenv;
+	    pflags = build_square->flags;
+	    phorizontal = build_square->horizontal;
+	    plit = build_square->lit;
+	    pwaslit = build_square->waslit;
+	    proomno = build_square->roomno;
+	    pedge = build_square->edge;
+	    pcandig = build_square->candig;
+
+            pline("glyph = %d",pglyph);
+	    pline("typ = %d",ptyp);
+	    pline("seenv = %d",pseenv);
+	    pline("flags = %d",pflags);
+	    pline("horizontal = %d",phorizontal);
+	    pline("lit = %d",plit);
+	    pline("waslit = %d",pwaslit);
+	    pline("roomno = %d",proomno);
+	    pline("edge = %d",pedge);
+	    pline("candig = %d",pcandig);
+
+/* end of code to print one struct rm */
+
         }
         break;
     }
