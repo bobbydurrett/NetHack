@@ -1721,42 +1721,13 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             by = u.uy + u.dy;
             build_square = &(level.locations[bx][by]);
 
-/* code to print one struct rm */
-            
-            int pglyph;
-	    int ptyp;
-	    int pseenv;
-	    int pflags;
-	    int phorizontal;
-	    int plit;
-	    int pwaslit;
-	    int proomno;
-	    int pedge;
-	    int pcandig;
+            build_square->glyph = cmap_to_glyph(S_vcdoor);
 
-            pglyph = build_square->glyph;
-	    ptyp = build_square->typ;
-	    pseenv = build_square->seenv;
-	    pflags = build_square->flags;
-	    phorizontal = build_square->horizontal;
-	    plit = build_square->lit;
-	    pwaslit = build_square->waslit;
-	    proomno = build_square->roomno;
-	    pedge = build_square->edge;
-	    pcandig = build_square->candig;
+            show_glyph(bx, by, build_square->glyph);
 
-            pline("glyph = %d",pglyph);
-	    pline("typ = %d",ptyp);
-	    pline("seenv = %d",pseenv);
-	    pline("flags = %d",pflags);
-	    pline("horizontal = %d",phorizontal);
-	    pline("lit = %d",plit);
-	    pline("waslit = %d",pwaslit);
-	    pline("roomno = %d",proomno);
-	    pline("edge = %d",pedge);
-	    pline("candig = %d",pcandig);
+            build_square->typ = cmap_to_type(S_vcdoor);
 
-/* end of code to print one struct rm */
+            build_square->doormask = D_CLOSED;
 
         }
         break;
