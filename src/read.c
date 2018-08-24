@@ -1825,11 +1825,15 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
 /* stick a vertical door on the square if chosen */
 
-            if (result == S_vcdoor) {
+            switch (result) {
+            case S_vcdoor:
                 build_square->glyph = cmap_to_glyph(S_vcdoor);
                 show_glyph(bx, by, build_square->glyph);
                 build_square->typ = cmap_to_type(S_vcdoor);
                 build_square->doormask = D_CLOSED;
+                break;
+            default:
+                pline("I don't know how to build %d",result);
             }
 
         }
