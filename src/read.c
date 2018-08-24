@@ -1719,15 +1719,33 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
         else {
             bx = u.ux + u.dx;
             by = u.uy + u.dy;
-/* mess with menu to prompt for choice of what to build */
-    winid win;
- 
-            win = create_nhwindow(NHW_MENU);
- 
-            putstr(win, 0, "test");
 
-            display_nhwindow(win, FALSE);
-            destroy_nhwindow(win);
+/* mess with menu to prompt for choice of what to build */
+
+            winid tmpwin = create_nhwindow(NHW_MENU);
+            anything any;
+            menu_item *selected;
+            int result;
+    
+            any = zeroany; /* set all bits to zero */
+            any.a_int = 1; /* use index+1 (cant use 0) as identifier */
+            start_menu(tmpwin);
+            any.a_int++;
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "one",
+                     MENU_UNSELECTED);
+            any.a_int++;
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "two",
+                     MENU_UNSELECTED);
+            any.a_int++;
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "three",
+                     MENU_UNSELECTED);
+            end_menu(tmpwin, "Aim for what?");
+            result = 0;
+            if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
+                result = selected[0].item.a_int-1;
+            free((genericptr_t) selected);
+            destroy_nhwindow(tmpwin);
+            pline("result=%d",result);
 
 /* stick a door on the square. :) */
 
