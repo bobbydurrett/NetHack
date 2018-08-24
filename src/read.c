@@ -1823,13 +1823,13 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
             build_square = &(level.locations[bx][by]);
 
-/* stick a vertical door on the square if chosen */
+/* build the selected type of square */
 
             switch (result) {
             case S_vcdoor:
-                build_square->glyph = cmap_to_glyph(S_vcdoor);
+                build_square->glyph = cmap_to_glyph(result);
                 show_glyph(bx, by, build_square->glyph);
-                build_square->typ = cmap_to_type(S_vcdoor);
+                build_square->typ = cmap_to_type(result);
                 build_square->doormask = D_CLOSED;
                 break;
             default:
