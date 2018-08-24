@@ -1719,6 +1719,18 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
         else {
             bx = u.ux + u.dx;
             by = u.uy + u.dy;
+/* mess with menu to prompt for choice of what to build */
+    winid win;
+ 
+            win = create_nhwindow(NHW_MENU);
+ 
+            putstr(win, 0, "test");
+
+            display_nhwindow(win, FALSE);
+            destroy_nhwindow(win);
+
+/* stick a door on the square. :) */
+
             build_square = &(level.locations[bx][by]);
 
             build_square->glyph = cmap_to_glyph(S_vcdoor);
