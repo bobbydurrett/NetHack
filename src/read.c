@@ -1723,14 +1723,13 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 /* mess with menu to prompt for choice of what to build */
 
             winid tmpwin = create_nhwindow(NHW_MENU);
-            anything any;
+            anything any; /* menu choice - integer here */
             menu_item *selected;
             int result;
     
             any = zeroany; /* set all bits to zero */
             any.a_int = 1; /* use index+1 (cant use 0) as identifier */
             start_menu(tmpwin);
-            any.a_int++;
             add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "one",
                      MENU_UNSELECTED);
             any.a_int++;
@@ -1742,7 +1741,7 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             end_menu(tmpwin, "Aim for what?");
             result = 0;
             if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
-                result = selected[0].item.a_int-1;
+                result = selected->item.a_int;
             free((genericptr_t) selected);
             destroy_nhwindow(tmpwin);
             pline("result=%d",result);
