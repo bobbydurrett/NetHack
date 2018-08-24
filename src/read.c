@@ -1720,7 +1720,7 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             bx = u.ux + u.dx;
             by = u.uy + u.dy;
 
-/* mess with menu to prompt for choice of what to build */
+/* menu to prompt for choice of what to build */
 
             winid tmpwin = create_nhwindow(NHW_MENU);
             anything any; /* menu choice - integer here */
@@ -1730,33 +1730,107 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             any = zeroany; /* set all bits to zero */
             any.a_int = 1; /* use index+1 (cant use 0) as identifier */
             start_menu(tmpwin);
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "one",
+            char *desc; /* description of square to build */
+
+            any.a_int = S_vwall;
+            desc = "vertical wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
                      MENU_UNSELECTED);
-            any.a_int++;
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "two",
+            
+            any.a_int = S_hwall;
+            desc = "horizontal wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
                      MENU_UNSELECTED);
-            any.a_int++;
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, "three",
+            
+            any.a_int = S_tlcorn;
+            desc = "top left corner";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
                      MENU_UNSELECTED);
-            end_menu(tmpwin, "Aim for what?");
+            
+            any.a_int = S_trcorn;
+            desc = "top right corner";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_blcorn;
+            desc = "bottom left corner";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_brcorn;
+            desc = "bottom right corner";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_crwall;
+            desc = "cross wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_tuwall;
+            desc = "tee up wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_tdwall;
+            desc = "tee down wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_tlwall;
+            desc = "tee left wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_trwall;
+            desc = "tee right wall";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_vcdoor;
+            desc = "vertical closed door";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_hcdoor;
+            desc = "horizontal closed door";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_bars;
+            desc = "bars";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_room;
+            desc = "room";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+            
+            any.a_int = S_corr;
+            desc = "corridor";
+            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+                     MENU_UNSELECTED);
+
+            end_menu(tmpwin, "Build what?");
             result = 0;
             if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
                 result = selected->item.a_int;
             free((genericptr_t) selected);
             destroy_nhwindow(tmpwin);
-            pline("result=%d",result);
 
-/* stick a door on the square. :) */
+/* get the struct for the square */
 
             build_square = &(level.locations[bx][by]);
 
-            build_square->glyph = cmap_to_glyph(S_vcdoor);
+/* stick a vertical door on the square if chosen */
 
-            show_glyph(bx, by, build_square->glyph);
-
-            build_square->typ = cmap_to_type(S_vcdoor);
-
-            build_square->doormask = D_CLOSED;
+            if (result == S_vcdoor) {
+                build_square->glyph = cmap_to_glyph(S_vcdoor);
+                show_glyph(bx, by, build_square->glyph);
+                build_square->typ = cmap_to_type(S_vcdoor);
+                build_square->doormask = D_CLOSED;
+            }
 
         }
         break;
