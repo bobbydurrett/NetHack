@@ -1743,9 +1743,20 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                 break;
             }
 
-/* check for grave */
+/* other checks */
 
-            if (IS_GRAVE(build_square->typ)) {
+            if (IS_GRAVE(build_square->typ) ||
+                IS_TREE(build_square->typ) ||
+                IS_POOL(build_square->typ) ||
+                IS_THRONE(build_square->typ) ||
+                IS_FOUNTAIN(build_square->typ) ||
+                IS_SINK(build_square->typ) ||
+                IS_GRAVE(build_square->typ) ||
+                IS_ALTAR(build_square->typ) ||
+                IS_DRAWBRIDGE(build_square->typ) ||
+                IS_FURNITURE(build_square->typ) ||
+                IS_SOFT(build_square->typ) ||
+                m_at(bx,by)) {
                 pline("Can not build there.");
                 break;
             }
