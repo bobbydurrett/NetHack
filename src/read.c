@@ -1727,8 +1727,6 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             menu_item *selected;
             int result;
     
-            any = zeroany; /* set all bits to zero */
-            any.a_int = 1; /* use index+1 (cant use 0) as identifier */
             start_menu(tmpwin);
             char *desc; /* description of square to build */
 
@@ -1825,12 +1823,33 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
 /* build the selected type of square */
 
+            build_square->glyph = cmap_to_glyph(result);
+            show_glyph(bx, by, build_square->glyph);
+            build_square->typ = cmap_to_type(result);
+
+/* set the flags for each type of square */
+
             switch (result) {
+            case S_vwall:
+            case S_hwall:
+            case S_tlcorn:
+            case S_trcorn:
+            case S_blcorn:
+            case S_brcorn:
+            case S_crwall:
+            case S_tuwall:
+            case S_tdwall:
+            case S_tlwall:
+            case S_trwall:
+            case S_bars:
+            case S_room:
+            case S_corr:
+                build_square->wall_info = 0;
+                break;
             case S_vcdoor:
-                build_square->glyph = cmap_to_glyph(result);
-                show_glyph(bx, by, build_square->glyph);
-                build_square->typ = cmap_to_type(result);
-                build_square->doormask = D_CLOSED;
+            case S_hcdoor:
+              /*  build_square->doormask = D_CLOSED; */
+                build_square->wall_info = 0;
                 break;
             default:
                 pline("I don't know how to build %d",result);
