@@ -1720,6 +1720,17 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             bx = u.ux + u.dx;
             by = u.uy + u.dy;
 
+/* check for trap - can't build there */
+            int trap_found = 0;
+            struct trap *ttmp; 
+            for (ttmp = ftrap; ttmp; ttmp = ttmp->ntrap)
+                if (ttmp->tx == bx && ttmp->ty == by)
+                    trap_found = 1;
+            if (trap_found) {
+                pline("Can not build there.");
+                break;
+            }
+
 /* menu to prompt for choice of what to build */
 
             winid tmpwin = create_nhwindow(NHW_MENU);
