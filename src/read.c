@@ -1720,6 +1720,11 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             bx = u.ux + u.dx;
             by = u.uy + u.dy;
 
+/* get the struct for the square */
+
+            build_square = &(level.locations[bx][by]);
+
+
 /* check for trap - can't build there */
             int trap_found = 0;
             struct trap *ttmp; 
@@ -1727,6 +1732,27 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                 if (ttmp->tx == bx && ttmp->ty == by)
                     trap_found = 1;
             if (trap_found) {
+                pline("Can not build there.");
+                break;
+            }
+
+/* check for stairs */
+
+            if (On_stairs(bx,by)) {
+                pline("Can not build there.");
+                break;
+            }
+
+/* check for grave */
+
+            if (IS_GRAVE(build_square->typ)) {
+                pline("Can not build there.");
+                break;
+            }
+
+/* check if diggable */
+
+            if ((build_square->wall_info & W_NONDIGGABLE) != 0) {
                 pline("Can not build there.");
                 break;
             }
@@ -1828,10 +1854,6 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             free((genericptr_t) selected);
             destroy_nhwindow(tmpwin);
 
-/* get the struct for the square */
-
-            build_square = &(level.locations[bx][by]);
-
 /* build the selected type of square */
 
             build_square->glyph = cmap_to_glyph(result);
@@ -1859,8 +1881,7 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                 break;
             case S_vcdoor:
             case S_hcdoor:
-              /*  build_square->doormask = D_CLOSED; */
-                build_square->wall_info = 0;
+                build_square->doormask = D_CLOSED;
                 break;
             default:
                 pline("I don't know how to build %d",result);
