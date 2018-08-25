@@ -1724,8 +1724,8 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
             build_square = &(level.locations[bx][by]);
 
-
 /* check for trap - can't build there */
+
             int trap_found = 0;
             struct trap *ttmp; 
             for (ttmp = ftrap; ttmp; ttmp = ttmp->ntrap)
@@ -1854,12 +1854,6 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             free((genericptr_t) selected);
             destroy_nhwindow(tmpwin);
 
-/* build the selected type of square */
-
-            build_square->glyph = cmap_to_glyph(result);
-            show_glyph(bx, by, build_square->glyph);
-            build_square->typ = cmap_to_type(result);
-
 /* set the flags for each type of square */
 
             switch (result) {
@@ -1874,17 +1868,32 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
             case S_tdwall:
             case S_tlwall:
             case S_trwall:
-            case S_bars:
-            case S_room:
-            case S_corr:
+                build_square->glyph = cmap_to_glyph(result);
+                build_square->typ = cmap_to_type(result);
                 build_square->wall_info = 0;
+                newsym(bx,by);
+                block_point(bx,by);
                 break;
             case S_vcdoor:
             case S_hcdoor:
+                build_square->glyph = cmap_to_glyph(result);
+                build_square->typ = cmap_to_type(result);
                 build_square->doormask = D_CLOSED;
+                newsym(bx,by);
+                block_point(bx,by);
+                break;
+            case S_bars:
+            case S_room:
+            case S_corr:
+                build_square->glyph = cmap_to_glyph(result);
+                build_square->typ = cmap_to_type(result);
+                build_square->wall_info = 0;
+                newsym(bx,by);
+                unblock_point(bx,by);
                 break;
             default:
-                pline("I don't know how to build %d",result);
+                pline("I don't know how to build that.");
+                break;
             }
 
         }
