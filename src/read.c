@@ -1745,17 +1745,43 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
 /* other checks */
 
-            if (IS_GRAVE(build_square->typ) ||
-                IS_TREE(build_square->typ) ||
-                IS_THRONE(build_square->typ) ||
-                IS_FOUNTAIN(build_square->typ) ||
-                IS_SINK(build_square->typ) ||
-                IS_GRAVE(build_square->typ) ||
-                IS_ALTAR(build_square->typ) ||
-                IS_DRAWBRIDGE(build_square->typ) ||
-                IS_AIR(build_square->typ) ||
-                m_at(bx,by)) {
-                pline("Can not build there.");
+            if (IS_GRAVE(build_square->typ)) {
+                pline("Can not build on a grave.");
+                break;
+            }
+
+            if (IS_TREE(build_square->typ)) {
+                pline("Can not build on a tree.");
+                break;
+            }
+
+            if (IS_FOUNTAIN(build_square->typ)) {
+                pline("Can not build on a fountain.");
+                break;
+            }
+
+            if (IS_SINK(build_square->typ)) {
+                pline("Can not build on a sink.");
+                break;
+            }
+
+            if (IS_ALTAR(build_square->typ)) {
+                pline("Can not build on an altar.");
+                break;
+            }
+
+            if (IS_DRAWBRIDGE(build_square->typ)) {
+                pline("Can not build on a drawbridge.");
+                break;
+            }
+
+            if (IS_AIR(build_square->typ)) {
+                pline("Can not build on air.");
+                break;
+            }
+
+            if (m_at(bx,by)) {
+                pline("Can not build on top of a monster.");
                 break;
             }
 
@@ -1763,7 +1789,7 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
             if (IS_WALL(build_square->typ) &&
                (build_square->wall_info & W_NONDIGGABLE) != 0) {
-                pline("Can not build. Undiggable.");
+                pline("Can not build. Wall is undiggable.");
                 break;
             }
 
