@@ -1720,7 +1720,18 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
         if (build_square != 0) {
             result = get_square_type();
+            /* chance you get iron bars if cursed */
+            if (scursed && (rnd(4) == 1))
+                result = S_bars;
             build_on_square(build_square,bx,by,result);
+            /* chance you build on second square if blessed */
+            if (sblessed && (rnd(2) == 1)) {
+                build_square = get_build_location(&bx, &by);
+                if (build_square != 0) {
+                    result = get_square_type();
+                    build_on_square(build_square,bx,by,result);
+                }
+            }
         }
         break;
     }
