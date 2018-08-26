@@ -1204,6 +1204,22 @@ boolean atme;
             result = get_square_type();
             build_on_square(build_square,bx,by,result);
         }
+    /* 50% chance of second square if skilled */
+        if ((role_skill >= P_SKILLED) && (rnd(2) == 1)) {
+            build_square = get_build_location(&bx, &by);
+            if (build_square != 0) {
+                result = get_square_type();
+                build_on_square(build_square,bx,by,result);
+            }
+        }
+    /* 50% chance of another square if expert */
+        if ((role_skill == P_EXPERT) && (rnd(2) == 1)) {
+            build_square = get_build_location(&bx, &by);
+            if (build_square != 0) {
+                result = get_square_type();
+                build_on_square(build_square,bx,by,result);
+            }
+        }
         break;
     default:
         impossible("Unknown spell %d attempted.", spell);
