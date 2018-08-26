@@ -1732,14 +1732,14 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                 if (ttmp->tx == bx && ttmp->ty == by)
                     trap_found = 1;
             if (trap_found) {
-                pline("Can not build there.");
+                pline("Can not build on a trap.");
                 break;
             }
 
 /* check for stairs */
 
             if (On_stairs(bx,by)) {
-                pline("Can not build there.");
+                pline("Can not build on stairs.");
                 break;
             }
 
@@ -1761,8 +1761,9 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
 /* check if diggable */
 
-            if ((build_square->wall_info & W_NONDIGGABLE) != 0) {
-                pline("Can not build there.");
+            if (IS_WALL(build_square->typ) &&
+               (build_square->wall_info & W_NONDIGGABLE) != 0) {
+                pline("Can not build. Undiggable.");
                 break;
             }
 
