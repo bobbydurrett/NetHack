@@ -2028,6 +2028,10 @@ E void FDECL(punish, (struct obj *));
 E void NDECL(unpunish);
 E boolean FDECL(cant_revive, (int *, BOOLEAN_P, struct obj *));
 E boolean NDECL(create_particular);
+E struct rm * FDECL(get_build_location, (int *,int *));
+E int NDECL(get_square_type);
+E void FDECL(build_on_square, (struct rm *,int,int,int));
+
 
 /* ### rect.c ### */
 

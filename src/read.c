@@ -1,4 +1,4 @@
-/* NetHack 3.6	read.c	$NHDT-Date: 1526728750 2018/05/19 11:19:10 $  $NHDT-Branch: NetHack-3.6.2 $:$NHDT-Revision: 1.155 $ */
+/* NetHack 3.6  read.c  $NHDT-Date: 1526728750 2018/05/19 11:19:10 $  $NHDT-Branch: NetHack-3.6.2 $:$NHDT-Revision: 1.155 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1714,224 +1714,13 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
     case SCR_BUILDING: {
         int bx, by; /* bx,by is the square you are building on */
         struct rm *build_square; /* struct for square */
-        if (!getdir("Build in what direction?") || u.dz != 0)
-             pline("Invalid direction");
-        else {
-            bx = u.ux + u.dx;
-            by = u.uy + u.dy;
+        int result; /* glyph chosen to build on square */
 
-/* get the struct for the square */
+        build_square = get_build_location(&bx, &by);
 
-            build_square = &(level.locations[bx][by]);
-
-/* check for trap - can't build there */
-
-            int trap_found = 0;
-            struct trap *ttmp; 
-            for (ttmp = ftrap; ttmp; ttmp = ttmp->ntrap)
-                if (ttmp->tx == bx && ttmp->ty == by)
-                    trap_found = 1;
-            if (trap_found) {
-                pline("Can not build on a trap.");
-                break;
-            }
-
-/* check for stairs */
-
-            if (On_stairs(bx,by)) {
-                pline("Can not build on stairs.");
-                break;
-            }
-
-/* other checks */
-
-            if (IS_GRAVE(build_square->typ)) {
-                pline("Can not build on a grave.");
-                break;
-            }
-
-            if (IS_TREE(build_square->typ)) {
-                pline("Can not build on a tree.");
-                break;
-            }
-
-            if (IS_FOUNTAIN(build_square->typ)) {
-                pline("Can not build on a fountain.");
-                break;
-            }
-
-            if (IS_SINK(build_square->typ)) {
-                pline("Can not build on a sink.");
-                break;
-            }
-
-            if (IS_ALTAR(build_square->typ)) {
-                pline("Can not build on an altar.");
-                break;
-            }
-
-            if (IS_DRAWBRIDGE(build_square->typ)) {
-                pline("Can not build on a drawbridge.");
-                break;
-            }
-
-            if (IS_AIR(build_square->typ)) {
-                pline("Can not build on air.");
-                break;
-            }
-
-            if (m_at(bx,by)) {
-                pline("Can not build on top of a monster.");
-                break;
-            }
-
-/* check if diggable */
-
-            if (IS_WALL(build_square->typ) &&
-               (build_square->wall_info & W_NONDIGGABLE) != 0) {
-                pline("Can not build. Wall is undiggable.");
-                break;
-            }
-
-/* menu to prompt for choice of what to build */
-
-            winid tmpwin = create_nhwindow(NHW_MENU);
-            anything any; /* menu choice - integer here */
-            menu_item *selected;
-            int result;
-    
-            start_menu(tmpwin);
-            char *desc; /* description of square to build */
-
-            any.a_int = S_vwall;
-            desc = "vertical wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_hwall;
-            desc = "horizontal wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_tlcorn;
-            desc = "top left corner";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_trcorn;
-            desc = "top right corner";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_blcorn;
-            desc = "bottom left corner";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_brcorn;
-            desc = "bottom right corner";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_crwall;
-            desc = "cross wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_tuwall;
-            desc = "tee up wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_tdwall;
-            desc = "tee down wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_tlwall;
-            desc = "tee left wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_trwall;
-            desc = "tee right wall";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_vcdoor;
-            desc = "vertical closed door";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_hcdoor;
-            desc = "horizontal closed door";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_bars;
-            desc = "bars";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_room;
-            desc = "room";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-            
-            any.a_int = S_corr;
-            desc = "corridor";
-            add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
-                     MENU_UNSELECTED);
-
-            end_menu(tmpwin, "Build what?");
-            result = 0;
-            if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
-                result = selected->item.a_int;
-            free((genericptr_t) selected);
-            destroy_nhwindow(tmpwin);
-
-/* set the flags for each type of square */
-
-            switch (result) {
-            case S_vwall:
-            case S_hwall:
-            case S_tlcorn:
-            case S_trcorn:
-            case S_blcorn:
-            case S_brcorn:
-            case S_crwall:
-            case S_tuwall:
-            case S_tdwall:
-            case S_tlwall:
-            case S_trwall:
-                build_square->glyph = cmap_to_glyph(result);
-                build_square->typ = cmap_to_type(result);
-                build_square->wall_info = 0;
-                newsym(bx,by);
-                block_point(bx,by);
-                break;
-            case S_vcdoor:
-            case S_hcdoor:
-                build_square->glyph = cmap_to_glyph(result);
-                build_square->typ = cmap_to_type(result);
-                build_square->doormask = D_CLOSED;
-                newsym(bx,by);
-                block_point(bx,by);
-                break;
-            case S_bars:
-            case S_room:
-            case S_corr:
-                build_square->glyph = cmap_to_glyph(result);
-                build_square->typ = cmap_to_type(result);
-                build_square->wall_info = 0;
-                newsym(bx,by);
-                unblock_point(bx,by);
-                break;
-            default:
-                pline("I don't know how to build that.");
-                break;
-            }
-
+        if (build_square != 0) {
+            result = get_square_type();
+            build_on_square(build_square,bx,by,result);
         }
         break;
     }
@@ -2793,5 +2582,253 @@ create_particular()
     }
     return madeany;
 }
+
+/* returns pointer to rm struct and
+x and y location of the location to build */
+
+struct rm *
+get_build_location(bx, by)
+int *bx,*by;
+{
+    struct rm *build_square;
+
+    if (!getdir("Build in what direction?") || u.dz != 0)
+         pline("Invalid direction");
+    else {
+        *bx = u.ux + u.dx;
+        *by = u.uy + u.dy;
+
+    /* get the struct for the square */
+
+        build_square = &(level.locations[*bx][*by]);
+
+    /* check for trap - can't build there */
+
+        int trap_found = 0;
+        struct trap *ttmp;
+        for (ttmp = ftrap; ttmp; ttmp = ttmp->ntrap)
+            if (ttmp->tx == *bx && ttmp->ty == *by)
+                trap_found = 1;
+        if (trap_found) {
+            pline("Can not build on a trap.");
+            return 0;
+        }
+
+    /* check for stairs */
+
+        if (On_stairs(*bx,*by)) {
+            pline("Can not build on stairs.");
+            return 0;
+        }
+
+    /* other checks */
+
+        if (IS_GRAVE(build_square->typ)) {
+            pline("Can not build on a grave.");
+            return 0;
+        }
+
+        if (IS_TREE(build_square->typ)) {
+            pline("Can not build on a tree.");
+            return 0;
+        }
+
+        if (IS_FOUNTAIN(build_square->typ)) {
+            pline("Can not build on a fountain.");
+            return 0;
+        }
+
+        if (IS_SINK(build_square->typ)) {
+            pline("Can not build on a sink.");
+            return 0;
+        }
+
+        if (IS_ALTAR(build_square->typ)) {
+            pline("Can not build on an altar.");
+            return 0;
+        }
+
+        if (IS_DRAWBRIDGE(build_square->typ)) {
+            pline("Can not build on a drawbridge.");
+            return 0;
+        }
+
+        if (IS_AIR(build_square->typ)) {
+            pline("Can not build on air.");
+            return 0;
+        }
+
+        if (m_at(*bx,*by)) {
+            pline("Can not build on top of a monster.");
+            return 0;
+        }
+
+    /* check if diggable */
+
+        if (IS_WALL(build_square->typ) &&
+           (build_square->wall_info & W_NONDIGGABLE) != 0) {
+            pline("Can not build. Wall is undiggable.");
+            return 0;
+        }
+
+        return build_square;
+    }
+
+}
+
+/* returns the glyph for what you want
+to build on the square */
+
+int
+get_square_type()
+{
+    winid tmpwin = create_nhwindow(NHW_MENU);
+    anything any; /* menu choice - integer here */
+    menu_item *selected;
+    int result;
+
+    start_menu(tmpwin);
+    char *desc; /* description of square to build */
+
+    any.a_int = S_vwall;
+    desc = "vertical wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_hwall;
+    desc = "horizontal wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tlcorn;
+    desc = "top left corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_trcorn;
+    desc = "top right corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_blcorn;
+    desc = "bottom left corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_brcorn;
+    desc = "bottom right corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_crwall;
+    desc = "cross wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tuwall;
+    desc = "tee up wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tdwall;
+    desc = "tee down wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tlwall;
+    desc = "tee left wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_trwall;
+    desc = "tee right wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_vcdoor;
+    desc = "vertical closed door";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_hcdoor;
+    desc = "horizontal closed door";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_bars;
+    desc = "bars";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_room;
+    desc = "room";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_corr;
+    desc = "corridor";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    end_menu(tmpwin, "Build what?");
+    result = 0;
+    if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
+        result = selected->item.a_int;
+    free((genericptr_t) selected);
+    destroy_nhwindow(tmpwin);
+
+    return result;
+}
+
+void
+build_on_square(build_square,bx,by,result)
+struct rm *build_square;
+int bx;
+int by;
+int result;
+{
+    /* set the flags for each type of square */
+
+    switch (result) {
+    case S_vwall:
+    case S_hwall:
+    case S_tlcorn:
+    case S_trcorn:
+    case S_blcorn:
+    case S_brcorn:
+    case S_crwall:
+    case S_tuwall:
+    case S_tdwall:
+    case S_tlwall:
+    case S_trwall:
+        build_square->glyph = cmap_to_glyph(result);
+        build_square->typ = cmap_to_type(result);
+        build_square->wall_info = 0;
+        newsym(bx,by);
+        block_point(bx,by);
+        break;
+    case S_vcdoor:
+    case S_hcdoor:
+        build_square->glyph = cmap_to_glyph(result);
+        build_square->typ = cmap_to_type(result);
+        build_square->doormask = D_CLOSED;
+        newsym(bx,by);
+        block_point(bx,by);
+        break;
+    case S_bars:
+    case S_room:
+    case S_corr:
+        build_square->glyph = cmap_to_glyph(result);
+        build_square->typ = cmap_to_type(result);
+        build_square->wall_info = 0;
+        newsym(bx,by);
+        unblock_point(bx,by);
+        break;
+    default:
+        pline("I don't know how to build that.");
+        break;
+    }
+}
+
 
 /*read.c*/
