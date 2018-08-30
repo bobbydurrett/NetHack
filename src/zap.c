@@ -2131,10 +2131,13 @@ register struct obj *obj;
         break;
     case WAN_BUILDING:
         known = TRUE;
+
+        /* see scroll of building in read.c for more comments */
+
         build_square = get_build_location(&bx, &by);
         if (build_square != 0) {
             result = get_square_type();
-            build_on_square(build_square,bx,by,result);
+            build_on_square(build_square, bx, by, result);
         }
         break;
     }
