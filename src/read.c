@@ -2639,6 +2639,13 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
         *bx = u.ux + u.dx;
         *by = u.uy + u.dy;
 
+        /* make sure square in in bounds */
+
+        if (*bx < 0 || *by < 0 || *bx >= COLNO || *by >= ROWNO) {
+            pline("That location does not exist in this dimension");
+            return 0;
+        }
+
         /* get the struct for the square */
 
         build_square = &(level.locations[*bx][*by]);
@@ -2711,9 +2718,17 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
 
         if (IS_WALL(build_square->typ) &&
            (build_square->wall_info & W_NONDIGGABLE) != 0) {
-            pline("Can not build -- wall is undiggable");
+            pline("Can not build -- that wall is undiggable");
             return 0;
         }
+
+    /* find undiggable rock around the rooms */
+
+        if (IS_ROCK(build_square->typ) && build_square->typ != SDOOR
+            && (build_square->wall_info & W_NONDIGGABLE) != 0) {
+            pline("Can not build -- that rock is undiggable");
+            return 0;
+        }  
 
         return build_square;
     }
