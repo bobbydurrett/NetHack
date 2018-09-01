@@ -2631,9 +2631,18 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
 
     /* prompt user for direction using getdir */
 
-    if (!getdir("Build in what direction?") || u.dz != 0)
+    if (!getdir("Build in what direction?")) {
          pline("Invalid direction");
+         return 0;
+    }
     else {
+        /* can't build on your own square */
+
+        if ((u.dz != 0) || (u.dx == 0 && u.dy ==0)) {
+            pline("You can't build on your own position");
+            return 0;
+        }
+
         /* save x and y values returned by getdir in u */
 
         *bx = u.ux + u.dx;
@@ -2668,7 +2677,7 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
         /* check for stairs */
 
         if (On_stairs(*bx, *by)) {
-            pline("Can not build on stairs");
+            pline("Can not build on stairs or ladders");
             return 0;
         }
 
@@ -2714,7 +2723,7 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
             return 0;
         }
 
-    /* check if diggable */
+        /* check if diggable */
 
         if (IS_WALL(build_square->typ) &&
            (build_square->wall_info & W_NONDIGGABLE) != 0) {
@@ -2722,11 +2731,18 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
             return 0;
         }
 
-    /* find undiggable rock around the rooms */
+        /* find undiggable rock around the rooms */
 
         if (IS_ROCK(build_square->typ) && build_square->typ != SDOOR
             && (build_square->wall_info & W_NONDIGGABLE) != 0) {
             pline("Can not build -- that rock is undiggable");
+            return 0;
+        }  
+
+        /* can't build in shop */
+
+        if (*in_rooms(*bx, *by, SHOPBASE)) {
+            pline("Can not build in a shop");
             return 0;
         }  
 
