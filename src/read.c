@@ -2708,7 +2708,8 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
             return 0;
         }
 
-        if (IS_DRAWBRIDGE(build_square->typ)) {
+        if (IS_DRAWBRIDGE(build_square->typ) || 
+           (is_drawbridge_wall(*bx, *by) != -1)) {
             pline("Can not build on a drawbridge");
             return 0;
         }
