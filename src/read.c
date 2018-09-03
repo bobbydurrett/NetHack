@@ -2703,6 +2703,11 @@ int *bx,*by; /* pointers to x and y variables passed to the function */
             return 0;
         }
 
+        if (IS_THRONE(build_square->typ)) {
+            pline("Can not build on a throne");
+            return 0;
+        }
+
         if (IS_ALTAR(build_square->typ)) {
             pline("Can not build on an altar");
             return 0;
