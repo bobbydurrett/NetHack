@@ -891,6 +891,9 @@ boolean atme;
     boolean physical_damage = FALSE;
     struct obj *pseudo;
     coord cc;
+    int bx, by; /* bx,by is the square you are building on */
+    struct rm *build_square; /* struct for square */
+    int result; /* glyph chosen to build on square */
 
     /*
      * Reject attempting to cast while stunned or with no free hands.
@@ -1194,6 +1197,30 @@ boolean atme;
     case SPE_JUMPING:
         if (!jump(max(role_skill, 1)))
             pline1(nothing_happens);
+        break;
+    case SPE_BUILDING:
+        /* see scroll of building in read.c for more comments */
+        build_square = get_build_location(&bx, &by);
+        if (build_square != 0) {
+            result = get_square_type();
+            build_on_square(build_square, bx, by, result);
+        }
+        /* 50% chance of second square if skilled */
+        if ((role_skill >= P_SKILLED) && (rnd(2) == 1)) {
+            build_square = get_build_location(&bx, &by);
+            if (build_square != 0) {
+                result = get_square_type();
+                build_on_square(build_square, bx, by, result);
+            }
+        }
+        /* 50% chance of another square if expert */
+        if ((role_skill == P_EXPERT) && (rnd(2) == 1)) {
+            build_square = get_build_location(&bx, &by);
+            if (build_square != 0) {
+                result = get_square_type();
+                build_on_square(build_square, bx, by, result);
+            }
+        }
         break;
     default:
         impossible("Unknown spell %d attempted.", spell);

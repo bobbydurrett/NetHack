@@ -1711,6 +1711,42 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
                                 8 + 4 * bcsign(sobj));
         break;
     }
+    case SCR_BUILDING: {
+        /* make a room feature like a wall or door */
+
+        int bx, by; /* bx,by is the square you are building on */
+        struct rm *build_square; /* struct for square */
+        int result; /* glyph chosen to build on square */
+
+        /* prompt user for location around them to build on */
+        build_square = get_build_location(&bx, &by);
+
+        if (build_square != 0) {
+            /* prompt user with list of things to build like a door */
+
+            result = get_square_type();
+
+            /* chance you get iron bars if cursed */
+
+            if (scursed && (rnd(4) == 1)) /* 25% chance */
+                result = S_bars;
+
+            /* actually make the change to the square */
+
+            build_on_square(build_square, bx, by, result);
+
+            /* chance you build on second square if blessed */
+
+            if (sblessed && (rnd(2) == 1)) { /* 50% chance */
+                build_square = get_build_location(&bx, &by);
+                if (build_square != 0) {
+                    result = get_square_type();
+                    build_on_square(build_square, bx, by, result);
+                }
+            }
+        }
+        break;
+    }
     default:
         impossible("What weird effect is this? (%u)", otyp);
     }
@@ -2603,5 +2639,340 @@ create_particular()
 
     return FALSE;
 }
+
+/* The function get_build_location is called for a scroll, wand or spell
+of building. The function prompts the user for a direction 
+around them which causes them to choose one of the 8 squared immediatly
+next to their own location.
+
+This function returns three values:
+
+A struct rm pointer to the structure that represents the square that 
+the user wants to build on. Returns 0 if user doesn't choose a valid
+location.
+
+bx and by:
+
+The x and y values of the square that the user wants to build on.
+
+*/
+
+struct rm *
+get_build_location(bx, by)
+int *bx,*by; /* pointers to x and y variables passed to the function */
+{
+    struct rm *build_square; /* pointer to be returned */
+
+    /* prompt user for direction using getdir */
+
+    if (!getdir("Build in what direction?")) {
+         pline("Invalid direction");
+         return 0;
+    }
+    else {
+        /* can't build on your own square */
+
+        if ((u.dz != 0) || (u.dx == 0 && u.dy ==0)) {
+            pline("You can't build on your own position");
+            return 0;
+        }
+
+        /* save x and y values returned by getdir in u */
+
+        *bx = u.ux + u.dx;
+        *by = u.uy + u.dy;
+
+        /* make sure square in in bounds */
+
+        if (*bx < 0 || *by < 0 || *bx >= COLNO || *by >= ROWNO) {
+            pline("That location does not exist in this dimension");
+            return 0;
+        }
+
+        /* get the struct for the square */
+
+        build_square = &(level.locations[*bx][*by]);
+
+        /* check for trap - can't build there */
+
+
+        /* search through linked list of traps */
+
+        int trap_found = 0;
+        struct trap *ttmp;
+        for (ttmp = ftrap; ttmp; ttmp = ttmp->ntrap)
+            if (ttmp->tx == *bx && ttmp->ty == *by)
+                trap_found = 1;
+        if (trap_found) {
+            pline("Can not build on a trap");
+            return 0;
+        }
+
+        /* check for stairs */
+
+        if (On_stairs(*bx, *by)) {
+            pline("Can not build on stairs or ladders");
+            return 0;
+        }
+
+        /* other checks */
+
+        if (IS_GRAVE(build_square->typ)) {
+            pline("Can not build on a grave");
+            return 0;
+        }
+
+        if (IS_TREE(build_square->typ)) {
+            pline("Can not build on a tree");
+            return 0;
+        }
+
+        if (IS_FOUNTAIN(build_square->typ)) {
+            pline("Can not build on a fountain");
+            return 0;
+        }
+
+        if (IS_SINK(build_square->typ)) {
+            pline("Can not build on a sink");
+            return 0;
+        }
+
+        if (IS_THRONE(build_square->typ)) {
+            pline("Can not build on a throne");
+            return 0;
+        }
+
+        if (IS_ALTAR(build_square->typ)) {
+            pline("Can not build on an altar");
+            return 0;
+        }
+
+        if (IS_DRAWBRIDGE(build_square->typ) || 
+           (is_drawbridge_wall(*bx, *by) != -1)) {
+            pline("Can not build on a drawbridge");
+            return 0;
+        }
+
+        if (IS_AIR(build_square->typ)) {
+            pline("Can not build on air");
+            return 0;
+        }
+
+        if (m_at(*bx, *by)) {
+            pline("Can not build on top of a monster");
+            return 0;
+        }
+
+        /* check if diggable */
+
+        if (IS_WALL(build_square->typ) &&
+           (build_square->wall_info & W_NONDIGGABLE) != 0) {
+            pline("Can not build -- that wall is undiggable");
+            return 0;
+        }
+
+        /* find undiggable rock around the rooms */
+
+        if (IS_ROCK(build_square->typ) && build_square->typ != SDOOR
+            && (build_square->wall_info & W_NONDIGGABLE) != 0) {
+            pline("Can not build -- that rock is undiggable");
+            return 0;
+        }  
+
+        /* can't build in shop */
+
+        if (*in_rooms(*bx, *by, SHOPBASE)) {
+            pline("Can not build in a shop");
+            return 0;
+        }  
+
+        return build_square;
+    }
+
+}
+
+/* The function get_square_type prompts the user with a menu listing
+the possible things that can be built on a square such as a door or
+wall. It returns a glyph such as S_vwall which represents a square with
+a piece of vertical wall. 
+
+This function is used by the scroll, wand, and spell of building.
+
+*/
+
+int
+get_square_type()
+{
+    winid tmpwin = create_nhwindow(NHW_MENU); /* window to show the user */
+    anything any; /* menu choice - integer here */
+    menu_item *selected; /* pointer to the menu item selected by the user */
+    int result; /* Glyph representing the user's choice */
+
+    /* create menu and add all of the menu item descriptions */
+
+    start_menu(tmpwin);
+    char *desc; /* text description of square to build */
+
+    any.a_int = S_vwall;
+    desc = "vertical wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_hwall;
+    desc = "horizontal wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tlcorn;
+    desc = "top left corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_trcorn;
+    desc = "top right corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_blcorn;
+    desc = "bottom left corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_brcorn;
+    desc = "bottom right corner";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_crwall;
+    desc = "cross wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tuwall;
+    desc = "tee up wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tdwall;
+    desc = "tee down wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_tlwall;
+    desc = "tee left wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_trwall;
+    desc = "tee right wall";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_vcdoor;
+    desc = "vertical closed door";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_hcdoor;
+    desc = "horizontal closed door";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_bars;
+    desc = "bars";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_room;
+    desc = "room";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    any.a_int = S_corr;
+    desc = "corridor";
+    add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, desc,
+             MENU_UNSELECTED);
+
+    end_menu(tmpwin, "Build what?");
+
+    /* get user's choice from the menu and free up the 
+    menu's memory */
+
+    result = 0;
+    if (select_menu(tmpwin, PICK_ONE, &selected) > 0)
+        result = selected->item.a_int;
+    free((genericptr_t) selected);
+    destroy_nhwindow(tmpwin);
+
+    /* return the user's choice */ 
+
+    return result;
+}
+
+/* The function build_on_square actually makes the change to the 
+square that the user has chosen. The parameter to_glyph represents 
+the type of square that the user wants to build such as a vertical
+wall. The parameters build_square, bx, by just tell the function 
+which square to build on.
+
+This function is used by the scroll, wand, and spell of building.
+
+*/
+
+void
+build_on_square(build_square, bx, by, to_glyph)
+struct rm *build_square; /* struct for square to build on */
+int bx; /* x and y for square to build on */
+int by;
+int to_glyph; /* Glyph representing what to build */
+{
+    /* The glyph values are grouped based on the flags that need to be set
+       for this type of item. For a wall you need to set wall_info and
+       to block the users view through the opaque wall. */
+
+    switch (to_glyph) {
+    case S_vwall:
+    case S_hwall:
+    case S_tlcorn:
+    case S_trcorn:
+    case S_blcorn:
+    case S_brcorn:
+    case S_crwall:
+    case S_tuwall:
+    case S_tdwall:
+    case S_tlwall:
+    case S_trwall:
+        /* first set flags for the square's structure */
+        build_square->glyph = cmap_to_glyph(to_glyph);
+        build_square->typ = cmap_to_type(to_glyph);
+        build_square->wall_info = 0;
+        newsym(bx, by); /* changes the symbol for the square */
+        block_point(bx, by); /* block user's vision */
+        break;
+    case S_vcdoor:
+    case S_hcdoor:
+        /* doors use doormask. set to closed. */
+        build_square->glyph = cmap_to_glyph(to_glyph);
+        build_square->typ = cmap_to_type(to_glyph);
+        build_square->doormask = D_CLOSED;
+        newsym(bx, by);
+        block_point(bx, by);
+        break;
+    case S_bars:
+    case S_room:
+    case S_corr:
+        /* users can see through bars, a room square, or a corridor */
+        build_square->glyph = cmap_to_glyph(to_glyph);
+        build_square->typ = cmap_to_type(to_glyph);
+        build_square->wall_info = 0;
+        newsym(bx, by);
+        unblock_point(bx, by);
+        break;
+    default:
+        pline("I don't know how to build that.");
+        break;
+    }
+}
+
 
 /*read.c*/

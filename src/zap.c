@@ -2089,6 +2089,9 @@ zapnodir(obj)
 register struct obj *obj;
 {
     boolean known = FALSE;
+    int bx, by; /* bx,by is the square you are building on */
+    struct rm *build_square; /* struct for square */
+    int result; /* glyph chosen to build on square */
 
     switch (obj->otyp) {
     case WAN_LIGHT:
@@ -2125,6 +2128,17 @@ register struct obj *obj;
         enlightenment(MAGICENLIGHTENMENT, ENL_GAMEINPROGRESS);
         pline_The("feeling subsides.");
         exercise(A_WIS, TRUE);
+        break;
+    case WAN_BUILDING:
+        known = TRUE;
+
+        /* see scroll of building in read.c for more comments */
+
+        build_square = get_build_location(&bx, &by);
+        if (build_square != 0) {
+            result = get_square_type();
+            build_on_square(build_square, bx, by, result);
+        }
         break;
     }
     if (known) {
