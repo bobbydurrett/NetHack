@@ -2,6 +2,8 @@ bobbyhack notes
 
 https://www.bobbydurrettdba.com/nethackgame/
 
+nethack@bobbydurrettdba.com
+
 5/23/19
 
 bobbyhack in its current state is some point in the 3.6.2 beta github stream of commits with four of my 
