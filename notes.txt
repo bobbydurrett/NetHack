@@ -52,3 +52,9 @@ Probably my first task after creating this notes.txt file will be to try to merg
 
 Working on merging in the 3.6.2 release changes.
 
+Merged in 3.6.2 updating monst.c to use 3.6.2 queen bee last line.
+
+Deleted Makefiles. Need to redeploy and manually edit for GAME=bobbyhack
+and flex and bison.
+
+
