@@ -1,4 +1,4 @@
-/* NetHack 3.6	restore.c	$NHDT-Date: 1451082255 2015/12/25 22:24:15 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.103 $ */
+/* NetHack 3.6	restore.c	$NHDT-Date: 1555201698 2019/04/14 00:28:18 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.129 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2009. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -192,7 +192,7 @@ boolean ghostly;
                 struct monst *shkp = shop_keeper(*shp);
 
                 if (shkp && inhishop(shkp)
-                    && repair_damage(shkp, tmp_dam, TRUE))
+                    && repair_damage(shkp, tmp_dam, (int *) 0, TRUE))
                     break;
             }
         }
@@ -298,10 +298,32 @@ boolean ghostly, frozen;
         /* get contents of a container or statue */
         if (Has_contents(otmp)) {
             struct obj *otmp3;
+
             otmp->cobj = restobjchn(fd, ghostly, Is_IceBox(otmp));
             /* restore container back pointers */
             for (otmp3 = otmp->cobj; otmp3; otmp3 = otmp3->nobj)
                 otmp3->ocontainer = otmp;
+        } else if (SchroedingersBox(otmp)) {
+            struct obj *catcorpse;
+
+            /*
+             * TODO:  Remove this after 3.6.x save compatibility is dropped.
+             *
+             * For 3.6.2, SchroedingersBox() always has a cat corpse in it.
+             * For 3.6.[01], it was empty and its weight was falsified
+             * to have the value it would have had if there was one inside.
+             * Put a non-rotting cat corpse in this box to convert to 3.6.2.
+             *
+             * [Note: after this fix up, future save/restore of this object
+             * will take the Has_contents() code path above.]
+             */
+            if ((catcorpse = mksobj(CORPSE, TRUE, FALSE)) != 0) {
+                otmp->spe = 1; /* flag for special SchroedingersBox */
+                set_corpsenm(catcorpse, PM_HOUSECAT);
+                (void) stop_timer(ROT_CORPSE, obj_to_any(catcorpse));
+                add_to_container(otmp, catcorpse);
+                otmp->owt = weight(otmp);
+            }
         }
         if (otmp->bypass)
             otmp->bypass = 0;
@@ -517,6 +539,7 @@ unsigned int *stuckid, *steedid;
 #ifdef SYSFLAGS
     struct sysflag newgamesysflags;
 #endif
+    struct context_info newgamecontext; /* all 0, but has some pointers */
     struct obj *otmp, *tmp_bc;
     char timebuf[15];
     unsigned long uid;
@@ -531,9 +554,15 @@ unsigned int *stuckid, *steedid;
         if (!wizard)
             return FALSE;
     }
+
+    newgamecontext = context; /* copy statically init'd context */
     mread(fd, (genericptr_t) &context, sizeof (struct context_info));
-    if (context.warntype.speciesidx >= LOW_PM)
-        context.warntype.species = &mons[context.warntype.speciesidx];
+    context.warntype.species = (context.warntype.speciesidx >= LOW_PM)
+                                  ? &mons[context.warntype.speciesidx]
+                                  : (struct permonst *) 0;
+    /* context.victual.piece, .tin.tin, .spellbook.book, and .polearm.hitmon
+       are pointers which get set to Null during save and will be recovered
+       via corresponding o_id or m_id while objs or mons are being restored */
 
     /* we want to be able to revert to command line/environment/config
        file option values instead of keeping old save file option values
@@ -543,9 +572,12 @@ unsigned int *stuckid, *steedid;
     /* avoid keeping permanent inventory window up to date during restore
        (setworn() calls update_inventory); attempting to include the cost
        of unpaid items before shopkeeper's bill is available is a no-no;
-       named fruit names aren't accessible yet either */
-    defer_perm_invent = flags.perm_invent;
-    flags.perm_invent = FALSE;
+       named fruit names aren't accessible yet either
+       [3.6.2: moved perm_invent from flags to iflags to keep it out of
+       save files; retaining the override here is simpler than trying to
+       to figure out where it really belongs now] */
+    defer_perm_invent = iflags.perm_invent;
+    iflags.perm_invent = FALSE;
     /* wizard and discover are actually flags.debug and flags.explore;
        player might be overriding the save file values for them;
        in the discover case, we don't want to set that for a normal
@@ -595,10 +627,12 @@ unsigned int *stuckid, *steedid;
         u.uz.dlevel = 1;
         /* revert to pre-restore option settings */
         iflags.deferred_X = FALSE;
+        iflags.perm_invent = defer_perm_invent;
         flags = newgameflags;
 #ifdef SYSFLAGS
         sysflags = newgamesysflags;
 #endif
+        context = newgamecontext;
         return FALSE;
     }
     /* in case hangup save occurred in midst of level change */
@@ -672,7 +706,7 @@ unsigned int *stuckid, *steedid;
     relink_timers(FALSE);
     relink_light_sources(FALSE);
     /* inventory display is now viable */
-    flags.perm_invent = defer_perm_invent;
+    iflags.perm_invent = defer_perm_invent;
     return TRUE;
 }
 
@@ -802,7 +836,7 @@ register int fd;
 #ifdef AMII_GRAPHICS
     {
         extern struct window_procs amii_procs;
-        if (windowprocs.win_init_nhwindows == amii_procs.win_init_nhwindows) {
+        if (WINDOWPORT("amii") {
             extern winid WIN_BASE;
             clear_nhwindow(WIN_BASE); /* hack until there's a hook for this */
         }
@@ -818,7 +852,7 @@ register int fd;
     curs(WIN_MAP, 1, 1);
     dotcnt = 0;
     dotrow = 2;
-    if (strncmpi("X11", windowprocs.name, 3))
+    if (!WINDOWPORT("X11"))
         putstr(WIN_MAP, 0, "Restoring:");
 #endif
     restoreprocs.mread_flags = 1; /* return despite error */
@@ -833,7 +867,7 @@ register int fd;
             dotrow++;
             dotcnt = 0;
         }
-        if (strncmpi("X11", windowprocs.name, 3)) {
+        if (!WINDOWPORT("X11")) {
             putstr(WIN_MAP, 0, ".");
         }
         mark_synch();
@@ -1076,7 +1110,7 @@ boolean ghostly;
             set_residency(mtmp, FALSE);
         place_monster(mtmp, mtmp->mx, mtmp->my);
         if (mtmp->wormno)
-            place_wsegs(mtmp);
+            place_wsegs(mtmp, NULL);
 
         /* regenerate monsters while on another level */
         if (!u.uz.dlevel)

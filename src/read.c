@@ -1,4 +1,4 @@
-/* NetHack 3.6	read.c	$NHDT-Date: 1526728750 2018/05/19 11:19:10 $  $NHDT-Branch: NetHack-3.6.2 $:$NHDT-Revision: 1.155 $ */
+/* NetHack 3.6	read.c	$NHDT-Date: 1546465285 2019/01/02 21:41:25 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.164 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -2406,8 +2406,8 @@ struct obj *sobj;
     uball->spe = 1; /* special ball (see save) */
 
     /*
-     *  Place ball & chain if not swallowed.  If swallowed, the ball &
-     *  chain variables will be set at the next call to placebc().
+     *  Place ball & chain if not swallowed.  If swallowed, the ball & chain
+     *  variables will be set at the next call to placebc().
      */
     if (!u.uswallow) {
         placebc();
@@ -2526,8 +2526,17 @@ struct _create_particular_data *d;
     if (d->which >= LOW_PM)
         return TRUE; /* got one */
     d->monclass = name_to_monclass(bufp, &d->which);
+
     if (d->which >= LOW_PM) {
         d->monclass = MAXMCLASSES; /* matters below */
+        return TRUE;
+    } else if (d->monclass == S_invisible) { /* not an actual monster class */
+        d->which = PM_STALKER;
+        d->monclass = MAXMCLASSES;
+        return TRUE;
+    } else if (d->monclass == S_WORM_TAIL) { /* empty monster class */
+        d->which = PM_LONG_WORM;
+        d->monclass = MAXMCLASSES;
         return TRUE;
     } else if (d->monclass > 0) {
         d->which = urole.malenum; /* reset from NON_PM */
@@ -2547,7 +2556,8 @@ struct _create_particular_data *d;
 
     if (!d->randmonst) {
         firstchoice = d->which;
-        if (cant_revive(&d->which, FALSE, (struct obj *) 0)) {
+        if (cant_revive(&d->which, FALSE, (struct obj *) 0)
+            && firstchoice != PM_LONG_WORM_TAIL) {
             /* wizard mode can override handling of special monsters */
             char buf[BUFSZ];
 
@@ -2586,8 +2596,14 @@ struct _create_particular_data *d;
 
             put_saddle_on_mon(otmp, mtmp);
         }
-        if (d->invisible)
+        if (d->invisible) {
+            int mx = mtmp->mx, my = mtmp->my;
             mon_set_minvis(mtmp);
+            if (does_block(mx, my, &levl[mx][my]))
+                block_point(mx, my);
+            else
+                unblock_point(mx, my);
+        }
         if (d->sleeping)
             mtmp->msleeping = 1;
         madeany = TRUE;
