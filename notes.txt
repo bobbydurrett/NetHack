@@ -48,3 +48,7 @@ I can follow the devteam's latest code in nethack-git repo while keeping bobbyha
 
 Probably my first task after creating this notes.txt file will be to try to merge in the 3.6.2 release changes.
 
+5/24/19
+
+Working on merging in the 3.6.2 release changes.
+
