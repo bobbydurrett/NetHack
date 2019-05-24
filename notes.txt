@@ -57,4 +57,8 @@ Merged in 3.6.2 updating monst.c to use 3.6.2 queen bee last line.
 Deleted Makefiles. Need to redeploy and manually edit for GAME=bobbyhack
 and flex and bison.
 
+Looks like 3.6.2 added another field in the MON macro in monst.c.
 
+Picked a number for crazy ants like a giant ant.
+
+Seems to work.

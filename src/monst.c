@@ -146,7 +146,7 @@ NEARDATA struct permonst mons[] = {
           NO_ATTK),
         SIZ(5, 5, MS_SILENT, MZ_TINY), 0, 0,
         M1_ANIMAL | M1_NOHANDS | M1_OVIPAROUS | M1_CARNIVORE, M2_HOSTILE, 0,
-        CLR_BRIGHT_MAGENTA),
+        4, CLR_BRIGHT_MAGENTA),
     /*
      * blobs
      */
