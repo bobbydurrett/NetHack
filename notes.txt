@@ -1,0 +1,48 @@
+bobbyhack notes
+
+https://www.bobbydurrettdba.com/nethackgame/
+
+5/23/19
+
+bobbyhack in its current state is some point in the 3.6.2 beta github stream of commits with four of my 
+branches merged into it. They are:
+
+tigerfix
+silversword
+crazyants
+building
+
+I have been doing some brainstorming and I want to move forward with bobbyhack as the base branch for 
+my own version of nethack. 
+
+At this point the four branches I created are not part of any cohesive plan or adventure but I hope over
+time to mold bobbyhack into my own game with some interesting parts to it. Whether I have time to do so
+does not matter. Here are some key ideas:
+
+If I want to catch up with newer code from the Dev team create a new branch off of bobbyhack and work out
+the merge issues with the new code. Then merge that branch back in.
+
+If I want to work on some new idea make a branch off of bobbyhack and not the main devteam branch (3.6 at this time).
+That way I will always be making changes that are compatible with my game. If I ever write something useful I can 
+always go back and retrofit the change to be a patch on top of the latest version or the ongoing git stream.
+
+Keep this file in the commits as my notes of what I am doing. If I merge a branch back into bobbyhack it will have 
+an updated version of this file. I have taken a similar approach with the repositories that I used for my
+Rosetta Code contributions and I like having a log of what I'm doing in a text file on GitHub.
+
+I debated starting bobbyhack over from scratch from the recently released 3.6.2 release but decided to move forward
+from bobbyhack as it is today and merge in devteam changes as desired. Also, I thought about not using the four
+existing branches because they are not designed to fit into any story or adventure. But, I can always back them out 
+later if I decide to not use them. I put time into testing them so I want to keep them in my code.
+
+Last time I rebased bobbyhack and then added in the four branches. I don't really care about rebasing to clean
+up the way the commits look. I want to keep my existing bobbyhack commits out there and move forward. I deleted
+my rebase.sh script so I would not accidentally redo the rebasing of bobbyhack.
+
+I thought about coming up with some new clever name like Terebynthia or something but I'm already attached to 
+bobbyhack so that is another reason to move forward.
+
+I can follow the devteam's latest code in nethack-git repo while keeping bobbyhack in a separate repo.
+
+Probably my first task after creating this notes.txt file will be to try to merge in the 3.6.2 release changes.
+
