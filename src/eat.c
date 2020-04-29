@@ -1,4 +1,4 @@
-/* NetHack 3.6	eat.c	$NHDT-Date: 1574900825 2019/11/28 00:27:05 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.206 $ */
+/* NetHack 3.6  eat.c   $NHDT-Date: 1574900825 2019/11/28 00:27:05 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.206 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1804,12 +1804,15 @@ struct obj *otmp;
         /* [satiation message may be inaccurate if eating gets interrupted] */
         break;
     case TRIPE_RATION:
-        if (carnivorous(youmonst.data) && !humanoid(youmonst.data)) {
-            pline("This tripe ration is surprisingly good!");
-        } else if (maybe_polyd(is_orc(youmonst.data), Race_if(PM_ORC))) {
-            pline(Hallucination ? "Tastes great!  Less filling!"
+        if (carnivorous(youmonst.data) && !humanoid(youmonst.data))
+            if (Hallucination && (u.umonnum == PM_TIGER))
+                pline("That tripe ration was gr-r-reat!");
+            else
+                pline("That tripe ration was surprisingly good!");
+        else if (maybe_polyd(is_orc(youmonst.data), Race_if(PM_ORC)))
+            pline(Hallucination ? "Tastes great! Less filling!"
                                 : "Mmm, tripe... not bad!");
-        } else {
+        else {
             pline("Yak - dog food!");
             more_experienced(1, 0);
             newexplevel();
@@ -1887,7 +1890,7 @@ struct obj *otmp;
                         || otmp->otyp == K_RATION
                         || otmp->otyp == C_RATION)
                         ? "bland."
-                        : Hallucination ? ((u.umonnum == PM_TIGER) ? "gr-r-reat" : "gnarly") : "delicious!");
+                        : Hallucination ? ((u.umonnum == PM_TIGER) ? "gr-r-reat!" : "gnarly") : "delicious!");
         }
         break; /* default */
     } /* switch */
