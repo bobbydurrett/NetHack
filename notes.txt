@@ -88,5 +88,17 @@ git push --set-upstream origin NetHack-3.6
 
 git branch --set-upstream-to=remotes/upstream/NetHack-3.6
 
+did not seem to be any conflicts. Good be pretty easy.
+
+[bobby@localhost nethack]$ bhbuild.sh
+
+does tags and all
+
+current branch
+
+everything looks good. Not so bad.
+
+
+
 
 
