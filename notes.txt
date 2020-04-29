@@ -62,3 +62,18 @@ Looks like 3.6.2 added another field in the MON macro in monst.c.
 Picked a number for crazy ants like a giant ant.
 
 Seems to work.
+
+4/28/2020
+
+Working on adding in the 3.6.6 changes.
+
+[bobby@localhost bobbyhack]$ git checkout bobbyhack
+Switched to branch 'bobbyhack'
+[bobby@localhost bobbyhack]$ view notes.txt
+[bobby@localhost bobbyhack]$ pwd
+/home/bobby/nethack/bobbyhack
+[bobby@localhost bobbyhack]$ git branch add366
+[bobby@localhost bobbyhack]$ git checkout add366
+Switched to branch 'add366'
+
+
