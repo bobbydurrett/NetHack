@@ -76,4 +76,17 @@ Switched to branch 'bobbyhack'
 [bobby@localhost bobbyhack]$ git checkout add366
 Switched to branch 'add366'
 
+bunch of stuff to get this working
+
+cd /home/bobby/nethack/nethack-git
+git fetch upstream
+git checkout NetHack-3.6
+git merge --ff-only upstream/NetHack-3.6
+git push
+
+git push --set-upstream origin NetHack-3.6
+
+git branch --set-upstream-to=remotes/upstream/NetHack-3.6
+
+
 
