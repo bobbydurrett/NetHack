@@ -102,4 +102,23 @@ everything looks good. Not so bad.
 
 created autoletter branch
 
+5/3/2020
+
+Created a simple function to write a string to a debugging file.
+
+File is /home/bobby/nethack/debugfile.log
+
+Function is write_debug_file(char *string) in files.c.
+
+Can use it anywhere.
+
+Could create formatted front ends to write_debug_file like
+
+write_debug_file_int(char *format,int data)
+
+int snprintf(formatted_string, 80, format, data);
+
+If formats to more than 80 characters abort.
+
+Could do one for each type we might need. Not sure yet what those would be.
 
