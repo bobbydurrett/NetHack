@@ -2298,7 +2298,6 @@ boolean
 parse_config_line(origbuf)
 char *origbuf;
 {
-    write_debug_file("In parse_config_line\n");
 #if defined(MICRO) && !defined(NOCWD_ASSUMPTIONS)
     static boolean ramdisk_specified = FALSE;
 #endif
