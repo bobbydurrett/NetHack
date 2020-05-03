@@ -143,7 +143,7 @@ E void FDECL(Lift_covet_and_placebc, (int, const char *, int));
 #define unplacebc_and_covet_placebc() \
             Unplacebc_and_covet_placebc(__FUNCTION__, __LINE__)
 #define lift_covet_and_placebc(x) \
-            Lift_covet_and_placebc(x, __FUNCTION__, __LINE__) 
+            Lift_covet_and_placebc(x, __FUNCTION__, __LINE__)
 #endif
 E void FDECL(set_bc, (int));
 E void FDECL(move_bc, (int, int, XCHAR_P, XCHAR_P, XCHAR_P, XCHAR_P));
@@ -852,6 +852,10 @@ E void NDECL(reveal_paths);
 E boolean FDECL(read_tribute, (const char *, const char *, int,
                                char *, int, unsigned));
 E boolean FDECL(Death_quote, (char *, int));
+
+/* Bobby Durrett debug file functions */
+
+E void write_debug_file(char *string);
 
 /* ### fountain.c ### */
 

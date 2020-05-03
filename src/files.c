@@ -2298,6 +2298,7 @@ boolean
 parse_config_line(origbuf)
 char *origbuf;
 {
+    write_debug_file("In parse_config_line\n");
 #if defined(MICRO) && !defined(NOCWD_ASSUMPTIONS)
     static boolean ramdisk_specified = FALSE;
 #endif
@@ -4467,5 +4468,54 @@ int bufsz;
 }
 
 /* ----------  END TRIBUTE ----------- */
+
+/* Bobby Durrett debug file functions */
+
+int debug_file = 1;
+
+/*
+write_debug_file writes a string to a debug file.
+
+It appends any existing data in the file.
+
+It opens and closes the file so it does not stay open.
+*/
+
+void
+write_debug_file(char *string)
+{
+    char *debug_file_name ="/home/bobby/nethack/debugfile.log";
+    FILE *fptr;
+
+    if (!debug_file)
+        return;
+
+    /* validate string - no more than 80 characters and
+       only ascii characters and newlines */
+
+    char c;
+    int i;
+
+    for (i = 0; i < 80 ; i++) {
+        c = string[i];
+        /* end validation with end of string found */
+        if (c == '\0')
+            break;
+        /* return from function if not alpha or space (newline, space) */
+        if (!isalnum(c) && !isspace(c))
+            return;
+    }
+    /* return if last character is not \0 */
+    if (c != '\0')
+        return;
+
+    fptr = fopen(debug_file_name,"a");
+
+    fputs(string,fptr);
+
+    fclose(fptr);
+
+    return ;
+}
 
 /*files.c*/

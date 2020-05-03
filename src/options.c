@@ -2010,6 +2010,7 @@ parseoptions(opts, tinitial, tfrom_file)
 register char *opts;
 boolean tinitial, tfrom_file;
 {
+    write_debug_file("In parseoptions\n");
     char *op;
     unsigned num;
     boolean negated, duplicate;
