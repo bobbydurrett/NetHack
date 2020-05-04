@@ -134,3 +134,31 @@ E void write_debug_file_int(char *format,int data);
 could clone write_debug_file_str or write_debug_file_int for other types
 just passes one parameter into format string. should be ok for debugging.
 
+possible other types for debug:
+
+    unsigned oeaten;        /* nutrition left in food, if partly eaten */
+    long age;               /* creation date */
+    short otyp; /* object class number */
+    schar spe; /* quality of weapon, weptool, armor or ring (+ or -);
+    xchar ox, oy;
+    Bitfield(cursed, 1);
+
+
+typedef signed char schar;
+
+https://vim.fandom.com/wiki/Browsing_programs_with_tags
+
+typedef schar xchar;
+
+looks like we need short, long, char.
+
+unsigned can work with int
+
+https://en.wikipedia.org/wiki/C_data_types
+
+Looks like long would be helpful. Others can adjust.
+
+added
+
+E void write_debug_file_long(char *format,long data);
+

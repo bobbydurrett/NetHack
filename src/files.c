@@ -4653,4 +4653,35 @@ write_debug_file_int(char *format,int data)
     }
 }
 
+/*
+write_debug_file_long is like write_debug_file_int but
+with %ld to format long integers
+*/
+
+void
+write_debug_file_long(char *format,long data)
+{
+    char formatted_string[81];
+    int bytes_written;
+
+    /* check format string */
+
+    if (!is_good_format(format,"%ld")) {
+        write_debug_file("Bad format string in write_debug_file_long\n");
+        return;
+    }
+
+    bytes_written =  snprintf(formatted_string, 80, format, data);
+
+    /* don't write strings longer than 80 characters */
+
+    if (bytes_written >= 80) {
+        write_debug_file("More than 80 charater string in write_debug_file_long\n");
+        return;
+    } else {
+        write_debug_file(formatted_string);
+        return;
+    }
+}
+
 /*files.c*/
