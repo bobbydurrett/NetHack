@@ -856,6 +856,9 @@ E boolean FDECL(Death_quote, (char *, int));
 /* Bobby Durrett debug file functions */
 
 E void write_debug_file(char *string);
+E void write_debug_file_datetime();
+E void write_debug_file_str(char *format,char *data);
+E void write_debug_file_int(char *format,int data);
 
 /* ### fountain.c ### */
 

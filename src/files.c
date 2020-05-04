@@ -4483,10 +4483,15 @@ It opens and closes the file so it does not stay open.
 void
 write_debug_file(char *string)
 {
-    char *debug_file_name ="/home/bobby/nethack/debugfile.log";
+    char *debug_file_name ="/home/bobby/test/debugfile.log";
     FILE *fptr;
 
     if (!debug_file)
+        return;
+
+    fptr = fopen(debug_file_name,"a");
+
+    if (fptr == NULL)
         return;
 
     /* validate string - no more than 80 characters and
@@ -4496,25 +4501,156 @@ write_debug_file(char *string)
     int i;
 
     for (i = 0; i < 80 ; i++) {
+
         c = string[i];
+
         /* end validation with end of string found */
+
         if (c == '\0')
             break;
-        /* return from function if not alpha or space (newline, space) */
-        if (!isalnum(c) && !isspace(c))
-            return;
-    }
-    /* return if last character is not \0 */
-    if (c != '\0')
-        return;
 
-    fptr = fopen(debug_file_name,"a");
+        /* return from function if not printable character or space */
+
+        if (!isprint(c) && !isspace(c)) {
+            fputs("Unprintable character in write_debug_file string\n",fptr);
+            fclose(fptr);
+            return;
+        }
+    }
+
+    /* return if last character is not \0 */
+
+    if (c != '\0') {
+        fputs("String more than 80 characters in write_debug_file\n",fptr);
+        fclose(fptr);
+        return;
+    }
 
     fputs(string,fptr);
 
     fclose(fptr);
 
     return ;
+}
+
+/*
+write_debug_file_datetime writes the current date and time to
+the debug file
+*/
+
+void
+write_debug_file_datetime()
+{
+    /* get current date and time */
+
+    time_t date_time;
+
+    time(&date_time);
+
+    /* write string version to log file */
+
+    write_debug_file(ctime(&date_time));
+}
+
+/*
+is_good_format(percent_string) verifies that the format string only contains one
+% and that it is the one passed as percent_string. I.e. %s or %d
+
+format_string is the full format string like "This is a string: %s\n"
+
+percent_string is the expected % format such as %d, %lf, %s, %c
+
+Returns 1 (true) if it is good.
+
+*/
+
+int
+is_good_format(char *format_string,char *percent_string)
+{
+    int length = strlen(format_string);
+    int i;
+    int percent_count = 0;
+
+    /* loop through counting % return 0 if not exactly 1 %*/
+
+    for (i = 0; i < length ; i++)
+        if (format_string[i] == '%') {
+            percent_count++;
+
+            if (percent_count > 1)
+                return 0;
+        }
+    if (percent_count != 1)
+        return 0;
+
+    /* check for correct % string */
+
+    if (strstr(format_string, percent_string) != NULL)
+        return 1;
+    else
+        return 0;
+}
+
+/*
+write_debug_file_str uses a sprintf type format and applies it
+to data and then writes to a file.
+*/
+
+void
+write_debug_file_str(char *format,char *data)
+{
+    char formatted_string[81];
+    int bytes_written;
+
+    /* check format string */
+
+    if (!is_good_format(format,"%s")) {
+        write_debug_file("Bad format string in write_debug_file_str\n");
+        return;
+    }
+
+    bytes_written =  snprintf(formatted_string, 80, format, data);
+
+    /* don't write strings longer than 80 characters */
+
+    if (bytes_written >= 80) {
+        write_debug_file("More than 80 charater string in write_debug_file_str\n");
+        return;
+    } else {
+        write_debug_file(formatted_string);
+        return;
+    }
+}
+
+/*
+write_debug_file_int is like write_debug_file_str but
+passes int data instead of char *
+*/
+
+void
+write_debug_file_int(char *format,int data)
+{
+    char formatted_string[81];
+    int bytes_written;
+
+    /* check format string */
+
+    if (!is_good_format(format,"%d")) {
+        write_debug_file("Bad format string in write_debug_file_int\n");
+        return;
+    }
+
+    bytes_written =  snprintf(formatted_string, 80, format, data);
+
+    /* don't write strings longer than 80 characters */
+
+    if (bytes_written >= 80) {
+        write_debug_file("More than 80 charater string in write_debug_file_str\n");
+        return;
+    } else {
+        write_debug_file(formatted_string);
+        return;
+    }
 }
 
 /*files.c*/

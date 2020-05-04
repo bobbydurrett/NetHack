@@ -122,3 +122,15 @@ If formats to more than 80 characters abort.
 
 Could do one for each type we might need. Not sure yet what those would be.
 
+debug functions are up to these now: (in extern.h)
+
+/* Bobby Durrett debug file functions */
+
+E void write_debug_file(char *string);
+E void write_debug_file_datetime();
+E void write_debug_file_str(char *format,char *data);
+E void write_debug_file_int(char *format,int data);
+
+could clone write_debug_file_str or write_debug_file_int for other types
+just passes one parameter into format string. should be ok for debugging.
+
