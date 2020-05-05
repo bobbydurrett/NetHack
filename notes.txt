@@ -162,3 +162,10 @@ added
 
 E void write_debug_file_long(char *format,long data);
 
+5/4/2020
+
+Cleaned up the debug file stuff a little bit.
+
+Put test code in /home/bobby/debugfile
+
+

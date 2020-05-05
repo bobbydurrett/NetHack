@@ -4470,20 +4470,34 @@ int bufsz;
 
 /* Bobby Durrett debug file functions */
 
-int debug_file = 1;
+/* Longest line that can be written to the debug file in characters */
+
+#define MAX_LINE_SIZE 80
+
+/* Location of file that has output of debug file functions */
+
+#define DEBUG_FILE "/home/bobby/debugfile/debugfile.log"
+
+/* Set debug_file TRUE to write to file, FALSE to disable. */
+
+int debug_file = TRUE;
 
 /*
-write_debug_file writes a string to a debug file.
+
+write_debug_file(char *string)
+
+Writes a string to a debug file.
 
 It appends any existing data in the file.
 
 It opens and closes the file so it does not stay open.
+
 */
 
 void
 write_debug_file(char *string)
 {
-    char *debug_file_name ="/home/bobby/test/debugfile.log";
+    char *debug_file_name =DEBUG_FILE;
     FILE *fptr;
 
     if (!debug_file)
@@ -4494,13 +4508,13 @@ write_debug_file(char *string)
     if (fptr == NULL)
         return;
 
-    /* validate string - no more than 80 characters and
+    /* validate string - no more than MAX_LINE_SIZE characters and
        only ascii characters and newlines */
 
     char c;
     int i;
 
-    for (i = 0; i < 80 ; i++) {
+    for (i = 0; i < MAX_LINE_SIZE ; i++) {
 
         c = string[i];
 
@@ -4521,7 +4535,7 @@ write_debug_file(char *string)
     /* return if last character is not \0 */
 
     if (c != '\0') {
-        fputs("String more than 80 characters in write_debug_file\n",fptr);
+        fputs("String more than MAX_LINE_SIZE characters in write_debug_file\n",fptr);
         fclose(fptr);
         return;
     }
@@ -4534,8 +4548,12 @@ write_debug_file(char *string)
 }
 
 /*
-write_debug_file_datetime writes the current date and time to
-the debug file
+
+write_debug_file_datetime()
+
+Writes the current date and time to
+the debug file.
+
 */
 
 void
@@ -4553,14 +4571,17 @@ write_debug_file_datetime()
 }
 
 /*
-is_good_format(percent_string) verifies that the format string only contains one
+
+int is_good_format(char *format_string,char *percent_string)
+
+Verifies that the format string only contains one
 % and that it is the one passed as percent_string. I.e. %s or %d
 
 format_string is the full format string like "This is a string: %s\n"
 
 percent_string is the expected % format such as %d, %lf, %s, %c
 
-Returns 1 (true) if it is good.
+Returns TRUE if it is good.
 
 */
 
@@ -4578,28 +4599,32 @@ is_good_format(char *format_string,char *percent_string)
             percent_count++;
 
             if (percent_count > 1)
-                return 0;
+                return FALSE;
         }
     if (percent_count != 1)
-        return 0;
+        return FALSE;
 
     /* check for correct % string */
 
     if (strstr(format_string, percent_string) != NULL)
-        return 1;
+        return TRUE;
     else
-        return 0;
+        return FALSE;
 }
 
 /*
-write_debug_file_str uses a sprintf type format and applies it
+
+write_debug_file_str(char *format,char *data)
+
+Uses a sprintf type format and applies it
 to data and then writes to a file.
+
 */
 
 void
 write_debug_file_str(char *format,char *data)
 {
-    char formatted_string[81];
+    char formatted_string[MAX_LINE_SIZE];
     int bytes_written;
 
     /* check format string */
@@ -4609,12 +4634,12 @@ write_debug_file_str(char *format,char *data)
         return;
     }
 
-    bytes_written =  snprintf(formatted_string, 80, format, data);
+    bytes_written =  snprintf(formatted_string, MAX_LINE_SIZE, format, data);
 
-    /* don't write strings longer than 80 characters */
+    /* don't write strings longer than MAX_LINE_SIZE characters */
 
-    if (bytes_written >= 80) {
-        write_debug_file("More than 80 charater string in write_debug_file_str\n");
+    if (bytes_written >= MAX_LINE_SIZE) {
+        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_str\n");
         return;
     } else {
         write_debug_file(formatted_string);
@@ -4623,14 +4648,18 @@ write_debug_file_str(char *format,char *data)
 }
 
 /*
-write_debug_file_int is like write_debug_file_str but
-passes int data instead of char *
+
+write_debug_file_int(char *format,int data)
+
+Is like write_debug_file_str but
+passes int data instead of char *.
+
 */
 
 void
 write_debug_file_int(char *format,int data)
 {
-    char formatted_string[81];
+    char formatted_string[MAX_LINE_SIZE];
     int bytes_written;
 
     /* check format string */
@@ -4640,12 +4669,12 @@ write_debug_file_int(char *format,int data)
         return;
     }
 
-    bytes_written =  snprintf(formatted_string, 80, format, data);
+    bytes_written =  snprintf(formatted_string, MAX_LINE_SIZE, format, data);
 
-    /* don't write strings longer than 80 characters */
+    /* don't write strings longer than MAX_LINE_SIZE characters */
 
-    if (bytes_written >= 80) {
-        write_debug_file("More than 80 charater string in write_debug_file_str\n");
+    if (bytes_written >= MAX_LINE_SIZE) {
+        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_int\n");
         return;
     } else {
         write_debug_file(formatted_string);
@@ -4654,14 +4683,18 @@ write_debug_file_int(char *format,int data)
 }
 
 /*
-write_debug_file_long is like write_debug_file_int but
-with %ld to format long integers
+
+write_debug_file_long(char *format,long data
+
+Is like write_debug_file_int but
+with %ld to format long integers.
+
 */
 
 void
 write_debug_file_long(char *format,long data)
 {
-    char formatted_string[81];
+    char formatted_string[MAX_LINE_SIZE];
     int bytes_written;
 
     /* check format string */
@@ -4671,12 +4704,12 @@ write_debug_file_long(char *format,long data)
         return;
     }
 
-    bytes_written =  snprintf(formatted_string, 80, format, data);
+    bytes_written =  snprintf(formatted_string, MAX_LINE_SIZE, format, data);
 
-    /* don't write strings longer than 80 characters */
+    /* don't write strings longer than MAX_LINE_SIZE characters */
 
-    if (bytes_written >= 80) {
-        write_debug_file("More than 80 charater string in write_debug_file_long\n");
+    if (bytes_written >= MAX_LINE_SIZE) {
+        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_long\n");
         return;
     } else {
         write_debug_file(formatted_string);
