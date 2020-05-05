@@ -4497,7 +4497,7 @@ It opens and closes the file so it does not stay open.
 void
 write_debug_file(char *string)
 {
-    char *debug_file_name =DEBUG_FILE;
+    char *debug_file_name = DEBUG_FILE;
     FILE *fptr;
 
     if (!debug_file)
