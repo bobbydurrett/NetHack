@@ -4639,7 +4639,7 @@ write_debug_file_str(char *format,char *data)
     /* don't write strings longer than MAX_LINE_SIZE characters */
 
     if (bytes_written >= MAX_LINE_SIZE) {
-        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_str\n");
+        write_debug_file("More than MAX_LINE_SIZE character string in write_debug_file_str\n");
         return;
     } else {
         write_debug_file(formatted_string);
@@ -4674,7 +4674,7 @@ write_debug_file_int(char *format,int data)
     /* don't write strings longer than MAX_LINE_SIZE characters */
 
     if (bytes_written >= MAX_LINE_SIZE) {
-        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_int\n");
+        write_debug_file("More than MAX_LINE_SIZE character string in write_debug_file_int\n");
         return;
     } else {
         write_debug_file(formatted_string);
@@ -4709,7 +4709,7 @@ write_debug_file_long(char *format,long data)
     /* don't write strings longer than MAX_LINE_SIZE characters */
 
     if (bytes_written >= MAX_LINE_SIZE) {
-        write_debug_file("More than MAX_LINE_SIZE charater string in write_debug_file_long\n");
+        write_debug_file("More than MAX_LINE_SIZE character string in write_debug_file_long\n");
         return;
     } else {
         write_debug_file(formatted_string);
