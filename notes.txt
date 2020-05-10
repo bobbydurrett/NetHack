@@ -323,3 +323,68 @@ probably here
 [bobby@localhost src]$ grep "Unknown option" *.c
 options.c:    config_error_add("Unknown option '%s'", opts);
 
+    /* out of valid options */
+    config_error_add("Unknown option '%s'", opts);
+    return FALSE;
+}
+
+this is called if you fall through to this point.
+
+This is the end of parseoptions in options.c
+
+Maybe add the autoletter support here.
+
+/* compound options, for option_help() and external programs like Amiga
+ * frontend */
+static struct Comp_Opt {
+    const char *name, *descr;
+    int size; /* for frontends and such allocating space --
+               * usually allowed size of data in game, but
+               * occasionally maximum reasonable size for
+               * typing when game maintains information in
+               * a different format */
+    int optflags;
+} compopt[] = {
+    { "align", "your starting alignment (lawful, neutral, or chaotic)", 8,
+      DISP_IN_GAME },
+    { "align_message", "message window alignment", 20, DISP_IN_GAME }, /*WC*/
+    { "align_status", "status window alignment", 20, DISP_IN_GAME },   /*WC*/
+
+Seems like we may not need to add autoletter to compopt[] in options.c at first just to get it working
+but later to add it to the help for options.
+
+Probably just need to handle autoletter at the end of parseoptions for now.
+
+    /* control over whether highlights should be displayed, and for how long */
+    fullname = "statushilites";
+    if (match_optname(opts, fullname, 9, TRUE)) {
+#ifdef STATUS_HILITES
+        if (negated) {
+            iflags.hilite_delta = 0L;
+        } else {
+            op = string_for_opt(opts, TRUE);
+            iflags.hilite_delta = (op == empty_optstr || !*op) ? 3L : atol(op);
+            if (iflags.hilite_delta < 0L)
+                iflags.hilite_delta = 1L;
+        }
+        if (!tfrom_file)
+            reset_status_hilites();
+        return retval;
+#else
+        config_error_add("'%s' is not supported", fullname);
+        return FALSE;
+#endif
+    }
+
+possible example. could use fullname = "autoletter";
+
+Not sure if I should use something like
+
+#ifdef AUTOLETTER to bracket the code? Kind of gross.
+
+If I am going to do it I should do something like
+
+#ifdef DEBUG_FILE for the debugging code.
+
+
+
