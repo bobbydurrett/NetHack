@@ -168,4 +168,132 @@ Cleaned up the debug file stuff a little bit.
 
 Put test code in /home/bobby/debugfile
 
+5/9/2020
+
+Poking around.
+
+boolean
+parseoptions(opts, tinitial, tfrom_file)
+register char *opts;
+boolean tinitial, tfrom_file;
+
+in options.c
+
+I think it is called for each option in .nethackrc
+
+[bobby@localhost ~]$ cat .nethackrc
+OPTIONS=noshowexp,showscore,time,color,!autopickup
+OPTIONS=autodig,ibmgraphics,autoquiver,noautoopen
+OPTIONS=number_pad:0,msg_window:reversed
+OPTIONS=hilite_pet,hilite_pile,pickup_burden:unencumbered
+OPTIONS=disclose:yi ya yv yg yc yo
+OPTIONS=boulder:`
+OPTIONS=sortloot:none
+
+
+boolean
+parseoptions(opts, tinitial, tfrom_file)
+register char *opts;
+boolean tinitial, tfrom_file;
+{
+    write_debug_file_str("In parseoptions opts = %s\n",opts);
+
+
+[bobby@localhost debugfile]$ cat /dev/null > debugfile.log;tail -f debugfile.log
+In parseoptions opts = noshowexp,showscore,time,color,!autopickup
+In parseoptions opts = showscore,time,color,!autopickup
+In parseoptions opts = time,color,!autopickup
+In parseoptions opts = color,!autopickup
+In parseoptions opts = !autopickup
+In parseoptions opts = autodig,ibmgraphics,autoquiver,noautoopen
+In parseoptions opts = ibmgraphics,autoquiver,noautoopen
+In parseoptions opts = autoquiver,noautoopen
+In parseoptions opts = noautoopen
+In parseoptions opts = number_pad:0,msg_window:reversed
+In parseoptions opts = msg_window:reversed
+In parseoptions opts = hilite_pet,hilite_pile,pickup_burden:unencumbered
+In parseoptions opts = hilite_pile,pickup_burden:unencumbered
+In parseoptions opts = pickup_burden:unencumbered
+In parseoptions opts = disclose:yi ya yv yg yc yo
+In parseoptions opts = boulder:`
+In parseoptions opts = sortloot:none
+
+Looks like it just processes the first option passed to it.
+
+    if ((op = index(opts, ',')) != 0) {
+        *op++ = 0;
+        if (!parseoptions(op, initial, from_file))
+            retval = FALSE;
+
+I guess this sticks a 0 where the first comma is so the rest of the function
+can use opts as if it didn't have a comma.
+
+Then it calls itself with op pointing to the string after the comma.
+
+[bobby@localhost src]$ grep parseoptions *.c
+files.c:        ++bufp; /* skip '='; parseoptions() handles spaces */
+files.c:        if (!parseoptions(bufp, TRUE, TRUE))
+options.c:             * parseoptions() will check each individually
+options.c:            (void) parseoptions(opts, TRUE, FALSE);
+options.c:/* paranoia[] - used by parseoptions() and special_handling() */
+options.c:parseoptions(opts, tinitial, tfrom_file)
+options.c:        if (!parseoptions(op, initial, from_file))
+options.c:         * or prompt for new values. In most cases, call parseoptions()
+options.c:                (void) parseoptions(buf, setinitial, fromfile);
+options.c:                    (void) parseoptions(buf, setinitial, fromfile);
+options.c:        /* parseoptions will prompt for the list of types */
+options.c:        (void) parseoptions(strcpy(buf, "pickup_types"),
+vision.c: *      + After an option has changed that affects vision [parseoptions()]
+
+Mostly return value is ignored except in files.c.
+
+        if (!parseoptions(bufp, TRUE, TRUE))
+            retval = FALSE;
+
+this uses returned value in files.c
+in function 
+
+boolean
+parse_config_line(origbuf)
+char *origbuf;
+
+But what the heck is parse_config_line doing?
+
+boolean
+parse_config_line(origbuf)
+char *origbuf;
+{
+    write_debug_file_str("In parse_config_line origbuf = %s\n",origbuf);
+
+
+clear; cat /dev/null > debugfile.log;tail -f debugfile.log
+
+In parse_config_line origbuf = WIZARDS=bobby
+In parse_config_line origbuf = EXPLORERS=*
+In parse_config_line origbuf = MAXPLAYERS=10
+In parse_config_line origbuf = GDBPATH=/usr/bin/gdb
+In parse_config_line origbuf = GREPPATH=/bin/grep
+In parse_config_line origbuf = PANICTRACE_GDB=1
+In parse_config_line origbuf = PANICTRACE_LIBC=2
+More than MAX_LINE_SIZE character string in write_debug_file_str
+More than MAX_LINE_SIZE character string in write_debug_file_str
+In parse_config_line origbuf = OPTIONS=number_pad:0,msg_window:reversed
+More than MAX_LINE_SIZE character string in write_debug_file_str
+In parse_config_line origbuf = OPTIONS=disclose:yi ya yv yg yc yo
+In parse_config_line origbuf = OPTIONS=boulder:`
+In parse_config_line origbuf = OPTIONS=sortloot:none
+
+I guess these are the uncommented lines in sysconf as well as the .nethackrc
+
+[bobby@localhost nethack]$ grep = /home/bobby/nethack/games/lib/bobbyhackdir/sysconf | grep -v \#
+WIZARDS=bobby
+EXPLORERS=*
+MAXPLAYERS=10
+GDBPATH=/usr/bin/gdb
+GREPPATH=/bin/grep
+PANICTRACE_GDB=1
+PANICTRACE_LIBC=2
+
+I'm thinking autoletter should be an option since it is related to game
+play and not configuration of the system relative to Linux.
 
