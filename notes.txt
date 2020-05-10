@@ -386,5 +386,11 @@ If I am going to do it I should do something like
 
 #ifdef DEBUG_FILE for the debugging code.
 
+I think retval is set by the earlier recursive call
 
+        if (!parseoptions(op, initial, from_file))
+            retval = FALSE;
+
+So if current option is good return retval otherwise
+return FALSE.
 
