@@ -297,3 +297,29 @@ PANICTRACE_LIBC=2
 I'm thinking autoletter should be an option since it is related to game
 play and not configuration of the system relative to Linux.
 
+5/10/2020
+
+[bobby@localhost ~]$ diff .nethackrc .nethackrc.workingsave
+
+.nethackrc.workingsave is my normal options for nethack 3.6.x
+
+[bobby@localhost ~]$ cat .nethackrc
+OPTIONS=autoletter:blindfold:1
+
+simple test of one autoletter option.
+
+[bobby@localhost ~]$ bobbyhack -D
+
+OPTIONS=autoletter:blindfold:1
+ * Line 1: Unknown option 'autoletter:blindfold:1'.
+
+1 error in /home/bobby/.nethackrc.
+
+
+Hit return to continue:
+
+probably here
+
+[bobby@localhost src]$ grep "Unknown option" *.c
+options.c:    config_error_add("Unknown option '%s'", opts);
+
