@@ -1815,6 +1815,11 @@ E int FDECL(msgtype_type, (const char *, BOOLEAN_P));
 E void FDECL(hide_unhide_msgtypes, (BOOLEAN_P, int));
 E void NDECL(msgtype_free);
 
+/* Bobby Durrett autoletter functions */
+
+E void FDECL(add_autoletter, (char *));
+
+
 /* ### pager.c ### */
 
 E char *FDECL(self_lookat, (char *));

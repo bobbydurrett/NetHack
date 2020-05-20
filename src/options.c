@@ -4181,7 +4181,7 @@ boolean tinitial, tfrom_file;
 
     fullname = "autoletter";
     if (match_optname(opts, fullname, 7, TRUE)) {
-        write_debug_file_str("autoletter opts = %s\n",opts);
+        add_autoletter(opts);
         return retval;
     }
 
@@ -6941,5 +6941,40 @@ set_playmode()
 }
 
 #endif /* OPTION_LISTS_ONLY */
+
+/* Bobby Durrett autoletter routines and variables */
+
+/*
+
+add_autoletter(char *opts)
+
+Takes an autoletter option of this format:
+
+autoletter:b:blindfold:1
+
+and stores it for later use so that it can be
+used to move an object of the specified type
+or name to the given letter.
+
+This is the format of the command after autoletter:
+
+letter:object type or name:integer priority
+
+object type can be the revealed type such as
+magic lamp or the unrevealed type like lamp.
+
+Object name can be the name of an artifact or
+the name given by the user.
+
+autoletter may only have a prefix of autolet
+so skip to the first :
+
+*/
+
+void
+add_autoletter(char *opts)
+{
+    write_debug_file_str("In add_autoletter opts = %s\n",opts);
+}
 
 /*options.c*/

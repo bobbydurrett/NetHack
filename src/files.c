@@ -4684,7 +4684,7 @@ write_debug_file_int(char *format,int data)
 
 /*
 
-write_debug_file_long(char *format,long data
+write_debug_file_long(char *format,long data)
 
 Is like write_debug_file_int but
 with %ld to format long integers.

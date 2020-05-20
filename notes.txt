@@ -429,6 +429,23 @@ autoletter opts = autoletter:blindfold:1
 autoletter opts = autolet:blindfold:1
 autoletter opts = autoletter:blindfold:1
 
+Duh.
+
+should be like this
+
+autoletter opts = autoletter:b:blindfold:1
+
+letter:object type or name:integer priority
+
+
+void
+add_autoletter(char *opts)
+{
+    write_debug_file_str("In add_autoletter opts = %s\n",opts);
+}
+
+shell of where to do actual insert into data structure
+
 
 
 
