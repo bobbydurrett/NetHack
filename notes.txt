@@ -446,6 +446,18 @@ add_autoletter(char *opts)
 
 shell of where to do actual insert into data structure
 
+strchr to find a string
 
+need to add validation code in add_autoletter
+to make sure isn't a huge string et. al. and that
+it has the proper number of :'s and all.
+Also having it default to priority 1 without the last
+: and having a prefix for autoletter.
 
+might need config_error_add and similar routines
+to report an error
+
+/* varargs 'config_error_add()' moved to pline.c */
+
+config_error_add("Unknown %s '%s'", fullname, op);
 

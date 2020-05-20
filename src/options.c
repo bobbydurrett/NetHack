@@ -4181,8 +4181,10 @@ boolean tinitial, tfrom_file;
 
     fullname = "autoletter";
     if (match_optname(opts, fullname, 7, TRUE)) {
-        add_autoletter(opts);
-        return retval;
+        if (add_autoletter(opts))
+            return retval;
+        else
+            return FALSE;
     }
 
     /* out of valid options */
@@ -6944,8 +6946,13 @@ set_playmode()
 
 /* Bobby Durrett autoletter routines and variables */
 
+/* Maximum size of object name or type */
+
+#define MAX_OBJ_TYPE_NAME_LEN 40
+
 /*
 
+boolean
 add_autoletter(char *opts)
 
 Takes an autoletter option of this format:
@@ -6971,10 +6978,67 @@ so skip to the first :
 
 */
 
-void
+boolean
 add_autoletter(char *opts)
 {
     write_debug_file_str("In add_autoletter opts = %s\n",opts);
+
+    /* parse out options */
+
+    /* opts = autoletter:b:blindfold:1 */
+
+    /* get past the first : */
+
+    char *at_letter = strchr(opts,':');
+    if (!at_letter) {
+        config_error_add("Missing first colon %s", opts);
+        return FALSE;
+    }
+    /* skip : */
+    at_letter++;
+
+    /* at_letter = b:blindfold:1 */
+
+    write_debug_file_str("In add_autoletter at_letter = %s\n",at_letter);
+
+    /* get the letter */
+
+    char letter = at_letter[0];
+
+    /* verify next character is : otherwise not one letter */
+
+    if (at_letter[1] != ':') {
+        config_error_add("Expected one letter %s", opts);
+        return FALSE;
+    }
+
+    write_debug_file_char("In add_autoletter letter = %c\n",letter);
+
+    /* Now get object_type_or_name and make sure it is no longer than expected */
+
+    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
+
+    /* loop through at_letter starting just past the : and copy to
+       object_type_or_name unless > MAX_OBJ_TYPE_NAME_LEN */
+
+    char *at_object = at_letter + 2;
+    int i;
+
+    for (i = 0; i < MAX_OBJ_TYPE_NAME_LEN ; i++) {
+
+        object_type_or_name[i] = at_object[i];
+
+        if (at_object[i] == '\0')
+            break;
+    }
+
+    /* if we get here and i >= MAX_OBJ_TYPE_NAME_LEN string is too long */
+
+    if (i >= MAX_OBJ_TYPE_NAME_LEN) {
+        config_error_add("Object name or type too long");
+    }
+
+    return TRUE;
 }
 
 /*options.c*/

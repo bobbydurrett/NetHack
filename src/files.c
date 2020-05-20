@@ -4717,4 +4717,39 @@ write_debug_file_long(char *format,long data)
     }
 }
 
+/*
+
+write_debug_file_char(char *format,char data)
+
+Is like write_debug_file_str but
+passes char data instead of char *.
+
+*/
+
+void
+write_debug_file_char(char *format,char data)
+{
+    char formatted_string[MAX_LINE_SIZE];
+    int bytes_written;
+
+    /* check format string */
+
+    if (!is_good_format(format,"%c")) {
+        write_debug_file("Bad format string in write_debug_file_char\n");
+        return;
+    }
+
+    bytes_written =  snprintf(formatted_string, MAX_LINE_SIZE, format, data);
+
+    /* don't write strings longer than MAX_LINE_SIZE characters */
+
+    if (bytes_written >= MAX_LINE_SIZE) {
+        write_debug_file("More than MAX_LINE_SIZE character string in write_debug_file_char\n");
+        return;
+    } else {
+        write_debug_file(formatted_string);
+        return;
+    }
+}
+
 /*files.c*/
