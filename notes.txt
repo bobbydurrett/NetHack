@@ -394,3 +394,41 @@ I think retval is set by the earlier recursive call
 So if current option is good return retval otherwise
 return FALSE.
 
+5/19/2020
+
+in options.c
+
+/* check whether a user-supplied option string is a proper leading
+   substring of a particular option name; option string might have
+   a colon or equals sign and arbitrary value appended to it */
+boolean
+match_optname(user_string, opt_name, min_length, val_allowed)
+const char *user_string, *opt_name;
+int min_length;
+boolean val_allowed;
+
+I guess use this:
+
+    /* automatically set objects to a specific letter */
+    fullname = "autoletter";
+    if (match_optname(opts, fullname, 10, TRUE)) {
+        write_debug_file_str("autoletter opts = %s\n",opts);
+        return retval;
+    }
+    
+[bobby@localhost ~]$ cat .nethackrc
+OPTIONS=autoletter:blindfold:1
+
+debug output:
+
+autoletter opts = autoletter:blindfold:1
+
+switched to 7 letters so autolet works.
+
+autoletter opts = autoletter:blindfold:1
+autoletter opts = autolet:blindfold:1
+autoletter opts = autoletter:blindfold:1
+
+
+
+

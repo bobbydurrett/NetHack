@@ -4176,6 +4176,15 @@ boolean tinitial, tfrom_file;
         return retval;
     }
 
+    /* automatically set objects to a specific letter */
+    /* Bobby Durrett autoletter option */
+
+    fullname = "autoletter";
+    if (match_optname(opts, fullname, 7, TRUE)) {
+        write_debug_file_str("autoletter opts = %s\n",opts);
+        return retval;
+    }
+
     /* out of valid options */
     config_error_add("Unknown option '%s'", opts);
     return FALSE;
