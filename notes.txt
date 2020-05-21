@@ -461,3 +461,16 @@ to report an error
 
 config_error_add("Unknown %s '%s'", fullname, op);
 
+5/20/2020
+
+add_autoletter is parsing out the autoletter option
+pretty well with error checking.
+
+getting super annoying clock skew message need to figure
+out how to sync Linux VM clock with my Windows laptop host.
+Maybe part of tools for virtualbox?
+
+should I put this code in its own function and call
+it from add_autoletter?
+
+maybe parse_autoletter?

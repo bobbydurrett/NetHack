@@ -6950,6 +6950,10 @@ set_playmode()
 
 #define MAX_OBJ_TYPE_NAME_LEN 40
 
+/* Maximum length of priority number */
+
+#define MAX_PRIORITY_LEN 4
+
 /*
 
 boolean
@@ -7026,6 +7030,13 @@ add_autoletter(char *opts)
 
     for (i = 0; i < MAX_OBJ_TYPE_NAME_LEN ; i++) {
 
+        /* Break if next colon found. Is end of object name/type */
+
+        if (at_object[i] == ':') {
+            object_type_or_name[i] = '\0';
+            break;
+        }
+
         object_type_or_name[i] = at_object[i];
 
         if (at_object[i] == '\0')
@@ -7036,7 +7047,61 @@ add_autoletter(char *opts)
 
     if (i >= MAX_OBJ_TYPE_NAME_LEN) {
         config_error_add("Object name or type too long");
+        return FALSE;
     }
+
+    write_debug_file_str("In add_autoletter object_type_or_name = %s\n",object_type_or_name);
+
+    /* need to handle two cases for priority:
+    1 - b:blindfold:1
+    2 - b:blindfold (implies priority 1)
+    */
+
+    char priority_str[MAX_PRIORITY_LEN];
+    char *rest_of_str;
+    int priority;
+
+    if (at_object[i] == ':') {
+        /* case 1 - number for priority */
+
+        /* point to the string priority number */
+
+        char *rest_of_str = at_object + i + 1;
+
+        write_debug_file_str("In add_autoletter rest_of_str = %s\n",rest_of_str);
+
+        int j;
+
+        /* copy priority string - check for digits only */
+
+        for (j = 0 ; j < MAX_PRIORITY_LEN ; j++) {
+
+            priority_str[j] = rest_of_str[j];
+
+            if (rest_of_str[j] == '\0')
+                break;
+
+            if (!isdigit(rest_of_str[j])) {
+                config_error_add("Priority has non-digit character");
+                return FALSE;
+            }
+
+        }
+
+        write_debug_file_str("In add_autoletter priority_str = %s\n",priority_str);
+
+        priority = atoi(priority_str);
+    }
+    else if (at_object[i] == '\0') {
+        /* case 2 - default priority 1 */
+        priority = 1;
+    }
+    else {
+        config_error_add("Should not be possible to get here");
+        return FALSE;
+    }
+
+    write_debug_file_int("In add_autoletter priority = %d\n",priority);
 
     return TRUE;
 }
