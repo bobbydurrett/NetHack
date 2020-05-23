@@ -483,3 +483,7 @@ Windows 10 laptop was the one that was out of sync somehow.
 Had to go to Date and time settings and click on
 Sync now button to resolve.
 
+Moved autoletter option parsing code into
+parse_autoletter to keep add_autoletter
+cleaner.
+

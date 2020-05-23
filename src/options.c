@@ -6957,15 +6957,13 @@ set_playmode()
 /*
 
 boolean
-add_autoletter(char *opts)
+parse_autoletter(char *opts,char *letter,char *object_type_or_name, int *priority)
 
 Takes an autoletter option of this format:
 
 autoletter:b:blindfold:1
 
-and stores it for later use so that it can be
-used to move an object of the specified type
-or name to the given letter.
+and breaks it out into its components and returns them.
 
 This is the format of the command after autoletter:
 
@@ -6980,13 +6978,14 @@ the name given by the user.
 autoletter may only have a prefix of autolet
 so skip to the first :
 
+Returns TRUE if it is parsed successfully, FALSE
+otherwise.
+
 */
 
 boolean
-add_autoletter(char *opts)
+parse_autoletter(char *opts,char *letter,char *object_type_or_name, int *priority)
 {
-    write_debug_file_str("In add_autoletter opts = %s\n",opts);
-
     /* parse out options */
 
     /* opts = autoletter:b:blindfold:1 */
@@ -7003,11 +7002,9 @@ add_autoletter(char *opts)
 
     /* at_letter = b:blindfold:1 */
 
-    write_debug_file_str("In add_autoletter at_letter = %s\n",at_letter);
-
     /* get the letter */
 
-    char letter = at_letter[0];
+    *letter = at_letter[0];
 
     /* verify next character is : otherwise not one letter */
 
@@ -7016,11 +7013,7 @@ add_autoletter(char *opts)
         return FALSE;
     }
 
-    write_debug_file_char("In add_autoletter letter = %c\n",letter);
-
     /* Now get object_type_or_name and make sure it is no longer than expected */
-
-    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
 
     /* loop through at_letter starting just past the : and copy to
        object_type_or_name unless > MAX_OBJ_TYPE_NAME_LEN */
@@ -7050,8 +7043,6 @@ add_autoletter(char *opts)
         return FALSE;
     }
 
-    write_debug_file_str("In add_autoletter object_type_or_name = %s\n",object_type_or_name);
-
     /* need to handle two cases for priority:
     1 - b:blindfold:1
     2 - b:blindfold (implies priority 1)
@@ -7059,7 +7050,6 @@ add_autoletter(char *opts)
 
     char priority_str[MAX_PRIORITY_LEN];
     char *rest_of_str;
-    int priority;
 
     if (at_object[i] == ':') {
         /* case 1 - number for priority */
@@ -7067,8 +7057,6 @@ add_autoletter(char *opts)
         /* point to the string priority number */
 
         char *rest_of_str = at_object + i + 1;
-
-        write_debug_file_str("In add_autoletter rest_of_str = %s\n",rest_of_str);
 
         int j;
 
@@ -7088,19 +7076,61 @@ add_autoletter(char *opts)
 
         }
 
-        write_debug_file_str("In add_autoletter priority_str = %s\n",priority_str);
-
-        priority = atoi(priority_str);
+        *priority = atoi(priority_str);
     }
     else if (at_object[i] == '\0') {
         /* case 2 - default priority 1 */
-        priority = 1;
+        *priority = 1;
     }
     else {
         config_error_add("Should not be possible to get here");
         return FALSE;
     }
 
+    return TRUE;
+}
+
+/*
+
+boolean
+add_autoletter(char *opts)
+
+Takes an autoletter option of this format:
+
+autoletter:b:blindfold:1
+
+and stores it for later use so that it can be
+used to move an object of the specified type
+or name to the given letter.
+
+This is the format of the command after autoletter:
+
+letter:object type or name:integer priority
+
+object type can be the revealed type such as
+magic lamp or the unrevealed type like lamp.
+
+Object name can be the name of an artifact or
+the name given by the user.
+
+autoletter may only have a prefix of autolet
+so skip to the first :
+
+*/
+
+boolean
+add_autoletter(char *opts)
+{
+    /* parsed option details */
+    char letter;
+    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
+    int priority;
+
+    if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
+        return FALSE;
+
+    write_debug_file_char("In add_autoletter letter = %c\n",letter);
+    write_debug_file_str("In add_autoletter object_type_or_name = %s\n",object_type_or_name);
     write_debug_file_int("In add_autoletter priority = %d\n",priority);
 
     return TRUE;
