@@ -474,3 +474,12 @@ should I put this code in its own function and call
 it from add_autoletter?
 
 maybe parse_autoletter?
+
+5/23/2020
+
+was getting weird time skew errors until I realized that my
+Windows 10 laptop was the one that was out of sync somehow.
+
+Had to go to Date and time settings and click on
+Sync now button to resolve.
+
