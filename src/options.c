@@ -6988,18 +6988,24 @@ insert_autoletter(char letter,char *object_type_or_name, int priority)
 {
     /* check for letter only */
 
-    if (!isalpha(letter))
+    if (!isalpha(letter)) {
+        config_error_add("Letter is not a-zA-Z");
         return FALSE;
+    }
 
     /* check type/name length */
 
-    if (strlen(object_type_or_name) > MAX_OBJ_TYPE_NAME_LEN)
+    if (strlen(object_type_or_name) > MAX_OBJ_TYPE_NAME_LEN) {
+        config_error_add("Object type or name too long");
         return FALSE;
+    }
 
     /* check priority >= 1 */
 
-    if (priority < 1)
+    if (priority < 1) {
+        config_error_add("Priority < 1");
         return FALSE;
+    }
 
     /* check for full array */
 

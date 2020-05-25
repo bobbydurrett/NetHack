@@ -515,5 +515,17 @@ Could test with my entire option list as I want to use it
 
 (blindfold, lamp, etc.)
 
+Need to test all the bad cases such as
+
+not a alpha letter
+
+priority < 1
+
+also need to add a check for duplicate object type or name.
+and make sure there is a meaningful error message.
+
+should I add config error messages to insert_autoletter
+itself.
+
 
 
