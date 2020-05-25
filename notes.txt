@@ -527,5 +527,15 @@ and make sure there is a meaningful error message.
 should I add config error messages to insert_autoletter
 itself.
 
+maybe create
 
+int lookup_autoletter(char *object_type_or_name)
+
+returns index into array >= 0 < MAX_AUTO_OPTIONS
+
+then combine with get_autoletter to return actual values.
+
+that way get_autoletter can be used to interate through
+entire array and to pull data back for a looked up
+index
 

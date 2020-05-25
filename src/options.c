@@ -6971,7 +6971,28 @@ static int num_autoletter = 0;                             /* Number of options 
 
 /* functions to save, lookup, etc. from array. */
 
-/* for now we just need to save to the array */
+/*
+
+int
+lookup_autoletter(char *object_type_or_name)
+
+Returns the index of the autoletter_array array that has
+the entry for object_type_or_name or -1 otherwise.
+
+*/
+
+int
+lookup_autoletter(char *object_type_or_name)
+{
+    int i;
+
+    for (i = 0; i < MAX_OBJ_TYPE_NAME_LEN ; i++) {
+        if (strcmp(object_type_or_name,autoletter_array[i].object_type_or_name) == 0)
+            return i;
+    }
+
+    return -1;
+}
 
 /*
 
@@ -7009,8 +7030,17 @@ insert_autoletter(char letter,char *object_type_or_name, int priority)
 
     /* check for full array */
 
-    if (num_autoletter >= MAX_AUTO_OPTIONS)
+    if (num_autoletter >= MAX_AUTO_OPTIONS) {
+        config_error_add("Too many autoletter options specified");
         return FALSE;
+    }
+
+    /* check for duplicate object name or type */
+
+    if (lookup_autoletter(object_type_or_name) > -1) {
+        config_error_add("Duplicate object name or type");
+        return FALSE;
+    }
 
     /* copy to current next entry */
 
