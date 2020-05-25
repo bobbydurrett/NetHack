@@ -623,3 +623,52 @@ add_autoletter(char *opts)
     return TRUE;
 }
 
+Now that this is there.
+
+Maybe do more testing to make sure array is updated correctly.
+
+Try my really intended options for one thing.
+
+OPTIONS=autoletter:b:blindfold
+OPTIONS=autoletter:l:magic lamp:1
+OPTIONS=autoletter:l:lamp:2
+OPTIONS=autoletter:l:oil lamp:2
+OPTIONS=autoletter:l:brass lantern:2
+OPTIONS=autoletter:k:key
+OPTIONS=autoletter:k:skeleton key
+OPTIONS=autoletter:m:mirror
+OPTIONS=autoletter:m:looking glass
+OPTIONS=autoletter:w:magic whistle:1
+OPTIONS=autoletter:w:whistle:2
+OPTIONS=autoletter:p:pick-axe
+OPTIONS=autoletter:u:unicorn horn
+
+
+It looks like in the code they call oil lamp the name
+and lamp the description.
+
+I have been thinking of these as "object types"
+
+names are in objects.c
+
+In add_autoletter opts = autoletter:u:unicorn horn
+
+Autoletter array length = 13
+
+Inventory Letter     Object Type or Name                     Priority
+---------------------------------------------------------------------
+b                    blindfold                                      1
+l                    magic lamp                                     1
+l                    lamp                                           2
+l                    oil lamp                                       2
+l                    brass lantern                                  2
+k                    key                                            1
+k                    skeleton key                                   1
+m                    mirror                                         1
+m                    looking glass                                  1
+w                    magic whistle                                  1
+w                    whistle                                        2
+p                    pick-axe                                       1
+u                    unicorn horn                                   1
+
+
