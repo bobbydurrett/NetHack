@@ -861,6 +861,7 @@ E void write_debug_file_str(char *format,char *data);
 E void write_debug_file_int(char *format,int data);
 E void write_debug_file_long(char *format,long data);
 E void write_debug_file_char(char *format,char data);
+E void write_debug_file_autoletter();
 
 /* ### fountain.c ### */
 
@@ -1819,7 +1820,8 @@ E void NDECL(msgtype_free);
 /* Bobby Durrett autoletter functions */
 
 E boolean FDECL(add_autoletter, (char *));
-
+E int NDECL(num_autoletter_options);
+E boolean FDECL(get_autoletter, (int, char *, char *, int *));
 
 /* ### pager.c ### */
 

@@ -584,5 +584,42 @@ void write_debug_file_autoletter()
 
 stick in extern.h
 
+add debug to write out opts in add_autoletter and the call
+write_debug_file_autoletter at the end.
 
+maybe
+
+    return insert_autoletter(letter, object_type_or_name, priority);
+
+change to
+
+    if (!insert_autoletter(letter, object_type_or_name, priority))
+        return FALSE;
+        
+    write_debug_file_autoletter()
+    
+    return TRUE;
+
+Then I could really see the options loading into the array.
+
+boolean
+add_autoletter(char *opts)
+{
+    /* parsed option details */
+    char letter;
+    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
+    int priority;
+
+    write_debug_file_str("In add_autoletter opts = %s" ,opts);
+
+    if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
+        return FALSE;
+
+    if (!insert_autoletter(letter, object_type_or_name, priority))
+        return FALSE;
+
+    write_debug_file_autoletter();
+
+    return TRUE;
+}
 

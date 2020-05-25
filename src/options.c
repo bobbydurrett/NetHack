@@ -6974,6 +6974,50 @@ static int num_autoletter = 0;                             /* Number of options 
 /*
 
 int
+num_autoletter_options()
+
+Returns the number of autoletter options in the array.
+
+*/
+
+int num_autoletter_options() {
+    if ((num_autoletter > 0) && (num_autoletter <= MAX_AUTO_OPTIONS))
+        return num_autoletter;
+    else
+        return 0;
+}
+
+/*
+
+boolean
+get_autoletter(int index,char *letter,char *object_type_or_name, int *priority)
+
+Returns false if index is outside the filled part of the array, TRUE otherwise.
+
+If TRUE then returns letter, object_type_or_name, priority from that entry.
+
+*/
+
+boolean
+get_autoletter(int index,char *letter,char *object_type_or_name, int *priority) {
+
+    /* see if index is outside of bounds */
+
+    if ((index < 0) || (index >= num_autoletter))
+        return FALSE;
+
+    /* return relevent values */
+
+    *letter = autoletter_array[index].letter;
+    *priority = autoletter_array[index].priority;
+    strncpy(object_type_or_name, autoletter_array[index].object_type_or_name, MAX_OBJ_TYPE_NAME_LEN);
+
+    return TRUE;
+}
+
+/*
+
+int
 lookup_autoletter(char *object_type_or_name)
 
 Returns the index of the autoletter_array array that has
@@ -7227,10 +7271,17 @@ add_autoletter(char *opts)
     char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
     int priority;
 
+    write_debug_file_str("In add_autoletter opts = %s\n" ,opts);
+
     if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
         return FALSE;
 
-    return insert_autoletter(letter, object_type_or_name, priority);
+    if (!insert_autoletter(letter, object_type_or_name, priority))
+        return FALSE;
+
+    write_debug_file_autoletter();
+
+    return TRUE;
 }
 
 /*options.c*/

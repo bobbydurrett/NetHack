@@ -4752,4 +4752,66 @@ write_debug_file_char(char *format,char data)
     }
 }
 
+/*
+
+void
+write_debug_file_autoletter()
+
+Writes nice formatted version of the autoletter array to a debug file.
+
+It appends any existing data in the file.
+
+It opens and closes the file so it does not stay open.
+
+File code hacked from write_debug_file.
+
+Hard coding size limits since this is just for debugging.
+
+*/
+
+void
+write_debug_file_autoletter()
+{
+    char *debug_file_name = DEBUG_FILE;
+    FILE *fptr;
+
+    if (!debug_file)
+        return;
+
+    fptr = fopen(debug_file_name,"a");
+
+    if (fptr == NULL)
+        return;
+
+    int num_autoletter = num_autoletter_options();
+
+    if (num_autoletter == 0)
+        fprintf(fptr,"Zero length autoletter array \n");
+    else {
+        int i;
+        char letter;
+        char object_type_or_name[40]; /* assume < 40 */
+        int priority;
+
+        fprintf(fptr,"\nAutoletter array length = %d \n",num_autoletter);
+
+        fprintf(fptr,"\nInventory Letter     Object Type or Name                     Priority\n",num_autoletter);
+        fprintf(fptr,"---------------------------------------------------------------------\n",num_autoletter);
+
+
+        for (i = 0; i < num_autoletter ; i++) {
+            if (!get_autoletter(i, &letter, object_type_or_name, &priority)) {
+                fprintf(fptr,"Error getting index = %d\n", i);
+                break;
+            }
+            fprintf(fptr,"%c                    %-40s    %4d \n",letter, object_type_or_name, priority);
+        }
+    }
+    fprintf(fptr,"\n");
+
+    fclose(fptr);
+
+    return ;
+}
+
 /*files.c*/
