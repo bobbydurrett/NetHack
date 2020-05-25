@@ -487,3 +487,33 @@ Moved autoletter option parsing code into
 parse_autoletter to keep add_autoletter
 cleaner.
 
+5/25/2020
+
+Need to save in an array now.
+
+boolean
+insert_autoletter(char letter,char *object_type_or_name, int priority)
+
+I guess since the array is static and the debug file commands are in files.c
+I cannot write a debug print command to directly access the array.
+
+I could write interface functions to get num_autoletter and
+a specific element of the array.
+
+int num_autoletter()
+
+boolean get_autoletter(int index,char *letter,char *object_type_or_name, int *priority)
+
+then I could write 
+
+void
+write_debug_file_autoletter()
+
+to dump the entire array in a nicely formatted output.
+
+Could test with my entire option list as I want to use it
+
+(blindfold, lamp, etc.)
+
+
+

@@ -6954,6 +6954,71 @@ set_playmode()
 
 #define MAX_PRIORITY_LEN 4
 
+/* Maximum number of autoletter options stored */
+
+#define MAX_AUTO_OPTIONS 50
+
+/* Type and variables for saving autoletter option information */
+
+typedef struct autoletter_struct {
+    char letter;                                        /* inventory letter to auto assign */
+    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];    /* type or name of object to assign inventory letter */
+    int priority;                                       /* priority if there are multiple entries same letter 1 highest */
+} autoletter_type;
+
+static autoletter_type autoletter_array[MAX_AUTO_OPTIONS]; /* Simple unordered array of options */
+static int num_autoletter = 0;                             /* Number of options inserted into array */
+
+/* functions to save, lookup, etc. from array. */
+
+/* for now we just need to save to the array */
+
+/*
+
+boolean
+insert_autoletter(char letter,char *object_type_or_name, int priority)
+
+Adds the inventory letter, object type or name, and integer priority
+to array if there is room.
+
+*/
+
+boolean
+insert_autoletter(char letter,char *object_type_or_name, int priority)
+{
+    /* check for letter only */
+
+    if (!isalpha(letter))
+        return FALSE;
+
+    /* check type/name length */
+
+    if (strlen(object_type_or_name) > MAX_OBJ_TYPE_NAME_LEN)
+        return FALSE;
+
+    /* check priority >= 1 */
+
+    if (priority < 1)
+        return FALSE;
+
+    /* check for full array */
+
+    if (num_autoletter >= MAX_AUTO_OPTIONS)
+        return FALSE;
+
+    /* copy to current next entry */
+
+    autoletter_array[num_autoletter].letter = letter;
+    autoletter_array[num_autoletter].priority = priority;
+    strncpy(autoletter_array[num_autoletter].object_type_or_name, object_type_or_name, MAX_OBJ_TYPE_NAME_LEN);
+
+    /* advance to next array entry */
+
+    num_autoletter++;
+
+    return TRUE;
+}
+
 /*
 
 boolean
@@ -7129,11 +7194,7 @@ add_autoletter(char *opts)
     if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
         return FALSE;
 
-    write_debug_file_char("In add_autoletter letter = %c\n",letter);
-    write_debug_file_str("In add_autoletter object_type_or_name = %s\n",object_type_or_name);
-    write_debug_file_int("In add_autoletter priority = %d\n",priority);
-
-    return TRUE;
+    return insert_autoletter(letter, object_type_or_name, priority);
 }
 
 /*options.c*/
