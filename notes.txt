@@ -539,3 +539,50 @@ that way get_autoletter can be used to interate through
 entire array and to pull data back for a looked up
 index
 
+not sure it makes sense to call config_error_add
+in insert_autoletter. may have to move out if I end up
+calling insert_autoletter from somewhere else
+such as users changing options on the fly.
+
+I wonder if here:
+
+    if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
+        return FALSE;
+
+    return insert_autoletter(letter, object_type_or_name, priority);
+
+I should make both calls - parse_autoletter and insert_autoletter
+return an error string and call config_error_add within add_autoletter.
+
+top level add_autoletter could be like
+
+add_autoletter_config
+
+to indicate it is from config file.
+
+That would keep parse_autoletter and insert_autoletter available for
+non-config-file uses.
+
+But then again if users adjusted the config in the program would probably 
+not use parse_autoletter.
+
+could have a wrapper to insert_autoletter called 
+insert_autoletter_config that did the error writing.
+
+Not sure.
+
+or just stick with this as only from the config file for now.
+It really does not need to change in the middle of the game.
+
+write these next:
+
+int num_autoletter()
+
+boolean get_autoletter(int index,char *letter,char *object_type_or_name, int *priority)
+
+void write_debug_file_autoletter()
+
+stick in extern.h
+
+
+
