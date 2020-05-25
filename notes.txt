@@ -671,4 +671,29 @@ w                    whistle                                        2
 p                    pick-axe                                       1
 u                    unicorn horn                                   1
 
+My full options:
+
+[bobby@localhost ~]$ cat .nethackrc
+OPTIONS=noshowexp,showscore,time,color,!autopickup
+OPTIONS=autodig,ibmgraphics,autoquiver,noautoopen
+OPTIONS=number_pad:0,msg_window:reversed
+OPTIONS=hilite_pet,hilite_pile,pickup_burden:unencumbered
+OPTIONS=disclose:yi ya yv yg yc yo
+OPTIONS=boulder:`
+OPTIONS=sortloot:none
+OPTIONS=autoletter:b:blindfold
+OPTIONS=autoletter:l:magic lamp:1
+OPTIONS=autoletter:l:lamp:2
+OPTIONS=autoletter:l:oil lamp:2
+OPTIONS=autoletter:l:brass lantern:2
+OPTIONS=autoletter:k:key
+OPTIONS=autoletter:k:skeleton key
+OPTIONS=autoletter:m:mirror
+OPTIONS=autoletter:m:looking glass
+OPTIONS=autoletter:w:magic whistle:1
+OPTIONS=autoletter:w:whistle:2
+OPTIONS=autoletter:p:pick-axe
+OPTIONS=autoletter:u:unicorn horn
+
+[bobby@localhost ~]$
 
