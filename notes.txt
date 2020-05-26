@@ -697,3 +697,53 @@ OPTIONS=autoletter:u:unicorn horn
 
 [bobby@localhost ~]$
 
+8:52 PM
+
+Next steps.
+
+1 - need to go over my handwritten notes to see what I was thinking.
+
+2 - I think I need to identify where objects are brought into the 
+main inventory. My notebook had a list of ideas for this.
+- game startup
+- picking up object
+- wishing for object
+- taking out of a container
+need to check my list.
+
+3 - at those points call an autoletter routine for each object that
+enters my inventory. That routine will look up the name or type of the
+object in the array and return the letter it should switch to if any.
+
+4 - once I identify which objects need to switch do the switch.
+Maybe look at the preadjust and sticky code for ideas?
+Maybe the #adjust code has the switch in it?
+
+Could start with a stub that just writes to the debug file that 
+we got there. Put it in the places identified by 2?
+
+maybe call the stub autoletter_adjust and pass a pointer to the
+object itself.
+
+Ultimately all the code for 3 and 4 would be in autoletter_adjust.
+
+Could start with a stub that prints the object information
+such as its type, description, name, etc.
+
+Put it in the locations from 2.
+
+Then add the code to see if the object needs its inventory letter adjusted
+which is 3.
+
+The add the code to actually do the switch. (4.)
+
+***********************************************************************************
+
+NEXT STEP:
+
+Write the autoletter_adjust([object type] *) stub with debug file outputs
+for the object passed to it and
+put it in places where objects come into the main inventory. Test. 
+
+***********************************************************************************
+

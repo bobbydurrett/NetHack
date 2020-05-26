@@ -7271,15 +7271,11 @@ add_autoletter(char *opts)
     char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
     int priority;
 
-    write_debug_file_str("In add_autoletter opts = %s\n" ,opts);
-
     if (!parse_autoletter(opts,&letter,object_type_or_name,&priority))
         return FALSE;
 
     if (!insert_autoletter(letter, object_type_or_name, priority))
         return FALSE;
-
-    write_debug_file_autoletter();
 
     return TRUE;
 }
