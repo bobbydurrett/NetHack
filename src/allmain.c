@@ -607,6 +607,16 @@ newgame()
                        * any artifacts */
     u_init();
 
+    /* Bobby Durrett - added to apply autoletter options after
+       initial setup. Pieces of code taken from Preadjust patch */
+
+    struct obj *obj;
+
+    /* loop through the objects in the newly created inventory */
+
+    for (obj = invent; obj; obj = obj->nobj)
+        autoletter_adjust(obj);
+
 #ifndef NO_SIGNAL
     (void) signal(SIGINT, (SIG_RET_TYPE) done1);
 #endif

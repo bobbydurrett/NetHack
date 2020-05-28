@@ -747,3 +747,189 @@ put it in places where objects come into the main inventory. Test.
 
 ***********************************************************************************
 
+5/27/2020
+
+Need to put autoletter_adjust somewhere where I have an object pointer.
+
+Look at preadjust
+
+[bobby@localhost src]$ grep PREADJUST *.c
+allmain.c:#ifdef PREADJUST
+allmain.c:#endif /* PREADJUST */
+files.c:#ifdef PREADJUST
+files.c:        } else if (match_varname(buf, "PREADJUST", 6)) {
+files.c:#endif /* PREADJUST */
+invent.c:#ifndef PREADJUST
+invent.c:#endif /* PREADJUST */
+invent.c:#ifndef PREADJUST
+invent.c:#endif /* PREADJUST */
+invent.c:#ifdef PREADJUST
+invent.c:#endif /* PREADJUST */
+invent.c:#ifndef PREADJUST
+invent.c:#endif /* PREADJUST */
+options.c:#ifdef PREADJUST
+options.c:#endif /* PREADJUST */
+options.c:#ifdef PREADJUST
+options.c:#endif /* PREADJUST */
+restore.c:#ifdef PREADJUST
+restore.c:#endif /* PREADJUST */
+
+
+allmain.c
+
+void
+newgame()
+{
+
+#ifdef PREADJUST
+	apply_preadjust();
+	cleanup_preadjust();
+#endif /* PREADJUST */
+
+invent.c
+
+int
+doorganize()
+
+options.c 
+
+code here like in mine
+
+void
+apply_preadjust()
+{
+    int i;
+    struct obj *obj;
+
+    if (n_preadjust == 0)
+	return;
+    /* this is kind of expensive, I suppose, but it only happens once */
+    for (i = 0; i < n_preadjust; i++) {
+	for (obj = invent; obj; obj = obj->nobj) {
+	    if (strstri(OBJ_NAME(objects[obj->otyp]), preadj_list[i].descr)) {
+# ifdef STICKY_OBJECTS
+		obj->sticky = preadj_list[i].sticky;
+# endif /* STICKY_OBJECTS */
+		doorganize_guts(obj, preadj_list[i].invlet, TRUE);
+		break;
+	    }
+	}
+    }
+}
+
+seems like this goes through the initial inventory
+and readjusts it.
+
+called from newgame()
+
+could loop through the inventory in the same way
+and call autoletter_adjust for each object.
+
+would mean that autoletter_adjust operates on objects
+after they are already put in the inventory.
+
+obj.h
+
+struct obj {
+
+    char invlet;    /* designation in inventory */
+
+    xchar where;        /* where the object thinks it is */
+
+#define OBJ_INVENT 3    /* object in the hero's inventory */
+
+should be where == OBJ_INVENT
+
+struct oextra {
+    char *oname;          /* ptr to name of object */
+
+    struct oextra *oextra; /* pointer to oextra struct */
+
+    Bitfield(known, 1);     /* exact nature known */
+    Bitfield(dknown, 1);    /* color or text known */
+    Bitfield(bknown, 1);    /* blessing or curse known */
+    Bitfield(rknown, 1);    /* rustproof or not known */
+    
+might be relevant
+
+need object description or name
+
+onames.h has the otyp numbers
+
+#define	DWARVISH_IRON_HELM	74
+
+where are the names stored?
+
+[bobby@localhost src]$ grep "small shield" *.c
+objects.c:SHIELD("small shield", None,
+
+ * The data in this file is processed twice, to construct two arrays.
+
+and the array names are...?
+
+NEARDATA struct objdescr obj_descr[] =
+
+NEARDATA struct objclass objects[] =
+
+maybe these two?
+
+[bobby@localhost src]$ grep "obj_descr\[" *.c
+do_name.c:                 : obj_descr[STRANGE_OBJECT].oc_name);
+objects.c: * struct objdescr obj_descr[] =
+objects.c:NEARDATA struct objdescr obj_descr[] =
+options.c:    obj_descr[SLIME_MOLD].oc_name = "fruit";
+pager.c:                              : an(obj_descr[STRANGE_OBJECT].oc_name));
+pager.c:                     : obj_descr[STRANGE_OBJECT].oc_name);
+
+in objclass.h
+
+struct objdescr {
+    const char *oc_name;  /* actual name */
+    const char *oc_descr; /* description when name unknown */
+};
+
+
+void
+autoletter_adjust(struct obj *obj)
+{
+    if (obj != NULL)
+        write_debug_file_char("Inventory letter = %c\n",obj->invlet);
+    else
+        return;
+
+    if (has_oname(obj))
+        write_debug_file_str("Object name = %s\n",obj->oextra->oname);
+    else
+        write_debug_file("No object name\n");
+
+    if (obj->where == OBJ_INVENT)
+        write_debug_file("In inventory\n");
+    else
+        write_debug_file("Not in inventory\n");
+
+    write_debug_file_int("object type number = %d\n",obj->otyp);
+
+    write_debug_file_str("Object class name = %s\n",(char *)obj_descr[obj->otyp].oc_name);
+
+    write_debug_file_str("Object class description = %s\n",(char *)obj_descr[obj->otyp].oc_descr);
+}
+
+shows the different types
+
+probably could use these different fields and maybe some of the bitfields to figure out if the
+object has a user given name and if the user knows the official name.
+
+Some of this is stiff fuzzy like this one for potion of sickness:
+
+Inventory letter = d
+No object name
+In inventory
+object type number = 294
+Object class name = sickness
+Object class description = fizzy
+
+Need to find the code that builds the full name potion of sickness, fizzy potion, etc.
+
+
+
+
