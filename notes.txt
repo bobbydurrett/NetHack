@@ -1084,10 +1084,58 @@ without commenting every line. :)
 I can't really work on the object name stuff
 until I can work on an object of my choosing.
 
+5/30/2020
 
+Think about what to do with objects that stack.
 
+10 potions of holy water
 
+10 +2 daggers
 
+I am really thinking more about tools but need to handle other cases
+or maybe not at first.
 
+Maybe only accept tools at first.
 
+Taking this out of allmain.c
+
+    u_init();
+
+    /* Bobby Durrett - added to apply autoletter options after
+       initial setup. Pieces of code taken from Preadjust patch */
+
+    struct obj *obj;
+
+    /* loop through the objects in the newly created inventory */
+
+    for (obj = invent; obj; obj = obj->nobj)
+        autoletter_adjust(obj);
+
+#ifndef NO_SIGNAL
+    (void) signal(SIGINT, (SIG_RET_TYPE) done1);
+#endif
+
+Can always put back.
+
+Need somewhere else to put write_debug_file_obj(obj)
+
+invent.c
+
+    /* Bobby Durrett - this might print from object in #adjust command */
+        
+    write_debug_file_obj(obj);
+
+Inventory letter = e
+No object name
+In inventory
+object type number = 198
+Object class name = lock pick
+Object class description = (null)
+cxname_singular(obj) = lock pick
+
+Worked.
+
+So from letter will cause the object to go
+to write_debug_file_obj and we can use that to experiment with
+object names and what is known and unknown.
 
