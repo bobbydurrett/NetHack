@@ -862,6 +862,7 @@ E void write_debug_file_int(char *format,int data);
 E void write_debug_file_long(char *format,long data);
 E void write_debug_file_char(char *format,char data);
 E void write_debug_file_autoletter();
+E void write_debug_file_obj(struct obj *obj);
 
 /* ### fountain.c ### */
 

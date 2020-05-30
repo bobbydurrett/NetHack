@@ -930,6 +930,21 @@ Object class description = fizzy
 
 Need to find the code that builds the full name potion of sickness, fizzy potion, etc.
 
+5/29/2020
+
+started putting object debugging code in
+write_debug_file_obj(obj);
+
+Need to get the full object name like
+
+spellbook of remove curse
+
+instead of
+
+remove curse
+
+
+
 
 
 

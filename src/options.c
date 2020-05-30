@@ -7296,26 +7296,7 @@ to the desired letter.
 void
 autoletter_adjust(struct obj *obj)
 {
-    if (obj != NULL)
-        write_debug_file_char("Inventory letter = %c\n",obj->invlet);
-    else
-        return;
-
-    if (has_oname(obj))
-        write_debug_file_str("Object name = %s\n",obj->oextra->oname);
-    else
-        write_debug_file("No object name\n");
-
-    if (obj->where == OBJ_INVENT)
-        write_debug_file("In inventory\n");
-    else
-        write_debug_file("Not in inventory\n");
-
-    write_debug_file_int("object type number = %d\n",obj->otyp);
-
-    write_debug_file_str("Object class name = %s\n",(char *)obj_descr[obj->otyp].oc_name);
-
-    write_debug_file_str("Object class description = %s\n",(char *)obj_descr[obj->otyp].oc_descr);
+    write_debug_file_obj(obj);
 }
 
 /*options.c*/
