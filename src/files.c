@@ -4847,6 +4847,7 @@ write_debug_file_obj(struct obj *obj)
 
     write_debug_file_str("Object class description = %s\n",(char *)obj_descr[obj->otyp].oc_descr);
 
+    write_debug_file_str("cxname_singular(obj) = %s\n",cxname_singular(obj));
 }
 
 /*files.c*/

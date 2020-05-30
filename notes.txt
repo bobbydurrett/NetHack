@@ -943,6 +943,149 @@ instead of
 
 remove curse
 
+sidetracked
+
+in zap.c
+
+        /* if type already discovered, treat this item has having been seen
+           even if hero is currently blinded (skips redundant makeknown) */
+        if (objects[obj->otyp].oc_name_known) {
+
+Looks like if objects[obj->otyp].oc_name_known is true then you know the 
+true name.
+
+this whole routine in zap.c looks interesting
+
+/* wand discovery gets special handling when hero is blinded */
+void
+learnwand(obj)
+struct obj *obj;
+{
+    /* For a wand (or wand-like tool) zapped by the player, if the
+       effect was observable (determined by caller; usually seen, but
+       possibly heard or felt if the hero is blinded) then discover the
+       object type provided that the object itself is known (as more
+       than just "a wand").  If object type is already discovered and
+       we observed the effect, mark the individual wand as having been
+       seen.  Suppress spells (which use fake spellbook object for `obj')
+       so that casting a spell won't re-discover its forgotten book. */
+    if (obj->oclass != SPBOOK_CLASS) {
+        /* if type already discovered, treat this item has having been seen
+           even if hero is currently blinded (skips redundant makeknown) */
+        if (objects[obj->otyp].oc_name_known) {
+            obj->dknown = 1; /* will usually be set already */
+
+        /* otherwise discover it if item itself has been or can be seen */
+        } else {
+            /* in case it was picked up while blind and then zapped without
+               examining inventory after regaining sight (bypassing xname) */
+            if (!Blind)
+                obj->dknown = 1;
+            /* make the discovery iff we know what we're manipulating */
+            if (obj->dknown)
+                makeknown(obj->otyp);
+        }
+        update_inventory();
+    }
+}
+
+I guess obj->dknown is true if a specific object is know and
+objects[obj->otyp].oc_name_known is true if the class of object
+is known.
+
+invent.c
+
+void
+update_inventory()
+{
+    if (restoring)
+        return;
+
+    /*
+     * Ought to check (windowprocs.wincap2 & WC2_PERM_INVENT) here....
+     *
+     * We currently don't skip this call when iflags.perm_invent is False
+     * because curses uses that to disable a previous perm_invent window
+     * (after toggle via 'O'; perhaps the options code should handle that).
+     */
+    (*windowprocs.win_update_inventory)();
+}
+
+so need to find the win_update_inventory for tty I guess.
+can't find it.
+
+int
+doorganize() /* inventory organizer by Del Lamb */
+
+I think was modified in sticky
+
+invent.c
+
+objname.c
+
+xname?
+
+char *
+xname(obj)
+struct obj *obj;
+{
+    return xname_flags(obj, CXN_NORMAL);
+}
+
+maybe this
+
+STATIC_OVL char *
+xname_flags(obj, cxn_flags)
+register struct obj *obj;
+unsigned cxn_flags; /* bitmask of CXN_xxx values */
+{
+    register char *buf;
+    register int typ = obj->otyp;
+    register struct objclass *ocl = &objects[typ];
+    int nn = ocl->oc_name_known, omndx = obj->corpsenm;
+    const char *actualn = OBJ_NAME(*ocl);
+    const char *dn = OBJ_DESCR(*ocl);
+    const char *un = ocl->oc_uname;
+    boolean pluralize = (obj->quan != 1L) && !(cxn_flags & CXN_SINGULAR);
+    
+maybe if I find the right cxn_flags values
+I can get what I want.
+
+files.c: In function ‘write_debug_file_obj’:
+files.c:4850:64: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     write_debug_file_str("xname_flags(obj, CXN_NORMAL) = %s\n",(char *)xname_flags(obj, CXN_NORMAL));
+
+I guess the STATIC_OVL keeps you from using it.
+
+/* like cxname, but ignores quantity */
+char *
+cxname_singular(obj)
+struct obj *obj;
+
+Inventory letter = h
+No object name
+In inventory
+object type number = 281
+Object class name = invisibility
+Object class description = brilliant blue
+cxname_singular(obj) = potion of invisibility
+
+converts the full potion name.
+
+I need to find a different place to put the call to 
+write_debug_file_obj so I can try one object at a time
+of my choosing. right now now I have it in newgame where
+I am calling autoletter_adjust a bunch of times.
+
+Looking at other code it seems to be more compact.
+Probably trying to fit a lot of code in a more compact file
+without commenting every line. :)
+
+I can't really work on the object name stuff
+until I can work on an object of my choosing.
+
+
+
 
 
 
