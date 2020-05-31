@@ -4104,10 +4104,6 @@ doorganize() /* inventory organizer by Del Lamb */
             break;
         }
 
-    /* Bobby Durrett - this might print from object in #adjust command */
-
-    write_debug_file_obj(obj);
-
     /* initialize the list with all lower and upper case letters */
     lets[GOLD_INDX] = (obj->oclass == COIN_CLASS) ? GOLD_SYM : ' ';
     for (ix = GOLD_OFFSET, let = 'a'; let <= 'z';)

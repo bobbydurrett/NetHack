@@ -1770,6 +1770,10 @@ E char *FDECL(safe_qbuf, (char *, const char *, const char *, struct obj *,
                           char *(*)(OBJ_P), char *(*)(OBJ_P), const char *));
 E int FDECL(shiny_obj, (CHAR_P));
 
+/* Bobby Durrett autoletter function */
+
+E char *FDECL(autoletter_name_type, (struct obj *));
+
 /* ### options.c ### */
 
 E void NDECL(reglyph_darkroom);

@@ -4832,7 +4832,7 @@ write_debug_file_obj(struct obj *obj)
         return;
 
     if (has_oname(obj))
-        write_debug_file_str("Object name = %s\n",obj->oextra->oname);
+        write_debug_file_str("obj->oextra->oname = %s\n",obj->oextra->oname);
     else
         write_debug_file("No object name\n");
 
@@ -4847,7 +4847,11 @@ write_debug_file_obj(struct obj *obj)
 
     write_debug_file_str("Object class description = %s\n",(char *)obj_descr[obj->otyp].oc_descr);
 
+    write_debug_file_str("simple_typename(obj->otyp) = %s\n",simple_typename(obj->otyp));
+
     write_debug_file_str("cxname_singular(obj) = %s\n",cxname_singular(obj));
+
+    write_debug_file_str("autoletter_name_type(obj) = %s\n",autoletter_name_type(obj));
 }
 
 /*files.c*/

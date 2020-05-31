@@ -4341,4 +4341,29 @@ boolean *weightformatted_p;
     return buf;
 }
 
+/* Bobby Durrett code for autoletter option.
+
+char *
+autoletter_name_type(obj)
+
+Takes an object and returns its name in priority order.
+
+If it is an artifact or named by the user return that name. (My Lamp)
+
+If it is unnamed and undiscovered return that type. (lamp)
+
+If it is unnamed and discovered return that type. (magic lamp)
+
+*/
+
+char *
+autoletter_name_type(obj)
+struct obj *obj;
+{
+    if (has_oname(obj))
+        return(obj->oextra->oname);
+
+    return xname_flags(obj, CXN_SINGULAR);
+}
+
 /*objnam.c*/

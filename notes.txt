@@ -1227,3 +1227,251 @@ But first I need to figure out how to get the base name to poll the array with s
 write_debug_file_obj to figure that out and then make a function in objects.c that returns
 the name for autoletter use.
 
+a - a +0 battle-axe named My Axe (weapon in hands)
+
+Inventory letter = a
+Object name = My Axe
+In inventory
+object type number = 28
+Object class name = battle-axe
+Object class description = double-headed axe
+cxname_singular(obj) = battle-axe named My Axe
+
+cxname_singular is not it.
+
+c - 56 +2 arrows (in quiver)
+
+Inventory letter = c
+No object name
+In inventory
+object type number = 1
+Object class name = arrow
+Object class description = (null)
+
+Object class name works.
+
+try a potion
+
+g - an uncursed potion of enlightenment named My Potion
+
+Inventory letter = g
+Object name = My Potion
+In inventory
+object type number = 286
+Object class name = enlightenment
+Object class description = swirly
+
+how do I get
+
+swirly potion
+
+potion of enlightenment
+
+Cannot use xname_flags because it sticks in
+the user supplied name.
+
+hack.h
+
+/* bitmask flags for corpse_xname();
+   PFX_THE takes precedence over ARTICLE, NO_PFX takes precedence over both */
+#define CXN_NORMAL 0    /* no special handling */
+#define CXN_SINGULAR 1  /* override quantity if greather than 1 */
+#define CXN_NO_PFX 2    /* suppress "the" from "the Unique Monst */
+#define CXN_PFX_THE 4   /* prefix with "the " (unless pname) */
+#define CXN_ARTICLE 8   /* include a/an/the prefix */
+#define CXN_NOCORPSE 16 /* suppress " corpse" suffix */
+
+Does not seem to be a way to get rid of it.
+
+Of course we could just not use it if we have the name.
+
+try
+
+char *
+simple_typename(otyp)
+
+f - a cursed potion of levitation named Bobby's Potion
+
+Inventory letter = f
+Object name = Bobby's Potion
+In inventory
+object type number = 279
+Object class name = levitation
+Object class description = cyan
+simple_typename(obj->otyp) = potion of levitation
+
+f - an emerald potion
+
+Inventory letter = f
+No object name
+In inventory
+object type number = 279
+Object class name = levitation
+Object class description = cyan
+simple_typename(obj->otyp) = potion
+cxname_singular(obj) = emerald potion
+
+
+l - a smoky potion
+
+Inventory letter = l
+No object name
+In inventory
+object type number = 279
+Object class name = levitation
+Object class description = cyan
+simple_typename(obj->otyp) = potion
+cxname_singular(obj) = smoky potion
+
+with no object name and real name unknown cxname_singular(obj) is right
+
+l - an uncursed potion of levitation
+
+Inventory letter = l
+No object name
+In inventory
+object type number = 279
+Object class name = levitation
+Object class description = cyan
+simple_typename(obj->otyp) = potion of levitation
+cxname_singular(obj) = potion of levitation
+
+with no object name and real name known  cxname_singular(obj) is right
+
+l - an uncursed potion of levitation named My Fav Potion
+
+Inventory letter = l
+obj->oextra->oname = My Fav Potion
+In inventory
+object type number = 279
+Object class name = levitation
+Object class description = cyan
+simple_typename(obj->otyp) = potion of levitation
+cxname_singular(obj) = potion of levitation named My Fav Potion
+
+With named potion obj->oextra->oname is right.
+
+m - the cursed -2 Stormbringer
+
+Inventory letter = m
+obj->oextra->oname = Stormbringer
+In inventory
+object type number = 42
+Object class name = runesword
+Object class description = runed broadsword
+simple_typename(obj->otyp) = runesword
+cxname_singular(obj) = Stormbringer
+
+obj->oextra->oname works fine for Artifacts
+
+might work:
+
+char *
+autoletter_name_type(obj)
+struct obj *obj;
+{
+    if (has_oname(obj))
+        return(obj->oextra->oname);
+
+    return xname_flags(obj, CXN_SINGULAR);
+}
+
+o - a lamp
+
+Inventory letter = o
+No object name
+In inventory
+object type number = 204
+Object class name = magic lamp
+Object class description = lamp
+simple_typename(obj->otyp) = lamp
+cxname_singular(obj) = lamp
+autoletter_name_type(obj) = lamp
+
+o - a cursed magic lamp
+
+Inventory letter = o
+No object name
+In inventory
+object type number = 204
+Object class name = magic lamp
+Object class description = lamp
+simple_typename(obj->otyp) = magic lamp
+cxname_singular(obj) = magic lamp
+autoletter_name_type(obj) = magic lamp
+
+o - a cursed magic lamp named My Lamp
+
+Inventory letter = o
+obj->oextra->oname = My Lamp
+In inventory
+object type number = 204
+Object class name = magic lamp
+Object class description = lamp
+simple_typename(obj->otyp) = magic lamp
+cxname_singular(obj) = magic lamp named My Lamp
+autoletter_name_type(obj) = My Lamp
+
+p - a long sword named Frost Brand
+
+Inventory letter = p
+obj->oextra->oname = Frost Brand
+In inventory
+object type number = 37
+Object class name = long sword
+Object class description = (null)
+simple_typename(obj->otyp) = long sword
+cxname_singular(obj) = long sword named Frost Brand
+autoletter_name_type(obj) = Frost Brand
+
+q - 10 +0 daggers
+
+Inventory letter = q
+No object name
+In inventory
+object type number = 17
+Object class name = dagger
+Object class description = (null)
+simple_typename(obj->otyp) = dagger
+cxname_singular(obj) = dagger
+autoletter_name_type(obj) = dagger
+
+r - 10 +7 elven daggers.
+
+Inventory letter = r
+No object name
+In inventory
+object type number = 18
+Object class name = elven dagger
+Object class description = runed dagger
+simple_typename(obj->otyp) = elven dagger
+cxname_singular(obj) = elven dagger
+autoletter_name_type(obj) = elven dagger
+
+s - 5 crude daggers
+
+Inventory letter = s
+No object name
+In inventory
+object type number = 19
+Object class name = orcish dagger
+Object class description = crude dagger
+simple_typename(obj->otyp) = crude dagger
+cxname_singular(obj) = crude dagger
+autoletter_name_type(obj) = crude dagger
+
+I say it works well enough.
+
+Removing from invent.c
+
+            break;
+        }
+
+    /* Bobby Durrett - this might print from object in #adjust command */
+
+    write_debug_file_obj(obj);
+
+    /* initialize the list with all lower and upper case letters */
+    lets[GOLD_INDX] = (obj->oclass == COIN_CLASS) ? GOLD_SYM : ' ';
+
+
