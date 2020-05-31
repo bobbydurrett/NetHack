@@ -7296,7 +7296,30 @@ to the desired letter.
 void
 autoletter_adjust(struct obj *obj)
 {
-    write_debug_file_obj(obj);
+    /* Get name or type of object */
+
+    char *object_type_or_name = autoletter_name_type(obj);
+
+    /* look up the object name or type to see if we
+       have a matching autoletter option */
+
+    int obj_index = lookup_autoletter(object_type_or_name);
+
+    /* write the letter and priority to the debug file if
+       found */
+
+    char letter;
+    int priority;
+
+    if (obj_index < 0)
+        write_debug_file_str("%s not found in autoletter_array\n",object_type_or_name);
+    else {
+        letter = autoletter_array[obj_index].letter;
+        priority = autoletter_array[obj_index].priority;
+        write_debug_file_str("%s found in autoletter_array\n",object_type_or_name);
+        write_debug_file_char("letter = %c\n",letter);
+        write_debug_file_int("priority = %d\n",priority);
+    }
 }
 
 /*options.c*/

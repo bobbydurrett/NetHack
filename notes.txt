@@ -1500,3 +1500,9 @@ that makes more sense than new game.
 Like when we pick up or wish for an object and it goes into
 our inventory.
 
+5/31/2020
+
+I think put autoletter_adjust back in invent.c where the write_debug_file_obj
+was before even though it was not where autoletter_adjust should really go just to get 
+the lookup working.
+
