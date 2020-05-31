@@ -1475,3 +1475,28 @@ Removing from invent.c
     lets[GOLD_INDX] = (obj->oclass == COIN_CLASS) ? GOLD_SYM : ' ';
 
 
+Next I guess go back to 
+
+autoletter_adjust
+
+Add a call to autoletter_name_type to get the name_type of the 
+passed inventory object.
+
+Then use 
+
+int
+lookup_autoletter(char *object_type_or_name)
+
+to look up the array entry for that object type or name
+
+then just write to the debug file for now
+
+letter
+priority
+
+Then find somewhere to stick the call to autoletter_adjust
+that makes more sense than new game.
+
+Like when we pick up or wish for an object and it goes into
+our inventory.
+
