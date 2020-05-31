@@ -1139,3 +1139,91 @@ So from letter will cause the object to go
 to write_debug_file_obj and we can use that to experiment with
 object names and what is known and unknown.
 
+So if you look at a typical inventory
+
+                        $ - 1695 gold pieces
+                        Weapons
+                        a - a +0 scalpel (weapon in hand)
+                        Armor
+                        b - an uncursed +1 pair of leather gloves (being worn)
+                        Comestibles
+                        k - 7 uncursed apples
+                        Spellbooks
+                        h - a blessed spellbook of healing
+                        i - a blessed spellbook of extra healing
+                        j - a blessed spellbook of stone to flesh
+                        Potions
+                        d - 3 uncursed potions of healing
+                        e - a blessed potion of healing
+                        f - 4 uncursed potions of extra healing
+                        Wands
+                        g - a wand of sleep (0:7)
+                        Tools
+                        c - an uncursed stethoscope
+
+
+what I want in the autoletter array is the name without all the extra stuff
+
+Singular without "a" or the number of items.
+
+No b/u/c status.
+
+No +1.
+
+No rustproof etc.
+
+Also for unknown items the unknown name
+
+i.e. 
+
+a fizzy potion 
+
+would be 
+
+fizzy potion
+
+a scroll labeled PHOL ENDE WODAN.
+
+would be
+
+scroll labeled PHOL ENDE WODAN
+
+n - a crystal wand.
+
+wb
+
+crystal wand
+
+Artifacts and named objects:
+
+p - the blessed +3 Frost Brand
+
+wb
+
+Frost Brand
+
+a - a +0 scalpel named My Favorite Weapon (weapon in hand)
+
+wb
+
+My Favorite Weapon
+
+the idea is that when an item enters my inventory it would look up this stripped down name in the 
+autoletter array based on this order of priority (autoletter name)
+
+1. Name of object - a name I gave it or an artifact name.
+
+2. Unknown type - generic type like key or fizzy potion
+
+3. Fully known type spellbook of healing
+
+The rest of the object characteristics such as b/u/c, enchantment level, number of items, rustproof
+would give it priority over an existing object of the same type. The priority number would help 
+distinguish between multiple object_name_or_type values for the same letter,
+but these characteristics would break the tie if there were multiple objects in the inventory with the 
+same "autoletter name"
+
+But first I need to figure out how to get the base name to poll the array with so I can use
+write_debug_file_obj to figure that out and then make a function in objects.c that returns
+the name for autoletter use.
+
