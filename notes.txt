@@ -1506,3 +1506,152 @@ I think put autoletter_adjust back in invent.c where the write_debug_file_obj
 was before even though it was not where autoletter_adjust should really go just to get 
 the lookup working.
 
+Done. Works nicely.
+
+Now figure out a place to put autoletter_adjust so I can really work on adjusting
+to a new letter.
+
+cmd.c
+
+/* ordered by command name */
+struct ext_func_tab extcmdlist[] = {
+    { '#', "#", "perform an extended command",
+            doextcmd, IFBURIED | GENERALCMD },
+    { M('?'), "?", "list all extended commands",
+            doextlist, IFBURIED | AUTOCOMPLETE | GENERALCMD },
+    { M('a'), "adjust", "adjust inventory letters",
+            doorganize, IFBURIED | AUTOCOMPLETE },
+           
+Seems like doorganize really is called by #adjust
+
+somewhere in invent.c
+
+    /* inline addinv; insert loose object at beginning of inventory */
+    obj->invlet = let;
+    obj->nobj = invent;
+    obj->where = OBJ_INVENT;
+    invent = obj;
+    reorder_invent();
+    
+Maybe inside 
+
+void
+assigninvlet(otmp)
+register struct obj *otmp;
+{
+
+Maybe somewhere in the logic of how to pick a letter I could move the object
+to the right letter. But that would only work well if the letter was not already
+in use. Could just choose it.
+
+    if (!(obj = getobj(allowall, "adjust")))
+        return 0;
+
+I think here in invent.c in doorganize it prompts the user for a letter
+
+maybe like sticky the stuff after here relates to the actual switch.
+
+/* sort the inventory; used by addinv() and doorganize() */
+STATIC_OVL void
+reorder_invent()
+
+end of addinv( in invent.c
+ added:
+    addinv_core2(obj);
+    carry_obj_effects(obj); /* carrying affects the obj */
+    update_inventory();
+    return obj;
+}
+
+Maybe before update_inventory() call autoletter_adjust(obj)
+
+that way it will be called before every object is added
+but before it is displayed.
+
+If an object exists with the right letter swap them
+and reorder_invent().
+
+may have to have the swap and reorder function in
+invent.c to call local function reorder_invent().
+
+This may only get were new letters are added
+
+May also need a call in doorganize
+
+Maybe right before update_inventory here.
+
+    if (splitting)
+        clear_splitobjs(); /* reset splitobj context */
+    update_inventory();
+    return 0;
+}
+
+Or maybe put a check in doorganize to make sure it is not moving
+a letter that is set by autoletter.
+
+Then I would only update the letter in addinv.
+
+Try addinv first just to see if it works. Then worry about doorganize
+
+ Armor
+ a - an uncursed +2 pair of leather gloves (being worn)
+ b - an uncursed +1 robe (being worn)
+ Comestibles
+ f - 4 uncursed food rations
+ g - 5 uncursed apples
+ h - 5 uncursed oranges
+ i - 3 uncursed fortune cookies
+ Scrolls
+ d - an uncursed scroll of identify
+ Spellbooks
+ c - a blessed spellbook of protection
+ Potions
+ e - 3 uncursed potions of healing
+ (end)
+
+pair of fencing gloves not found in autoletter_array
+robe not found in autoletter_array
+dark blue spellbook not found in autoletter_array
+scroll labeled GNIK SISI VLE not found in autoletter_array
+swirly potion not found in autoletter_array
+potion of healing not found in autoletter_array
+potion of healing not found in autoletter_array
+food ration not found in autoletter_array
+food ration not found in autoletter_array
+food ration not found in autoletter_array
+apple not found in autoletter_array
+apple not found in autoletter_array
+apple not found in autoletter_array
+apple not found in autoletter_array
+apple not found in autoletter_array
+orange not found in autoletter_array
+orange not found in autoletter_array
+orange not found in autoletter_array
+orange not found in autoletter_array
+orange not found in autoletter_array
+fortune cookie not found in autoletter_array
+fortune cookie not found in autoletter_array
+fortune cookie not found in autoletter_array
+
+Each individual object when multiples are added are included
+in addinv
+
+wished for key
+
+key found in autoletter_array
+letter = k
+priority = 1
+
+nothing done when I identified it.
+
+does not do anything when I restore game.
+
+took out of add inv
+
+why not just create a little routine at the bottom of
+invent.c that swaps the letters and calls
+STATIC_OVL void
+reorder_invent()
+
+Then figure out where to put it.
+
