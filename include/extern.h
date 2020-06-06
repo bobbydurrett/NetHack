@@ -1833,6 +1833,7 @@ E int NDECL(num_autoletter_options);
 E boolean FDECL(get_autoletter, (int, char *, char *, int *));
 E int FDECL(lookup_autoletter, (char *));
 E void FDECL(autoletter_adjust, (struct obj *));
+E boolean FDECL(autoletter_should_swap, (struct obj *,struct obj *));
 
 /* ### pager.c ### */
 

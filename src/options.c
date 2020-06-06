@@ -7282,8 +7282,6 @@ add_autoletter(char *opts)
 
 /*
 
-void FDECL(autoletter_adjust, (struct obj *
-
 void
 autoletter_adjust(struct obj *obj)
 
@@ -7321,6 +7319,41 @@ autoletter_adjust(struct obj *obj)
         write_debug_file_int("priority = %d\n",priority);
         autoletter_swap(obj ,letter);
     }
+}
+
+/*
+
+boolean
+autoletter_should_swap(obj, has_obj)
+
+Returns TRUE if obj has a higher priority than has_obj.
+For now just look at priorities. Only make the switch
+if the new object has a higher priority.
+
+*/
+
+boolean
+autoletter_should_swap(struct obj *obj, struct obj *has_obj)
+{
+    /* lookup has_obj to see if it is in the autoletter array */
+
+    int has_index = lookup_autoletter(autoletter_name_type(has_obj));
+
+    /* if has_obj is not in array then we should swap it */
+
+    if (has_index < 0)
+        return TRUE;
+
+    /* if obj priority > has_obj priority then swap */
+
+    int obj_index = lookup_autoletter(autoletter_name_type(obj));
+
+    /* should not happen but if obj is not in array do not swap */
+
+    if (obj_index < 0)
+        return FALSE;
+
+    return autoletter_array[obj_index].priority > autoletter_array[has_index].priority;
 }
 
 /*options.c*/

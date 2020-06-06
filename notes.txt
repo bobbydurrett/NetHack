@@ -1721,3 +1721,7 @@ priority = 1
 
 commit this and then figure out how to switch to right letter.
 
+6/6/2020
+
+Pretty much works. Can wish for or pick up key and it switches to k.
+

@@ -4477,6 +4477,34 @@ void
 autoletter_swap(struct obj *obj ,char letter)
 {
     write_debug_file_char("In autoletter_swap letter = %c\n",letter);
+
+    /* see if an object in the inventory already has invlet == letter */
+
+    struct obj *otmp,*has_obj;
+    boolean found_letter = FALSE;
+
+
+    for (otmp = invent; otmp; otmp = otmp->nobj)
+        if (otmp->invlet == letter) {
+            found_letter = TRUE;
+            has_obj = otmp;
+            break;
+        }
+
+    /* handle case where an object with invlet == letter */
+
+    if (found_letter) {
+        /* swap letters if obj has higher priority than has_obj */
+        if (autoletter_should_swap(obj, has_obj)) {
+            has_obj->invlet = obj->invlet;
+            obj->invlet = letter;
+        }
+    }
+    else {
+        /* just set invlet to letter for obj */
+        obj->invlet = letter;
+    }
+
     reorder_invent();
 }
 
