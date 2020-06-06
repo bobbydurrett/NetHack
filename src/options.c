@@ -7319,6 +7319,7 @@ autoletter_adjust(struct obj *obj)
         write_debug_file_str("%s found in autoletter_array\n",object_type_or_name);
         write_debug_file_char("letter = %c\n",letter);
         write_debug_file_int("priority = %d\n",priority);
+        autoletter_swap(obj ,letter);
     }
 }
 

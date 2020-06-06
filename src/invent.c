@@ -4461,4 +4461,24 @@ boolean as_if_seen;
     return n;
 }
 
+/* Bobby Durrett autoletter routine
+
+why not just create a little routine at the bottom of
+invent.c that swaps the letters and calls
+STATIC_OVL void
+reorder_invent()
+
+void
+autoletter_swap(struct obj *obj ,char letter)
+
+*/
+
+void
+autoletter_swap(struct obj *obj ,char letter)
+{
+    write_debug_file_char("In autoletter_swap letter = %c\n",letter);
+    reorder_invent();
+}
+
+
 /*invent.c*/

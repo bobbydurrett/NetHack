@@ -1072,6 +1072,10 @@ E void FDECL(carry_obj_effects, (struct obj *));
 E const char *FDECL(currency, (long));
 E void FDECL(silly_thing, (const char *, struct obj *));
 
+/* Bobby Durrett autoletter */
+
+E void FDECL(autoletter_swap, (struct obj *obj, char));
+
 /* ### ioctl.c ### */
 
 #if defined(UNIX) || defined(__BEOS__)
