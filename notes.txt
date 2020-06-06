@@ -1655,3 +1655,69 @@ reorder_invent()
 
 Then figure out where to put it.
 
+6/5/2020
+
+pickup_object
+
+pickup
+
+pickup.c
+
+Maybe place to test autoletter_adjust
+
+/*
+ * Pick up <count> of obj from the ground and add it to the hero's inventory.
+ * Returns -1 if caller should break out of its loop, 0 if nothing picked
+ * up, 1 if otherwise.
+ */
+int
+pickup_object(obj, count, telekinesis)
+struct obj *obj;
+long count;
+boolean telekinesis; /* not picking it up directly by hand */
+
+/*
+ * Do the actual work of picking otmp from the floor or monster's interior
+ * and putting it in the hero's inventory.  Take care of billing.  Return a
+ * pointer to the object where otmp ends up.  This may be different
+ * from otmp because of merging.
+ */
+struct obj *
+pick_obj(otmp)
+struct obj *otmp;
+
+Maybe in here?
+
+    result = addinv(otmp);
+
+I thought I looked at addinv.
+
+Maybe put back in addinv and get it
+to really work there.
+
+Put back in addinv again.
+
+                         Weapons
+                         a - a +0 katana (weapon in hand)
+                         b - a +0 wakizashi (alternate weapon; not wielded)
+                         c - a +0 yumi
+                         d - 44 +0 ya (in quiver)
+                         Armor
+                         e - an uncursed rustproof +0 splint mail (being worn)
+                         Tools
+                         f - a key
+                         (end)
+
+after wishing for key:
+
+samurai sword not found in autoletter_array
+wakizashi not found in autoletter_array
+long bow not found in autoletter_array
+bamboo arrow not found in autoletter_array
+splint mail not found in autoletter_array
+key found in autoletter_array
+letter = k
+priority = 1
+
+commit this and then figure out how to switch to right letter.
+

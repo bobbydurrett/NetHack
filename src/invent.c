@@ -944,6 +944,9 @@ struct obj *obj;
  added:
     addinv_core2(obj);
     carry_obj_effects(obj); /* carrying affects the obj */
+
+    autoletter_adjust(obj); /* Bobby Durrett autoletter */
+
     update_inventory();
     return obj;
 }
