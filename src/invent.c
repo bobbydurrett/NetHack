@@ -4476,8 +4476,6 @@ autoletter_swap(struct obj *obj ,char letter)
 void
 autoletter_swap(struct obj *obj ,char letter)
 {
-    write_debug_file_char("In autoletter_swap letter = %c\n",letter);
-
     /* see if an object in the inventory already has invlet == letter */
 
     struct obj *otmp,*has_obj;
