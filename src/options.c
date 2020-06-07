@@ -7353,7 +7353,7 @@ autoletter_should_swap(struct obj *obj, struct obj *has_obj)
     if (obj_index < 0)
         return FALSE;
 
-    return autoletter_array[obj_index].priority > autoletter_array[has_index].priority;
+    return autoletter_array[obj_index].priority < autoletter_array[has_index].priority;
 }
 
 /*options.c*/
