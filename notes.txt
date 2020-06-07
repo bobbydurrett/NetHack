@@ -1770,3 +1770,109 @@ OPTIONS=autoletter:h:oilskin sack:2
 OPTIONS=autoletter:h:sack:3
 OPTIONS=autoletter:h:bag:4
 
+STATIC_OVL boolean
+duplicate_opt_detection(opts, iscompound)
+const char *opts;
+int iscompound; /* 0 == boolean option, 1 == compound */
+{
+    int i, *optptr;
+
+    if (!iscompound && iflags.opt_booldup && initial && from_file) {
+        for (i = 0; boolopt[i].name; i++) {
+            if (match_optname(opts, boolopt[i].name, 3, FALSE)) {
+                optptr = iflags.opt_booldup + i;
+                *optptr += 1;
+                if (*optptr > 1)
+                    return TRUE;
+                else
+                    return FALSE;
+            }
+        }
+    } else if (iscompound && iflags.opt_compdup && initial && from_file) {
+        for (i = 0; compopt[i].name; i++) {
+            if (match_optname(opts, compopt[i].name, strlen(compopt[i].name),
+                              TRUE)) {
+                optptr = iflags.opt_compdup + i;
+                *optptr += 1;
+                if (*optptr > 1)
+                    return TRUE;
+                else
+                    return FALSE;
+            }
+        }
+    }
+    return FALSE;
+}
+
+somehow this is triggering.
+
+[bobby@localhost ~]$ bobbyhack -D
+
+OPTIONS=autoletter:k:key
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+ * Line 9: compound option specified multiple times: autoletter:k:key.
+
+11 errors in /home/bobby/.nethackrc.
+
+
+Hit return to continue:
+
+[bobby@localhost ~]$ cat .nethackrc
+OPTIONS=noshowexp,showscore,time,color,!autopickup
+OPTIONS=autodig,ibmgraphics,autoquiver,noautoopen
+OPTIONS=number_pad:0,msg_window:reversed
+OPTIONS=hilite_pet,hilite_pile,pickup_burden:unencumbered
+OPTIONS=disclose:yi ya yv yg yc yo
+OPTIONS=boulder:`
+OPTIONS=sortloot:none
+OPTIONS=autoletter:b:blindfold
+OPTIONS=autoletter:k:key
+
+I added autoletter here:
+
+static struct Comp_Opt {
+    const char *name, *descr;
+    int size; /* for frontends and such allocating space --
+               * usually allowed size of data in game, but
+               * occasionally maximum reasonable size for
+               * typing when game maintains information in
+               * a different format */
+    int optflags;
+} compopt[] = {
+    { "align", "your starting alignment (lawful, neutral, or chaotic)", 8,
+      DISP_IN_GAME },
+    { "align_message", "message window alignment", 20, DISP_IN_GAME }, /*WC*/
+    { "align_status", "status window alignment", 20, DISP_IN_GAME },   /*WC*/
+    { "altkeyhandler", "alternate key handler", 20, SET_IN_GAME },
+    { "autoletter", "assign inventory letter", 20, DISP_IN_GAME },
+    
+I wonder if a different value for optflags would work. Really
+don't want to DISP_IN_GAME.
+
+In options.c
+
+/*
+ *  NOTE:  If you add (or delete) an option, please update the short
+ *  options help (option_help()), the long options help (dat/opthelp),
+ *  and the current options setting display function (doset()),
+ *  and also the Guidebooks.
+ *
+ *  The order matters.  If an option is a an initial substring of another
+ *  option (e.g. time and timed_delay) the shorter one must come first.
+ */
+
+did a kludgy fix to option_help
+
+added to dat/opthelp
+
+I think it is good for now. At least there is some help in the game.
+

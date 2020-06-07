@@ -6295,6 +6295,13 @@ option_help()
     for (i = 0; opt_epilog[i]; i++)
         putstr(datawin, 0, opt_epilog[i]);
 
+    /* Bobby Durrett autoletter option */
+
+    putstr(datawin, 0, "");
+    putstr(datawin, 0, "Custom options which do not follow the boolean or compound syntax:");
+    putstr(datawin, 0, "");
+    putstr(datawin, 0, "autoletter - set inventory letter for object types or names");
+
     display_nhwindow(datawin, FALSE);
     destroy_nhwindow(datawin);
     return;

@@ -267,13 +267,51 @@ windowtype windowing system to be used    [depends on operating system and
            named 'options' which is generated when building it.
 
 Compound option if TTY_GRAPHICS was set at compile time:
+
 msg_window the type of message window to use:                      [single]
            single      -- One message at a time
            full        -- Full window with all saved top line messages
            reverse     -- Same as full, but messages printed most-recent-first
            combination -- Two single messages, then as full
 
-
 Some sample options lists are:
 !autopickup,!tombstone,name:Gandalf,scores:own/3 top/2 around
 female,nonews,dogname:Rover,rest_on_space,!verbose,menustyle:traditional
+           
+Custom options which do not follow the boolean or compound syntax:
+ 
+autoletter Inventory letter automatically chosen for the given object type or 
+           object name with this format: 
+           
+           letter:object type or name:priority
+           
+           Priority is an integer > 0 with lower numbers indicating
+           greater priority.
+           
+           You can leave off the priority with this syntax:
+           
+           letter:object type or name
+           
+           In this case priority is assumed to be 1.
+           
+           For example:
+           
+OPTIONS=autoletter:b:blindfold
+OPTIONS=autoletter:l:magic lamp:1
+OPTIONS=autoletter:l:lamp:2
+OPTIONS=autoletter:l:oil lamp:2
+OPTIONS=autoletter:l:brass lantern:2
+OPTIONS=autoletter:k:key
+OPTIONS=autoletter:k:skeleton key
+OPTIONS=autoletter:m:mirror
+OPTIONS=autoletter:m:looking glass
+OPTIONS=autoletter:w:magic whistle:1
+OPTIONS=autoletter:w:whistle:2
+OPTIONS=autoletter:p:pick-axe
+OPTIONS=autoletter:u:unicorn horn
+OPTIONS=autoletter:h:bag of holding:1
+OPTIONS=autoletter:h:oilskin sack:2
+OPTIONS=autoletter:h:sack:3
+OPTIONS=autoletter:h:bag:4
+           
+
