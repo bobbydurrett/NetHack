@@ -55,4 +55,8 @@ Makefile.gcc-orig
 .vs
 # Win32-specific ignores end
 .DS_Store
+# Bobby Durrett ignores
+Makefile.bobbyhack
+bobbyhack
+bobby
 
