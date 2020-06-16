@@ -1941,3 +1941,22 @@ put here or in do_oname?
 
 done.
 
+***************************************************************************
+
+Now the thing is what if
+an object leaves my main inventory
+and another object that is also in autoletter for 
+the same letter but worse priority.
+
+I.e. 
+
+Drop a bag of holding
+Have sack in inventory.
+
+Put a lamp in bag but another lamp
+in main inventory.
+
+THere are a lot of ways objects can leave the main inventory.
+
+Is there some main remove from inventory routine?
+
