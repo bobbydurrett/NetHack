@@ -1396,8 +1396,11 @@ docallcmd()
         allowall[0] = ALL_CLASSES;
         allowall[1] = '\0';
         obj = getobj(allowall, "name");
-        if (obj)
+        if (obj) {
             do_oname(obj);
+            /* Bobby Durrett autoletter */
+            autoletter_adjust(obj);
+        }
         break;
     case 'o': /* name a type of object in inventory */
         obj = getobj(callable, "call");

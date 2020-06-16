@@ -1925,3 +1925,19 @@ which is in restgamestate - added at end:
 
 Next I need to call autoletter_adjust when and object is named.
 
+cmd.c might be a start
+
+do_name.c:docallcmd()
+
+    case 'i': /* name an individual object in inventory */
+        allowall[0] = ALL_CLASSES;
+        allowall[1] = '\0';
+        obj = getobj(allowall, "name");
+        if (obj)
+            do_oname(obj);
+        break;
+        
+put here or in do_oname?
+
+done.
+
