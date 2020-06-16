@@ -1876,3 +1876,52 @@ added to dat/opthelp
 
 I think it is good for now. At least there is some help in the game.
 
+6/15/2020
+
+Next thing is to have it apply the autoletter options
+after a restore from a saved game.
+
+start game with no autoletter options
+
+name some weapon My Favorite Weapon
+and assign it to some letter other than a.
+
+then save and add this one
+
+OPTIONS=autoletter:a:My Favorite Weapon:1
+
+Should autoassign it back to a.
+
+ Weapons
+      a - a +1 long sword (weapon in hand)
+      b - a +0 dagger named My Favorite Weapon (alternate weapon; not wielded)
+      Armor
+      c - a blessed +3 small shield (being worn)
+      Comestibles
+      d - an uncursed food ration
+
+didn't change.
+
+restore.c maybe?
+
+STATIC_OVL struct obj *
+restobjchn(fd, ghostly, frozen)
+
+    invent = restobjchn(fd, FALSE, FALSE);
+
+which is in restgamestate - added at end:
+
+    /* Bobby Durrett - added to apply autoletter options after
+       game restore. Pieces of code taken from Preadjust patch */
+
+    struct obj *obj;
+
+    /* loop through the objects in the newly created inventory */
+
+    for (obj = invent; obj; obj = obj->nobj)
+        autoletter_adjust(obj);
+
+    /* end autoletter */
+
+Next I need to call autoletter_adjust when and object is named.
+

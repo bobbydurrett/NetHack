@@ -708,6 +708,19 @@ unsigned int *stuckid, *steedid;
     relink_light_sources(FALSE);
     /* inventory display is now viable */
     iflags.perm_invent = defer_perm_invent;
+
+    /* Bobby Durrett - added to apply autoletter options after
+       game restore. Pieces of code taken from Preadjust patch */
+
+    struct obj *obj;
+
+    /* loop through the objects in the newly created inventory */
+
+    for (obj = invent; obj; obj = obj->nobj)
+        autoletter_adjust(obj);
+
+    /* end autoletter */
+
     return TRUE;
 }
 
