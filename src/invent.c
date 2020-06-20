@@ -2290,6 +2290,7 @@ struct obj *otmp;
         otmp->cknown = otmp->lknown = 1;
     if (otmp->otyp == EGG && otmp->corpsenm != NON_PM)
         learn_egg_type(otmp->corpsenm);
+    autoletter_adjust(otmp);
 }
 
 /* ggetobj callback routine; identify an object and give immediate feedback */
