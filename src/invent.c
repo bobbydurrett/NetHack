@@ -1156,6 +1156,18 @@ register struct obj *obj;
 {
     extract_nobj(obj, &invent);
     freeinv_core(obj);
+
+    /* Bobby Durrett apply autoletter options after removing obj */
+
+    struct obj *otmp;
+
+    /* loop through the objects in the remaining inventory */
+
+    for (otmp = invent; otmp; otmp = otmp->nobj)
+        autoletter_adjust(otmp);
+
+    /* end autoletter */
+
     update_inventory();
 }
 

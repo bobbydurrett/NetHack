@@ -1960,3 +1960,96 @@ THere are a lot of ways objects can leave the main inventory.
 
 Is there some main remove from inventory routine?
 
+6/20/2020
+
+Need to poke around with debug statements
+try to find what happens when you drop something, etc.
+
+do.c
+
+/* 'd' command: drop one inventory item */
+int
+dodrop()
+
+freeinv(obj); maybe
+
+invent.c:freeinv(obj)
+
+/* remove an object from the hero's inventory */
+void
+freeinv(obj)
+register struct obj *obj;
+{
+    extract_nobj(obj, &invent);
+    freeinv_core(obj);
+    update_inventory();
+}
+
+do i do autoletter_adjust before or after update_inventory?
+
+ added:
+    addinv_core2(obj);
+    carry_obj_effects(obj); /* carrying affects the obj */
+
+    autoletter_adjust(obj); /* Bobby Durrett autoletter */
+
+    update_inventory();
+    return obj;
+    
+This is what I did in addinv. Do the opposite in freeinv(
+
+is not working right with magic lamp and oil lamp:
+
+Tools
+ l - an uncursed oil lamp
+ m - an uncursed tooled horn
+ n - a magic marker (0:77)
+ o - a blessed magic lamp
+
+Have to identify after wishing
+
+Maybe this isn't a problem.
+
+Really the issue is to adapt after identifying.
+
+Dropping isn't working either.
+
+Hmm.
+
+My new version
+
+void
+freeinv(obj)
+register struct obj *obj;
+{
+    extract_nobj(obj, &invent);
+    freeinv_core(obj);
+
+    /* Bobby Durrett apply autoletter options after removing obj */
+
+    struct obj *otmp;
+
+    /* loop through the objects in the remaining inventory */
+
+    for (otmp = invent; otmp; otmp = otmp->nobj)
+        autoletter_adjust(otmp);
+
+    /* end autoletter */
+
+    update_inventory();
+}
+
+I didn't do bhbuild.sh
+
+Works. Cool.
+
+Now have to fix it so that identifying causes the update.
+
+i.e.
+
+oil lamp first
+
+then magic lamp identified.
+
+magic lamp switches in.
+
