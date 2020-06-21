@@ -1161,12 +1161,8 @@ register struct obj *obj;
 
     /* Bobby Durrett apply autoletter options after removing obj */
 
-    struct obj *otmp;
+    autoletter_adjust_all();
 
-    /* loop through the objects in the remaining inventory */
-
-    for (otmp = invent; otmp; otmp = otmp->nobj)
-        autoletter_adjust(otmp);
     autoletter_reorder_invent();
 
     /* end autoletter */

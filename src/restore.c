@@ -710,17 +710,11 @@ unsigned int *stuckid, *steedid;
     iflags.perm_invent = defer_perm_invent;
 
     /* Bobby Durrett - added to apply autoletter options after
-       game restore. Pieces of code taken from Preadjust patch */
+       game restore. */
 
-    struct obj *obj;
+    autoletter_adjust_all();
 
-    /* loop through the objects in the newly created inventory */
-
-    for (obj = invent; obj; obj = obj->nobj)
-        autoletter_adjust(obj);
     autoletter_reorder_invent();
-
-    /* end autoletter */
 
     return TRUE;
 }

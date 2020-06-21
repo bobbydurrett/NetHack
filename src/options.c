@@ -7479,6 +7479,27 @@ autoletter_adjust(struct obj *obj)
     }
 }
 
+/*
 
+void
+autoletter_adjust_all()
+
+Loop through the entire inventory list calling autoletter_adjust
+on every object.
+
+Does not reorder the inventory list after swapping.
+
+*/
+
+void
+autoletter_adjust_all()
+{
+    struct obj *obj;
+
+    /* loop through the objects in the newly created inventory */
+
+    for (obj = invent; obj; obj = obj->nobj)
+        autoletter_adjust(obj);
+}
 
 /*options.c*/
