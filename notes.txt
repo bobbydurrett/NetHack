@@ -2184,4 +2184,19 @@ commented out.
 
 breaks control-I x2 in wiz mode
 
+I think it is this call in autoletter_swap:
+
+    reorder_invent();
+}
+
+probably put autoletter_adjust
+after fully_identify_obj
+is called one or more times instead
+of in fully_identify_obj.
+
+i.e. the ctrl-I x2 place and other
+places wait until all the identifying is done
+and then adjust the ones identified.
+
+
 
