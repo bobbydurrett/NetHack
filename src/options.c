@@ -7395,7 +7395,7 @@ autoletter_adjust(struct obj *obj)
     if (obj_index >= 0) {
         letter = autoletter_array[obj_index].letter;
         priority = autoletter_array[obj_index].priority;
-        autoletter_swap(obj ,letter);
+        autoletter_swap(obj ,letter, priority);
     }
 }
 
@@ -7411,7 +7411,7 @@ if the new object has a higher priority.
 */
 
 boolean
-autoletter_should_swap(struct obj *obj, struct obj *has_obj)
+autoletter_should_swap(int priority, struct obj *has_obj)
 {
     /* lookup has_obj to see if it is in the autoletter array */
 
@@ -7422,16 +7422,10 @@ autoletter_should_swap(struct obj *obj, struct obj *has_obj)
     if (has_index < 0)
         return TRUE;
 
-    /* if obj priority > has_obj priority then swap */
+    /* should swap if the object's priority is lower number
+       (higher priority) than the object that has the letter now */
 
-    int obj_index = lookup_autoletter(autoletter_name_type(obj));
-
-    /* should not happen but if obj is not in array do not swap */
-
-    if (obj_index < 0)
-        return FALSE;
-
-    return autoletter_array[obj_index].priority < autoletter_array[has_index].priority;
+    return priority < autoletter_array[has_index].priority;
 }
 
 /*options.c*/

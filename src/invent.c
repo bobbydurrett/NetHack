@@ -2290,9 +2290,6 @@ struct obj *otmp;
         otmp->cknown = otmp->lknown = 1;
     if (otmp->otyp == EGG && otmp->corpsenm != NON_PM)
         learn_egg_type(otmp->corpsenm);
-/*
-    autoletter_adjust(otmp);
-*/
 }
 
 /* ggetobj callback routine; identify an object and give immediate feedback */
@@ -4489,7 +4486,7 @@ autoletter_swap(struct obj *obj ,char letter)
 */
 
 void
-autoletter_swap(struct obj *obj ,char letter)
+autoletter_swap(struct obj *obj ,char letter, int priority)
 {
     /* see if an object in the inventory already has invlet == letter */
 
@@ -4508,7 +4505,7 @@ autoletter_swap(struct obj *obj ,char letter)
 
     if (found_letter) {
         /* swap letters if obj has higher priority than has_obj */
-        if (autoletter_should_swap(obj, has_obj)) {
+        if (autoletter_should_swap(priority, has_obj)) {
             has_obj->invlet = obj->invlet;
             obj->invlet = letter;
         }

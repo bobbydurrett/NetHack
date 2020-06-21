@@ -1074,7 +1074,7 @@ E void FDECL(silly_thing, (const char *, struct obj *));
 
 /* Bobby Durrett autoletter */
 
-E void FDECL(autoletter_swap, (struct obj *obj, char));
+E void FDECL(autoletter_swap, (struct obj *obj, char, int));
 
 /* ### ioctl.c ### */
 
@@ -1833,7 +1833,7 @@ E int NDECL(num_autoletter_options);
 E boolean FDECL(get_autoletter, (int, char *, char *, int *));
 E int FDECL(lookup_autoletter, (char *));
 E void FDECL(autoletter_adjust, (struct obj *));
-E boolean FDECL(autoletter_should_swap, (struct obj *,struct obj *));
+E boolean FDECL(autoletter_should_swap, (int, struct obj *));
 
 /* ### pager.c ### */
 

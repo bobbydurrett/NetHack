@@ -2198,5 +2198,87 @@ i.e. the ctrl-I x2 place and other
 places wait until all the identifying is done
 and then adjust the ones identified.
 
+invent.c:fully_identify_obj(otmp)
+invent.c:    fully_identify_obj(otmp);
+invent.c:        /* TODO:  use fully_identify_obj and cornline/menu/whatever here */
+quest.c:            fully_identify_obj(otmp);
+quest.c:        fully_identify_obj(obj);
+                                        
+used here
 
+/* ggetobj callback routine; identify an object and give immediate feedback */
+int
+identify(otmp)
+struct obj *otmp;
+{
+    fully_identify_obj(otmp);
+    prinv((char *) 0, otmp, 0L);
+    return 1;
+}
+
+
+/* TODO:  use fully_identify_obj and cornline/menu/whatever here */
+for (obj = invent; obj; obj = obj->nobj) {
+    if (not_fully_identified(obj)) {
+        (void) identify(obj);
+        if (unid_cnt == 1)
+            break;
+    }
+}
+
+This is probably the real problem.
+
+Going through the list and autoletter_adjust
+modified the list.
+
+Maybe we should find wherever identify or fully_identify_obj
+is called and put autoletter_adjust there instead.
+
+Worries me that autoletter_adjust does not work with a loop
+like this. Need to verify because we use it when we 
+restore a game and start a game also.
+
+See if we are manipulating the list in reorder_invent.
+
+May need my own list outside of the object structure.
+
+/* sort the inventory; used by addinv() and doorganize() */
+STATIC_OVL void
+reorder_invent()
+{
+    struct obj *otmp, *prev, *next;
+    boolean need_more_sorting;
+
+    do {
+        /*
+         * We expect at most one item to be out of order, so this
+         * isn't nearly as inefficient as it may first appear.
+         */
+        need_more_sorting = FALSE;
+        for (otmp = invent, prev = 0; otmp;) {
+            next = otmp->nobj;
+            if (next && inv_rank(next) < inv_rank(otmp)) {
+                need_more_sorting = TRUE;
+                if (prev)
+                    prev->nobj = next;
+                else
+                    invent = next;
+                otmp->nobj = next->nobj;
+                next->nobj = otmp;
+                prev = next;
+            } else {
+                prev = otmp;
+                otmp = next;
+            }
+        }
+    } while (need_more_sorting);
+}
+
+This definately tweaks the structure so we cannot call it during a loop through
+the same pointers.
+
+        priority = autoletter_array[obj_index].priority;
+
+why in autoletter_adjust do I get priority here and then 
+do not use it?
 
