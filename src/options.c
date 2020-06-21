@@ -7030,19 +7030,76 @@ lookup_autoletter(char *object_type_or_name)
 Returns the index of the autoletter_array array that has
 the entry for object_type_or_name or -1 otherwise.
 
+binary search version
+
 */
 
 int
 lookup_autoletter(char *object_type_or_name)
 {
-    int i;
+    int mini; /* minimum index */
+    int maxi; /* max index */
+    int midi; /* mid point index */
+    int cmp;  /* strcmp result */
 
-    for (i = 0; i < num_autoletter ; i++) {
-        if (strcmp(object_type_or_name,autoletter_array[i].object_type_or_name) == 0)
-            return i;
+    /* check for empty array */
+
+    if (num_autoletter < 1)
+        return -1;
+
+    /* set initial min and max indexes */
+
+    mini = 0;
+    maxi = num_autoletter - 1;
+
+    /* keep finding midpoints until down to one element */
+
+    while (maxi > mini) {
+        midi = (mini + maxi) / 2;
+
+        cmp = strcmp(object_type_or_name,autoletter_array[midi].object_type_or_name);
+
+        if (cmp == 0)
+            return midi;
+
+        if (cmp < 0)
+            maxi = midi;
+        else {
+            if (mini == midi) {
+                mini = maxi;
+                break;
+            }
+
+            mini = midi;
+        }
     }
 
-    return -1;
+    if (strcmp(object_type_or_name,autoletter_array[mini].object_type_or_name) == 0)
+        return mini;
+    else
+        return -1;
+}
+
+/*
+
+static int
+autoletter_compare(const void *p1, const void *p2)
+
+Used by qsort to keep autoletter array sorted for binary search.
+This just returns the result of comparing the object type or name
+field of the autoletter array elements pointed to by p1 and p2.
+
+Comparison used by the sort.
+
+*/
+
+static int
+autoletter_compare(const void *p1, const void *p2)
+{
+    /* p1 and p2 are actually pointers to a autoletter_type
+       element of autoletter_array */
+
+    return strcmp(((autoletter_type *) p1)->object_type_or_name, ((autoletter_type *) p2)->object_type_or_name);
 }
 
 /*
@@ -7052,6 +7109,8 @@ insert_autoletter(char letter,char *object_type_or_name, int priority)
 
 Adds the inventory letter, object type or name, and integer priority
 to array if there is room.
+
+Sorts array for binary search.
 
 */
 
@@ -7102,6 +7161,10 @@ insert_autoletter(char letter,char *object_type_or_name, int priority)
     /* advance to next array entry */
 
     num_autoletter++;
+
+    /* sort for binary search */
+
+    qsort((void *)autoletter_array, num_autoletter, sizeof(autoletter_type),autoletter_compare);
 
     return TRUE;
 }

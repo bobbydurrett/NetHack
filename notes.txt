@@ -2114,3 +2114,33 @@ real    0m5.797s
 user    0m5.791s
 sys     0m0.003s
 
+[bobby@localhost binarysearch]$ time ./binsearch
+
+real    0m1.388s
+user    0m1.386s
+sys     0m0.001s
+
+binary search about 4x at 10 million
+
+binary search 100,000,000
+
+[bobby@localhost binarysearch]$ time ./binsearch
+
+real    0m13.817s
+user    0m13.809s
+sys     0m0.002s
+
+[bobby@localhost binarysearch]$ gcc -o linear linear.c -Wall
+[bobby@localhost binarysearch]$ time ./linear
+
+real    0m59.207s
+user    0m59.112s
+sys     0m0.007s
+
+so, faster but not a ton faster. aboug 4.5x
+
+added binary search.
+
+may want to add some sort of notification out of 
+autoletter_adjust of a letter is adjusted.
+
