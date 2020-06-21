@@ -7037,7 +7037,7 @@ lookup_autoletter(char *object_type_or_name)
 {
     int i;
 
-    for (i = 0; i < MAX_OBJ_TYPE_NAME_LEN ; i++) {
+    for (i = 0; i < num_autoletter ; i++) {
         if (strcmp(object_type_or_name,autoletter_array[i].object_type_or_name) == 0)
             return i;
     }

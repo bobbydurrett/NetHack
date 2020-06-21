@@ -2091,3 +2091,26 @@ Works.
 I'm putting this a lot of places. Might want to see about using 
 binary search if I'm going to call this all the time.
 
+[bobby@localhost binarysearch]$ pwd
+/home/bobby/nethack/binarysearch
+[
+
+Do some binary search testing here.
+
+[bobby@localhost binarysearch]$ time ./linear
+
+real    0m9.243s
+user    0m9.236s
+sys     0m0.002s
+
+9 seconds for 10,000,000 lookups with current code.
+
+fixed bug in current lookup. now is
+
+
+[bobby@localhost binarysearch]$ time ./linear
+
+real    0m5.797s
+user    0m5.791s
+sys     0m0.003s
+
