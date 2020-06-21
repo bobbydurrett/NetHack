@@ -2162,3 +2162,26 @@ If I wish for an unidentified oil lamp and
 magic lamp and then do control-I twice it only
 identifies one.
 
+/* make an object actually be identified; no display updating */
+void
+fully_identify_obj(otmp)
+struct obj *otmp;
+{
+    makeknown(otmp->otyp);
+    if (otmp->oartifact)
+        discover_artifact((xchar) otmp->oartifact);
+    otmp->known = otmp->dknown = otmp->bknown = otmp->rknown = 1;
+    if (Is_container(otmp) || otmp->otyp == STATUE)
+        otmp->cknown = otmp->lknown = 1;
+    if (otmp->otyp == EGG && otmp->corpsenm != NON_PM)
+        learn_egg_type(otmp->corpsenm);
+/*
+    autoletter_adjust(otmp);
+*/
+}
+
+commented out. 
+
+breaks control-I x2 in wiz mode
+
+
