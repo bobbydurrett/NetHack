@@ -7054,7 +7054,7 @@ lookup_autoletter(char *object_type_or_name)
 
     /* keep finding midpoints until down to one element */
 
-    while (maxi > mini) {
+    while (TRUE) {
         midi = (mini + maxi) / 2;
 
         cmp = strcmp(object_type_or_name,autoletter_array[midi].object_type_or_name);
@@ -7062,22 +7062,36 @@ lookup_autoletter(char *object_type_or_name)
         if (cmp == 0)
             return midi;
 
+        if (maxi <= (mini + 1))
+            break;
+
         if (cmp < 0)
             maxi = midi;
         else {
-            if (mini == midi) {
-                mini = maxi;
-                break;
-            }
 
             mini = midi;
         }
     }
 
-    if (strcmp(object_type_or_name,autoletter_array[mini].object_type_or_name) == 0)
-        return mini;
-    else
+    /* if we get here either
+       mini == maxi or mini + 1 == maxi
+       of cmp > 0 then test maxi
+       else test mini because already checked the other
+       in previous loop */
+
+    /* avoid last comparison where mini == maxi */
+
+    if (maxi <= mini)
         return -1;
+
+    if (cmp > 0) {
+        if (strcmp(object_type_or_name,autoletter_array[maxi].object_type_or_name) == 0)
+            return maxi;
+    } else {
+        if (strcmp(object_type_or_name,autoletter_array[mini].object_type_or_name) == 0)
+            return mini;
+    }
+    return -1;
 }
 
 /*

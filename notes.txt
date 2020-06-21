@@ -2144,3 +2144,21 @@ added binary search.
 may want to add some sort of notification out of 
 autoletter_adjust of a letter is adjusted.
 
+[bobby@localhost binarysearch]$ time ./binsearch
+
+real    0m13.579s
+user    0m13.571s
+sys     0m0.002s
+
+Tweaked the logic but didn't really speed up.
+
+still not sure if I can eliminate the last comparision
+if mini == maxi
+
+finished updating binary search but my identify change
+may have introduced a bug.
+
+If I wish for an unidentified oil lamp and 
+magic lamp and then do control-I twice it only
+identifies one.
+
