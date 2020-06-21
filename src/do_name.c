@@ -1400,6 +1400,7 @@ docallcmd()
             do_oname(obj);
             /* Bobby Durrett autoletter */
             autoletter_adjust(obj);
+            autoletter_reorder_invent();
         }
         break;
     case 'o': /* name a type of object in inventory */

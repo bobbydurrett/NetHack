@@ -7366,12 +7366,92 @@ add_autoletter(char *opts)
 
 /*
 
+boolean
+autoletter_should_swap(int priority, struct obj *has_obj)
+
+Returns TRUE if obj has a higher priority than has_obj.
+For now just look at priorities. Only make the switch
+if the new object has a higher priority.
+
+*/
+
+boolean
+autoletter_should_swap(int priority, struct obj *has_obj)
+{
+    /* lookup has_obj to see if it is in the autoletter array */
+
+    int has_index = lookup_autoletter(autoletter_name_type(has_obj));
+
+    /* if has_obj is not in array then we should swap it */
+
+    if (has_index < 0)
+        return TRUE;
+
+    /* should swap if the object's priority is lower number
+       (higher priority) than the object that has the letter now */
+
+    return priority < autoletter_array[has_index].priority;
+}
+
+/*
+
+void
+autoletter_swap(struct obj *obj ,char letter, int priority)
+
+Swap with another object if one already has the letter.
+Compare priority if is also in autoletter array.
+
+*/
+
+void
+autoletter_swap(struct obj *obj ,char letter, int priority)
+{
+    /* see if an object in the inventory already has invlet == letter */
+
+    struct obj *otmp,*has_obj;
+    boolean found_letter = FALSE;
+
+
+    for (otmp = invent; otmp; otmp = otmp->nobj)
+        if (otmp->invlet == letter) {
+            found_letter = TRUE;
+            has_obj = otmp;
+            break;
+        }
+
+    /* handle case where an object with invlet == letter */
+
+    if (found_letter) {
+        /* swap letters if obj has higher priority than has_obj */
+        if (autoletter_should_swap(priority, has_obj)) {
+            has_obj->invlet = obj->invlet;
+            obj->invlet = letter;
+        }
+    }
+    else {
+        /* just set invlet to letter for obj */
+        obj->invlet = letter;
+    }
+
+}
+
+/*
+
 void
 autoletter_adjust(struct obj *obj)
 
 Takes an object obj that is already in the user's inventory
 and applies the autoletter options to adjust the object
 to the desired letter.
+
+Does not reorder the inventory list after swapping.
+
+Use
+
+void
+autoletter_reorder_invent()
+
+for that.
 
 */
 
@@ -7399,33 +7479,6 @@ autoletter_adjust(struct obj *obj)
     }
 }
 
-/*
 
-boolean
-autoletter_should_swap(obj, has_obj)
-
-Returns TRUE if obj has a higher priority than has_obj.
-For now just look at priorities. Only make the switch
-if the new object has a higher priority.
-
-*/
-
-boolean
-autoletter_should_swap(int priority, struct obj *has_obj)
-{
-    /* lookup has_obj to see if it is in the autoletter array */
-
-    int has_index = lookup_autoletter(autoletter_name_type(has_obj));
-
-    /* if has_obj is not in array then we should swap it */
-
-    if (has_index < 0)
-        return TRUE;
-
-    /* should swap if the object's priority is lower number
-       (higher priority) than the object that has the letter now */
-
-    return priority < autoletter_array[has_index].priority;
-}
 
 /*options.c*/

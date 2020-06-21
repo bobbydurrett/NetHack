@@ -718,6 +718,7 @@ unsigned int *stuckid, *steedid;
 
     for (obj = invent; obj; obj = obj->nobj)
         autoletter_adjust(obj);
+    autoletter_reorder_invent();
 
     /* end autoletter */
 

@@ -945,7 +945,9 @@ struct obj *obj;
     addinv_core2(obj);
     carry_obj_effects(obj); /* carrying affects the obj */
 
-    autoletter_adjust(obj); /* Bobby Durrett autoletter */
+    /* Bobby Durrett autoletter */
+    autoletter_adjust(obj);
+    autoletter_reorder_invent();
 
     update_inventory();
     return obj;
@@ -1165,6 +1167,7 @@ register struct obj *obj;
 
     for (otmp = invent; otmp; otmp = otmp->nobj)
         autoletter_adjust(otmp);
+    autoletter_reorder_invent();
 
     /* end autoletter */
 
@@ -4475,46 +4478,16 @@ boolean as_if_seen;
 
 /* Bobby Durrett autoletter routine
 
-why not just create a little routine at the bottom of
-invent.c that swaps the letters and calls
-STATIC_OVL void
-reorder_invent()
-
 void
-autoletter_swap(struct obj *obj ,char letter)
+autoletter_reorder_invent()
+
+Reorder the inventory after swapping letters around.
 
 */
 
 void
-autoletter_swap(struct obj *obj ,char letter, int priority)
+autoletter_reorder_invent()
 {
-    /* see if an object in the inventory already has invlet == letter */
-
-    struct obj *otmp,*has_obj;
-    boolean found_letter = FALSE;
-
-
-    for (otmp = invent; otmp; otmp = otmp->nobj)
-        if (otmp->invlet == letter) {
-            found_letter = TRUE;
-            has_obj = otmp;
-            break;
-        }
-
-    /* handle case where an object with invlet == letter */
-
-    if (found_letter) {
-        /* swap letters if obj has higher priority than has_obj */
-        if (autoletter_should_swap(priority, has_obj)) {
-            has_obj->invlet = obj->invlet;
-            obj->invlet = letter;
-        }
-    }
-    else {
-        /* just set invlet to letter for obj */
-        obj->invlet = letter;
-    }
-
     reorder_invent();
 }
 

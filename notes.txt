@@ -2282,3 +2282,18 @@ the same pointers.
 why in autoletter_adjust do I get priority here and then 
 do not use it?
 
+fixed this but need to deal with reorder_invent and the
+object list.
+
+autoletter_reorder_invent();
+
+use where needed
+
+[bobby@localhost src]$ grep autoletter_adjust *.c
+do_name.c:            autoletter_adjust(obj);
+invent.c:    autoletter_adjust(obj); /* Bobby Durrett autoletter */
+invent.c:        autoletter_adjust(otmp);
+options.c:autoletter_adjust(struct obj *obj)
+options.c:autoletter_adjust(struct obj *obj)
+restore.c:        autoletter_adjust(obj);
+
