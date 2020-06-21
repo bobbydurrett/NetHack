@@ -2339,3 +2339,5 @@ oil lamp was earlier in the order so I didn't get it in the one pass through the
 
 Maybe make multiple passes until all is done switching?
 
+Need to deal with this case and identify.
+
