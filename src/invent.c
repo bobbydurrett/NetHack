@@ -2388,6 +2388,14 @@ boolean learning_id; /* true if we just read unknown identify scroll */
         if (n == 0 || n < -1)
             menu_identify(id_limit);
     }
+
+    /* Bobby Durrett - added to apply autoletter options after
+       several items identified */
+
+    autoletter_adjust_all();
+
+    autoletter_reorder_invent();
+
     update_inventory();
 }
 
