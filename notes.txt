@@ -2381,3 +2381,16 @@ I think put there.
 
 Seems to work. 
 
+6/21/2020 5:06 PM MST
+
+Two key things two work on:
+
+1 - add some sort of output letting us know a letter was switched
+    (identify looks odd because it identifies it with the old letter then it
+    silently switches)
+
+2 - adjust remaining letters after one letter successfully switches
+    (should there be a limit to the depth of the recursion?)
+
+Also, I need a written test case list instead of having it in my head.
+
