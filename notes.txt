@@ -2394,3 +2394,59 @@ Two key things two work on:
 
 Also, I need a written test case list instead of having it in my head.
 
+6/26/2020
+
+identify bug:
+
+wish for an oil lamp, then a magic lamp, 
+and then identify both with control-I x2.
+
+g - a blessed magic lamp.  l - a blessed oil lamp.
+
+didn't seem to get magic lamp.
+
+ Tools
+                         g - a blessed oil lamp
+                         l - a blessed magic lamp
+
+but they are swapped in the inventory.
+
+I guess this bug is really about what feedback we should get.
+
+If I leave these in teh inventory and save
+then change option to make magic lamp x you get
+
+ Tools
+                         g - a blessed oil lamp
+                         x - a blessed magic lamp
+
+So, here is a real bug. oil lamp should switch to l.
+
+void
+autoletter_adjust_all()
+{
+    struct obj *obj;
+    int i;
+
+    /* loop through the objects in the newly created inventory twice */
+
+    for (i = 0; i < 2 ; i++)
+        for (obj = invent; obj; obj = obj->nobj)
+            autoletter_adjust(obj);
+}
+
+changed to make two passes and it fixed the issue:
+
+ Tools
+  l - a cursed oil lamp
+  x - a blessed magic lamp
+  
+maybe two passes through the list is all it needs?
+
+still need to fix the way it appears - output.
+
+
+
+
+
+

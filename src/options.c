@@ -7495,11 +7495,13 @@ void
 autoletter_adjust_all()
 {
     struct obj *obj;
+    int i;
 
-    /* loop through the objects in the newly created inventory */
+    /* loop through the objects in the newly created inventory twice */
 
-    for (obj = invent; obj; obj = obj->nobj)
-        autoletter_adjust(obj);
+    for (i = 0; i < 2 ; i++)
+        for (obj = invent; obj; obj = obj->nobj)
+            autoletter_adjust(obj);
 }
 
 /*options.c*/
