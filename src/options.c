@@ -7396,6 +7396,29 @@ autoletter_should_swap(int priority, struct obj *has_obj)
 /*
 
 void
+autoletter_notify(struct obj *obj ,char letter)
+
+Notifies the user that the letter has been assigned.
+
+*/
+
+void
+autoletter_notify(struct obj *obj ,char letter)
+{
+    char buffer[80];
+    int bytes_formatted;
+
+    bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", autoletter_name_type(obj),letter);
+
+    /* pline if no error formatting */
+
+    if (bytes_formatted > 0)
+        pline(buffer);
+}
+
+/*
+
+void
 autoletter_swap(struct obj *obj ,char letter, int priority)
 
 Swap with another object if one already has the letter.
@@ -7426,11 +7449,13 @@ autoletter_swap(struct obj *obj ,char letter, int priority)
         if (autoletter_should_swap(priority, has_obj)) {
             has_obj->invlet = obj->invlet;
             obj->invlet = letter;
+            autoletter_notify(obj ,letter);
         }
     }
     else {
         /* just set invlet to letter for obj */
         obj->invlet = letter;
+        autoletter_notify(obj ,letter);
     }
 
 }
@@ -7474,8 +7499,13 @@ autoletter_adjust(struct obj *obj)
 
     if (obj_index >= 0) {
         letter = autoletter_array[obj_index].letter;
-        priority = autoletter_array[obj_index].priority;
-        autoletter_swap(obj ,letter, priority);
+
+        /* Only swap if obj does not already have desired letter */
+
+        if (obj->invlet != letter) {
+            priority = autoletter_array[obj_index].priority;
+            autoletter_swap(obj ,letter, priority);
+        }
     }
 }
 
