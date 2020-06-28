@@ -2447,4 +2447,103 @@ still need to fix the way it appears - output.
 
 added autoletter_notify and it works pretty well.
 
+6/27/2020 6:18 PM
+
+Possible speedup idea
+
+Add a new 52 element array called autoletter_inventory.
+
+Elements of the array have these fields
+
+object pointer
+
+desired letter
+
+priority
+
+autoletter_changed - true if changed based on autoletter option
+
+Elements 0-25 represent lower case letters a-z
+26-51 represent upper case A-Z.
+
+The main reason for this is that in autoletter_swap 
+we scan the full inventory list looking for an existing object
+with the desired letter.
+
+In autoletter_adjust_all we scan the full inventory
+list twice calling autoletter_adjust for each object
+which calls autoletter_swap.
+
+So, autoletter_adjust_all is O(n^2) where n is size
+of the inventory. Of course n is no more than 52
+so not sure asymptotics matter.
+
+Idea is to rewrite autoletter_adjust_all and its
+underlying routines using autoletter_inventory to make
+autoletter_adjust_all O(n).
+
+Also, eliminate autoletter_reorder_invent and its call
+to the inefficient reorder_invent by including the
+relinking of the inventory linked list in 
+autoletter_adjust_all.
+
+General algorithm *******************************************************************************
+
+set autoletter_changed to false for entire array and put 0 or NULL in all 
+entries.
+
+Loop through the inventory looking at each a-zA-Z lettered object.
+
+    lookup current object in autoletter_array
+    
+    if not in array then
+    
+        if the autoletter_inventory entry for that object's letter is empty then
+        
+            put that object (pointer) in the entry and change the object's letter to the
+            desired letter
+       
+        else 
+        
+            put the object in the nearest empty letter entry and change the object's letter
+            to the letter for that slot
+            
+    else if object is in autoletter_array then
+    
+        if autoletter_inventory entry for the desired letter is empty then
+        
+            put the object in the desired letter and change the object's letter to that letter
+            
+            set autoletter_changed to True if that object's letter was not already the desired letter
+            
+        else if the autoletter_inventory has an existing entry then
+        
+            if current object has higher priority (lower number) than existing object or if 
+            existing object has no priority (not in autoletter_array) then
+            
+                move the existing object in the autoletter_inventory slot for the desired letter to
+                the closest empty slot and set the object's letter to that slot's letter
+                
+                put the current object in the in the entry and change the object's letter to the
+                desired letter
+                
+                set autoletter_changed to True if that object's letter was not already the desired letter
+                
+            else if the current object has a lower priority than the existing object then.
+            
+                put the object in the nearest empty letter entry and change the object's letter
+                to the letter for that slot
+                
+After the first loop is done loop through the autoletter_inventory array skipping any empty entry and 
+relinking the entire inventory linked list based on the order they appear in the array.
+
+Output a notice for any entry with autoletter_changed true.
+
+END OF ALGORITHM ********************************************************************************************
+
+Would like to do performance testing outside nethack like I did for the binary search lookup.
+
+may have to fake some of the types like the object list, etc.
+
+The new algorithm should scan through the inventory list twice so that makes it O(n).
 
