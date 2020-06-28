@@ -2500,29 +2500,53 @@ Loop through the inventory looking at each a-zA-Z lettered object.
     
         if the autoletter_inventory entry for that object's letter is empty then
         
-            put that object (pointer) in the entry and change the object's letter to the
-            desired letter
+            put that object (pointer) in the entry. object letter is unchanged.
        
         else 
-        
-            put the object in the nearest empty letter entry and change the object's letter
-            to the letter for that slot
+            if the object in the slot has a priority and desired letter - meaning it was set 
+            by a autoletter object then
+            
+                put the current object in the nearest empty letter entry and change the object's letter
+                to the letter for that slot
+                
+            else if the object in the slot has zeros for priority and letter then it was just put there
+            by some autoletter switch so then
+            
+                move the object in the slot to the nearest empty letter and change its letter to match
+                the new slot
+                
+                put the current object in the now empty slot and leave its letter unchanged.
             
     else if object is in autoletter_array then
     
         if autoletter_inventory entry for the desired letter is empty then
         
-            put the object in the desired letter and change the object's letter to that letter
+            put the object in the slot for the desired letter
             
-            set autoletter_changed to True if that object's letter was not already the desired letter
-            
+            if the object's letter does not match the desired letter then
+                 
+                 change the object's letter to that letter
+                 
+                 set autoletter_changed to True
+                             
         else if the autoletter_inventory has an existing entry then
         
-            if current object has higher priority (lower number) than existing object or if 
-            existing object has no priority (not in autoletter_array) then
+            if the existing object has no priority (not in autoletter_array) then
+                
+                move the existing object in the autoletter_inventory slot for the desired letter to
+                the closest empty slot and set the object's letter to that slot's letter
+                
+                put the current object in the in the entry and change the object's letter to the
+                desired letter
+                
+                set autoletter_changed to True if that object's letter was not already the desired letter
+                
+            else if current object has higher priority (lower number) than existing object then
             
                 move the existing object in the autoletter_inventory slot for the desired letter to
                 the closest empty slot and set the object's letter to that slot's letter
+                
+                set the moved object's autoletter_changed to false
                 
                 put the current object in the in the entry and change the object's letter to the
                 desired letter
@@ -2533,6 +2557,7 @@ Loop through the inventory looking at each a-zA-Z lettered object.
             
                 put the object in the nearest empty letter entry and change the object's letter
                 to the letter for that slot
+                
                 
 After the first loop is done loop through the autoletter_inventory array skipping any empty entry and 
 relinking the entire inventory linked list based on the order they appear in the array.
