@@ -2572,3 +2572,77 @@ may have to fake some of the types like the object list, etc.
 
 The new algorithm should scan through the inventory list twice so that makes it O(n).
 
+6/30/2020
+
+[bobby@localhost inventoryarray]$ pwd
+/home/bobby/inventoryarray
+[bobby@localhost inventoryarray]$ ls -al
+total 36
+drwxrwxr-x.  2 bobby bobby    46 Jun 30 19:59 .
+drwx------. 15 bobby bobby  4096 Jun 30 19:16 ..
+-rwxrwxr-x.  1 bobby bobby 13760 Jun 30 19:59 linkedlists
+-rw-rw-r--.  1 bobby bobby 15854 Jun 30 19:59 linkedlists.c
+[bobby@localhost inventoryarray]$
+
+started work on performance test outside nethack.
+
+/* test my current non-array version of
+autoletter_adjust_all() and get a performance
+baseline */
+
+int
+main()
+{
+    struct obj myobjs[3];
+
+    invent = myobjs;
+
+    myobjs[0].nobj = myobjs+1;
+    myobjs[0].invlet = 'a';
+    myobjs[0].nametype = "short sword";
+
+    myobjs[1].nobj = myobjs+2;
+    myobjs[1].invlet = 'b';
+    myobjs[1].nametype = "lamp";
+
+    myobjs[2].nobj = 0;
+    myobjs[2].invlet = 'c';
+    myobjs[2].nametype = "bag";
+
+
+    insert_autoletter('h',"bag", 1);
+    insert_autoletter('l',"lamp", 1);
+
+    autoletter_adjust_all();
+
+    autoletter_reorder_invent();
+
+    struct obj *obj;
+
+    for (obj = invent; obj; obj = obj->nobj) {
+        printf("invlet = %c\n",obj->invlet);
+        printf("nametype = %s\n",obj->nametype);
+    }
+
+    return 0;
+}
+
+[bobby@localhost inventoryarray]$ ./linkedlists
+Adjusting lamp to letter l.
+Adjusting bag to letter h.
+invlet = a
+nametype = short sword
+invlet = h
+nametype = bag
+invlet = l
+nametype = lamp
+
+need to get rid of the "Adjusting ..." output
+and setup a larger object list and 
+run autoletter_adjust_all bunch of times.
+
+Then rewrite it all with inventory array
+and see if it is faster and works.
+
+
+
