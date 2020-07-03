@@ -2692,3 +2692,74 @@ autoletter_relink()
 
 need to go over the algorithm and make sure the if's and brackets all match correctly.
 
+7/3/2020
+
+put this all together quickly. Need to check error handling and
+clean up the comments.
+
+Also need to make sure this will work correctly with gold $ in the
+inventory list.
+
+stick this somewhere:
+
+for (obj = invent; obj; obj = obj->nobj)
+    write_debug_file_obj(obj);
+
+
+stuck in restore.c
+
+    /* Bobby Durrett - added to apply autoletter options after
+       game restore. */
+       
+    struct obj *obj;
+
+    for (obj = invent; obj; obj = obj->nobj)
+        write_debug_file_obj(obj);
+
+    autoletter_adjust_all();
+
+    autoletter_reorder_invent();
+
+    return TRUE;
+}
+
+Inventory letter = $
+No object name
+In inventory
+object type number = 415
+Object class name = gold piece
+Object class description = (null)
+simple_typename(obj->otyp) = coin
+cxname_singular(obj) = gold piece
+autoletter_name_type(obj) = gold piece
+Inventory letter = a
+No object name
+In inventory
+object type number = 57
+Object class name = mace
+Object class description = (null)
+simple_typename(obj->otyp) = mace
+cxname_singular(obj) = mace
+autoletter_name_type(obj) = mace
+
+Like I thought first entry is $
+
+finished writing relink code.
+
+Not really working.
+
+[bobby@localhost inventoryarray]$ ./array
+invlet = a
+nametype = Stormbringer
+invlet = b
+nametype = blindfold
+invlet = c
+nametype = dagger
+invlet = d
+nametype = ring of teleport control
+
+only gets the first 4 elements.
+
+So, need to debug. 
+
+At least it is all written down.
