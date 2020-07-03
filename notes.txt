@@ -2884,5 +2884,45 @@ letter there?
 
 added code for == priority and notifications
 
+some weird freaking stuff with save files and 
+oil and magic lamp.
 
+start in this situation:
+
+e - an uncursed oil lamp
+l - a cursed magic lamp
+
+save and restore game - my normal options
+
+this feedback:
+
+Restoring save file...  Adjusting magic lamp to letter l.--More--
+
+still
+
+e - an uncursed oil lamp
+l - a cursed magic lamp
+
+#adjust e to m - letter after l
+
+now is
+
+l - a cursed magic lamp
+m - an uncursed oil lamp
+
+save and restore game
+
+no message and back to this:
+
+e - an uncursed oil lamp
+l - a cursed magic lamp
+
+Hmm.
+
+Seems to be a lot of work needed testing.
+
+Yikes.
+
+Need to move the autoletter_adjust_all code into
+functions so it is not so large and hard to follow.
 
