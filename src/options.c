@@ -7562,6 +7562,68 @@ autoletter_relink()
 /*
 
 void
+not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
+
+Process one inventory object given that it is not in the
+autoletter array and the target element in the inventory
+array is filled.
+
+*/
+
+void
+not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
+{
+    /* target not empty */
+
+    if (autoletter_inventory[inv_index].desired_letter != '\0') {
+
+        /* else if the object in the slot has a priority and desired letter -
+           meaning it was set by a autoletter object then */
+
+        /* put the current object in the nearest empty letter entry and
+           change the object's letter to the letter for that slot */
+
+        int close_empty = find_empty(inv_index);
+
+        /* exit if impossible condition happens */
+
+        if (close_empty < 0)
+            return;
+
+        autoletter_inventory[close_empty].obj = obj;
+
+        obj->invlet = autoletter_inventory_letter(close_empty);
+    } /* case where target was put there my autoletter option */
+    else {
+
+        /* else if the object in the slot has zeros for priority and letter then it was just put there
+        by some autoletter switch so then */
+
+        /* move the object in the slot to the nearest empty letter and change its letter to match
+        the new slot */
+
+        int close_empty = find_empty(inv_index);
+
+        /* exit if impossible condition happens */
+
+        if (close_empty < 0)
+            return;
+
+        struct obj *moved_obj = autoletter_inventory[inv_index].obj;
+
+        autoletter_inventory[close_empty].obj = moved_obj;
+
+        moved_obj->invlet = autoletter_inventory_letter(close_empty);
+
+        /* put the current object in the now empty slot and leave its letter unchanged. */
+
+        autoletter_inventory[inv_index].obj = obj;
+    } /* case where target not an autoletter option and want to keep letter for current obj */
+}
+
+/*
+
+void
 not_in_array(struct obj *obj, int obj_index)
 
 Process one inventory object given that it is not in the
@@ -7584,52 +7646,9 @@ not_in_array(struct obj *obj, int obj_index)
         autoletter_inventory[inv_index].obj = obj;
     } /* end of case where target is empty */
     else {
-        /* target not empty */
 
-        if (autoletter_inventory[inv_index].desired_letter != '\0') {
+        not_in_array_target_not_empty(obj, obj_index, inv_index);
 
-            /* else if the object in the slot has a priority and desired letter -
-               meaning it was set by a autoletter object then */
-
-            /* put the current object in the nearest empty letter entry and
-               change the object's letter to the letter for that slot */
-
-            int close_empty = find_empty(inv_index);
-
-            /* exit if impossible condition happens */
-
-            if (close_empty < 0)
-                return;
-
-            autoletter_inventory[close_empty].obj = obj;
-
-            obj->invlet = autoletter_inventory_letter(close_empty);
-        } /* case where target was put there my autoletter option */
-        else {
-
-            /* else if the object in the slot has zeros for priority and letter then it was just put there
-            by some autoletter switch so then */
-
-            /* move the object in the slot to the nearest empty letter and change its letter to match
-            the new slot */
-
-            int close_empty = find_empty(inv_index);
-
-            /* exit if impossible condition happens */
-
-            if (close_empty < 0)
-                return;
-
-            struct obj *moved_obj = autoletter_inventory[inv_index].obj;
-
-            autoletter_inventory[close_empty].obj = moved_obj;
-
-            moved_obj->invlet = autoletter_inventory_letter(close_empty);
-
-            /* put the current object in the now empty slot and leave its letter unchanged. */
-
-            autoletter_inventory[inv_index].obj = obj;
-        } /* case where target not an autoletter option and want to keep letter for current obj */
     } /* case where target not empty */
 }
 
