@@ -946,8 +946,8 @@ struct obj *obj;
     carry_obj_effects(obj); /* carrying affects the obj */
 
     /* Bobby Durrett autoletter */
-    autoletter_adjust(obj);
-    autoletter_reorder_invent();
+
+    autoletter_adjust_all();
 
     update_inventory();
     return obj;
@@ -1162,8 +1162,6 @@ register struct obj *obj;
     /* Bobby Durrett apply autoletter options after removing obj */
 
     autoletter_adjust_all();
-
-    autoletter_reorder_invent();
 
     /* end autoletter */
 
@@ -2393,8 +2391,6 @@ boolean learning_id; /* true if we just read unknown identify scroll */
        several items identified */
 
     autoletter_adjust_all();
-
-    autoletter_reorder_invent();
 
     update_inventory();
 }
@@ -4479,21 +4475,5 @@ boolean as_if_seen;
     }
     return n;
 }
-
-/* Bobby Durrett autoletter routine
-
-void
-autoletter_reorder_invent()
-
-Reorder the inventory after swapping letters around.
-
-*/
-
-void
-autoletter_reorder_invent()
-{
-    reorder_invent();
-}
-
 
 /*invent.c*/

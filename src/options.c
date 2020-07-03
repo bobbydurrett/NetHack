@@ -6976,6 +6976,21 @@ typedef struct autoletter_struct {
 static autoletter_type autoletter_array[MAX_AUTO_OPTIONS]; /* Simple unordered array of options */
 static int num_autoletter = 0;                             /* Number of options inserted into array */
 
+/* Number of letters a-zA-Z */
+
+#define NUM_LETTERS 52
+
+typedef struct inventory_struct {
+    struct obj *obj;                                    /* pointer to inventory object */
+    char desired_letter;                                /* letter that autoletter wants to assign to obj */
+    int priority;                                       /* priority if there are multiple entries same letter 1 highest */
+    boolean autoletter_changed;                         /* true if object letter changed based on autoletter option */
+} inventory_type;
+
+static inventory_type autoletter_inventory[NUM_LETTERS];  /* One entry per inventory letter */
+
+static int next_empty = 0;                                /* Index of next empty entry in inventory array */
+
 /* functions to save, lookup, etc. from array. */
 
 /*
@@ -7366,35 +7381,6 @@ add_autoletter(char *opts)
 
 /*
 
-boolean
-autoletter_should_swap(int priority, struct obj *has_obj)
-
-Returns TRUE if obj has a higher priority than has_obj.
-For now just look at priorities. Only make the switch
-if the new object has a higher priority.
-
-*/
-
-boolean
-autoletter_should_swap(int priority, struct obj *has_obj)
-{
-    /* lookup has_obj to see if it is in the autoletter array */
-
-    int has_index = lookup_autoletter(autoletter_name_type(has_obj));
-
-    /* if has_obj is not in array then we should swap it */
-
-    if (has_index < 0)
-        return TRUE;
-
-    /* should swap if the object's priority is lower number
-       (higher priority) than the object that has the letter now */
-
-    return priority < autoletter_array[has_index].priority;
-}
-
-/*
-
 void
 autoletter_notify(struct obj *obj ,char letter)
 
@@ -7418,96 +7404,161 @@ autoletter_notify(struct obj *obj ,char letter)
 
 /*
 
-void
-autoletter_swap(struct obj *obj ,char letter, int priority)
+int
+autoletter_inventory_index(char letter)
 
-Swap with another object if one already has the letter.
-Compare priority if is also in autoletter array.
+returns the index into autoletter_inventory for the given letter
+
+just return 0 if not an alpha letter.
 
 */
 
-void
-autoletter_swap(struct obj *obj ,char letter, int priority)
+int
+autoletter_inventory_index(char letter)
 {
-    /* see if an object in the inventory already has invlet == letter */
-
-    struct obj *otmp,*has_obj;
-    boolean found_letter = FALSE;
-
-
-    for (otmp = invent; otmp; otmp = otmp->nobj)
-        if (otmp->invlet == letter) {
-            found_letter = TRUE;
-            has_obj = otmp;
-            break;
-        }
-
-    /* handle case where an object with invlet == letter */
-
-    if (found_letter) {
-        /* swap letters if obj has higher priority than has_obj */
-        if (autoletter_should_swap(priority, has_obj)) {
-            has_obj->invlet = obj->invlet;
-            obj->invlet = letter;
-            autoletter_notify(obj ,letter);
-        }
-    }
-    else {
-        /* just set invlet to letter for obj */
-        obj->invlet = letter;
-        autoletter_notify(obj ,letter);
-    }
-
+    if (islower(letter))
+        return letter - 'a';
+    else if (isupper(letter))
+        return (letter - 'A') + 26;
+    else
+        return 0;
 }
 
 /*
 
-void
-autoletter_adjust(struct obj *obj)
+int
+find_empty(int inv_index)
 
-Takes an object obj that is already in the user's inventory
-and applies the autoletter options to adjust the object
-to the desired letter.
+find the next empty autoletter_inventory entry
 
-Does not reorder the inventory list after swapping.
+uses static next_empty
 
-Use
-
-void
-autoletter_reorder_invent()
-
-for that.
+returns -1 on failure which should not happen
 
 */
 
-void
-autoletter_adjust(struct obj *obj)
+int
+find_empty(int inv_index)
 {
-    /* Get name or type of object */
+    for (; next_empty < NUM_LETTERS ; next_empty++)
+        if (autoletter_inventory[next_empty].obj == 0)
+            return next_empty;
 
-    char *object_type_or_name = autoletter_name_type(obj);
+    /* should never get here */
 
-    /* look up the object name or type to see if we
-       have a matching autoletter option */
+    return -1;
+}
 
-    int obj_index = lookup_autoletter(object_type_or_name);
+/*
 
-    /* set to found letter if appropriate */
+char
+autoletter_inventory_letter(int index)
 
-    char letter;
-    int priority;
+returns the letter associated with the given index into
+autoletter_inventory
 
-    if (obj_index >= 0) {
-        letter = autoletter_array[obj_index].letter;
+*/
 
-        /* Only swap if obj does not already have desired letter */
+char
+autoletter_inventory_letter(int index)
+{
+    if ((index >= 0) && (index < (NUM_LETTERS / 2)))
+        return index + 'a';
+    else if ((index >= (NUM_LETTERS / 2)) && (index < NUM_LETTERS))
+        return index - 26 + 'A';
+    else
+        return '\0';
+}
 
-        if (obj->invlet != letter) {
-            priority = autoletter_array[obj_index].priority;
-            autoletter_swap(obj ,letter, priority);
+
+/*
+
+void
+autoletter_relink()
+
+Loop through the autoletter_inventory array skipping any empty entry and
+relink the entire inventory linked list based on the order they appear in the array.
+
+Skip gold entry if there is one. Should be first entry.
+
+Output a notice for any entry with autoletter_changed true. */
+
+void
+autoletter_relink()
+{
+    int curr_entry;
+
+    /* first first non-empty entry */
+
+    for (curr_entry = 0; curr_entry < NUM_LETTERS ; curr_entry++) {
+        if (autoletter_inventory[curr_entry].obj != 0)
+            break;
+    }
+
+    /* check for empty array */
+
+    if (curr_entry >= NUM_LETTERS)
+        return;
+
+    /* curr_entry is first element at this point
+       use last_updated for rest of loop below */
+
+    struct obj *last_updated = autoletter_inventory[curr_entry].obj;
+
+    /* notify that letter changed based on autoletter */
+
+    if (autoletter_inventory[curr_entry].autoletter_changed) {
+        autoletter_notify(last_updated, last_updated->invlet);
+    }
+
+    /* point to first entry */
+
+    if (invent->invlet == '$') {
+
+        /* point gold object next pointer to first letter object */
+
+        invent->nobj = last_updated;
+
+    } else {
+
+        /* set invent to pointer to first letter object */
+
+        invent = last_updated;
+    }
+
+    /* loop through the rest of the array linking in
+    the rest of the elements. Keep track of the last one
+    used */
+
+    for (curr_entry++; curr_entry < NUM_LETTERS ; curr_entry++) {
+
+        /* curr_entry is next object */
+
+        struct obj *next_obj = autoletter_inventory[curr_entry].obj;
+
+        if (next_obj != 0) {
+
+            /* link previous object with current one */
+
+            last_updated->nobj = next_obj;
+
+            /* advance current object to previous for next loop */
+
+            last_updated = next_obj;
+
+            /* notify that letter changed based on autoletter */
+
+            if (autoletter_inventory[curr_entry].autoletter_changed) {
+                autoletter_notify(last_updated, last_updated->invlet);
+            }
         }
     }
+
+    /* add null to last pointer to end list */
+
+    last_updated->nobj = 0;
 }
+
 
 /*
 
@@ -7524,14 +7575,257 @@ Does not reorder the inventory list after swapping.
 void
 autoletter_adjust_all()
 {
-    struct obj *obj;
+    /* set autoletter_changed to false for entire array and put 0 or NULL in all
+    entries. */
+
     int i;
 
-    /* loop through the objects in the newly created inventory twice */
+    for (i = 0 ; i < NUM_LETTERS ; i++) {
+        autoletter_inventory[i].obj = 0;
+        autoletter_inventory[i].desired_letter = '\0';
+        autoletter_inventory[i].priority = 0;
+        autoletter_inventory[i].autoletter_changed = FALSE;
+    }
 
-    for (i = 0; i < 2 ; i++)
-        for (obj = invent; obj; obj = obj->nobj)
-            autoletter_adjust(obj);
+    /* Loop through the inventory looking at each a-zA-Z lettered object. */
+
+    struct obj *obj;
+
+    for (obj = invent; obj; obj = obj->nobj)
+        /* skip $ */
+        if (isalpha(obj->invlet)) {
+            /* lookup current object in autoletter_array */
+
+            /* Get name or type of object */
+
+            char *object_type_or_name = autoletter_name_type(obj);
+
+            /* look up the object name or type to see if we
+            have a matching autoletter option */
+
+            int obj_index = lookup_autoletter(object_type_or_name);
+
+            /* if not in array */
+
+            if (obj_index < 0) {
+
+                /* if the autoletter_inventory entry for that object's letter is empty */
+
+                int inv_index = autoletter_inventory_index(obj->invlet);
+
+                if (autoletter_inventory[inv_index].obj == 0) {
+
+                    /* put that object (pointer) in the entry. object letter is unchanged. */
+
+                    autoletter_inventory[inv_index].obj = obj;
+                } /* end of case where target is empty */
+                else {
+                    /* target not empty */
+
+                    if (autoletter_inventory[inv_index].desired_letter != '\0') {
+
+                        /* else if the object in the slot has a priority and desired letter -
+                           meaning it was set by a autoletter object then */
+
+                        /* put the current object in the nearest empty letter entry and
+                           change the object's letter to the letter for that slot */
+
+                        int close_empty = find_empty(inv_index);
+
+                        /* exit if impossible condition happens */
+
+                        if (close_empty < 0)
+                            return;
+
+                        autoletter_inventory[close_empty].obj = obj;
+
+                        obj->invlet = autoletter_inventory_letter(close_empty);
+                    } /* case where target was put there my autoletter option */
+                    else {
+
+                        /* else if the object in the slot has zeros for priority and letter then it was just put there
+                        by some autoletter switch so then */
+
+                        /* move the object in the slot to the nearest empty letter and change its letter to match
+                        the new slot */
+
+                        int close_empty = find_empty(inv_index);
+
+                        /* exit if impossible condition happens */
+
+                        if (close_empty < 0)
+                            return;
+
+                        struct obj *moved_obj = autoletter_inventory[inv_index].obj;
+
+                        autoletter_inventory[close_empty].obj = moved_obj;
+
+                        moved_obj->invlet = autoletter_inventory_letter(close_empty);
+
+                        /* put the current object in the now empty slot and leave its letter unchanged. */
+
+                        autoletter_inventory[inv_index].obj = obj;
+                    } /* case where target not an autoletter option and want to keep letter for current obj */
+                } /* case where target not empty */
+            } /* end of not in autoletter array condition */
+            else {
+                /* else if object is in autoletter_array then */
+
+                char letter = autoletter_array[obj_index].letter;
+                int priority = autoletter_array[obj_index].priority;
+
+                int inv_index = autoletter_inventory_index(letter);
+
+                if (autoletter_inventory[inv_index].obj == 0) {
+
+                    /* if autoletter_inventory entry for the desired letter is empty then */
+
+                    /* put the object in the slot for the desired letter */
+
+                    autoletter_inventory[inv_index].obj = obj;
+                    autoletter_inventory[inv_index].desired_letter = letter;
+                    autoletter_inventory[inv_index].priority = priority;
+
+                    /* if the object's letter does not match the desired letter then */
+
+                    if ((obj->invlet) != letter) {
+
+                        /* change the object's letter to that letter */
+
+                        obj->invlet = letter;
+
+                        /* set autoletter_changed to True */
+
+                        autoletter_inventory[inv_index].autoletter_changed = TRUE;
+                    }
+
+                } /* target empty */
+                else {
+
+                    /* else if the autoletter_inventory has an existing entry then */
+
+                    /* if the existing object has no desired letter (not in autoletter_array) then */
+
+                    if (autoletter_inventory[inv_index].desired_letter == '\0') {
+
+                        /* move the existing object in the autoletter_inventory slot for the
+                        desired letter to the closest empty slot and set the object's letter
+                        to that slot's letter */
+
+                        int close_empty = find_empty(inv_index);
+
+                        /* exit if impossible condition happens */
+
+                        if (close_empty < 0)
+                            return;
+
+                        struct obj *moved_obj = autoletter_inventory[inv_index].obj;
+
+                        autoletter_inventory[close_empty].obj = moved_obj;
+
+                        moved_obj->invlet = autoletter_inventory_letter(close_empty);
+
+                        /* put the current object in the in the entry and change the object's
+                        letter to the desired letter */
+
+                        autoletter_inventory[inv_index].obj = obj;
+                        autoletter_inventory[inv_index].desired_letter = letter;
+                        autoletter_inventory[inv_index].priority = priority;
+
+                        /* if the object's letter does not match the desired letter then */
+
+                        if ((obj->invlet) != letter) {
+
+                            /* change the object's letter to that letter */
+
+                            obj->invlet = letter;
+
+                            /* set autoletter_changed to True */
+
+                            autoletter_inventory[inv_index].autoletter_changed = TRUE;
+                        } /* letter changed by autoletter */
+                    } else {
+                        /* current object was put there by autoletter */
+
+                        /* else if current object has higher priority (lower number) than existing object then */
+
+                        if (priority < autoletter_inventory[inv_index].priority) {
+
+                            /* move the existing object in the autoletter_inventory slot for the desired letter to
+                               the closest empty slot and set the object's letter to that slot's letter */
+
+                            int close_empty = find_empty(inv_index);
+
+                            /* exit if impossible condition happens */
+
+                            if (close_empty < 0)
+                                return;
+
+                            struct obj *moved_obj = autoletter_inventory[inv_index].obj;
+
+                            autoletter_inventory[close_empty].obj = moved_obj;
+
+                            moved_obj->invlet = autoletter_inventory_letter(close_empty);
+
+                            autoletter_inventory[close_empty].desired_letter = autoletter_inventory[inv_index].desired_letter;
+                            autoletter_inventory[close_empty].priority = autoletter_inventory[inv_index].priority;
+
+                            /* set the moved object's autoletter_changed to false */
+
+                            autoletter_inventory[close_empty].autoletter_changed = FALSE;
+
+                            /* put the current object in the in the entry and change the object's letter to the
+                            desired letter and set autoletter_changed to True if that object's letter was not already
+                            the desired letter */
+
+                            autoletter_inventory[inv_index].obj = obj;
+                            autoletter_inventory[inv_index].desired_letter = letter;
+                            autoletter_inventory[inv_index].priority = priority;
+
+                            /* if the object's letter does not match the desired letter then */
+
+                            if ((obj->invlet) != letter) {
+
+                                /* change the object's letter to that letter */
+
+                                obj->invlet = letter;
+
+                                /* set autoletter_changed to True */
+
+                                autoletter_inventory[inv_index].autoletter_changed = TRUE;
+                            }
+                        } else {
+
+                            /* else if the current object has a lower priority than the existing object then. */
+
+                            /* put the object in the nearest empty letter entry and change the object's letter
+                            to the letter for that slot */
+
+                            int close_empty = find_empty(inv_index);
+
+                            /* exit if impossible condition happens */
+
+                            if (close_empty < 0)
+                                return;
+
+                            autoletter_inventory[close_empty].obj = obj;
+
+                            obj->invlet = autoletter_inventory_letter(close_empty);
+
+                            autoletter_inventory[close_empty].desired_letter = letter;
+                            autoletter_inventory[close_empty].priority = priority;
+                        } /* new object has worse priority than existing one */
+                    } /* target entry has object put there by autoletter */
+                } /* target not empty */
+            } /* obj in autoletter array */
+        }
+
+    /* After the first loop is done loop through the autoletter_inventory array skipping any empty entry and
+    relinking the entire inventory linked list based on the order they appear in the array.
+
+    Output a notice for any entry with autoletter_changed true. */
+
+    autoletter_relink();
 }
 
 /*options.c*/

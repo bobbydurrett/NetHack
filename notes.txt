@@ -2763,3 +2763,97 @@ only gets the first 4 elements.
 So, need to debug. 
 
 At least it is all written down.
+
+first perf run
+
+[bobby@localhost inventoryarray]$ time ./array
+
+real    0m8.587s
+user    0m8.582s
+sys     0m0.001s
+
+8.5 microseconds
+
+want to fix next empty.
+
+old version
+
+/*
+
+int
+find_close_empty(int inv_index)
+
+find the closest empty autoletter_inventory entry
+relative to the inv_index location
+
+need to rewrite this to make a single pass from the beginning
+no entry is ever emptied so just keep track of the last empty
+location and move down to the next one.
+
+change to find_empty instead off find_close_empty
+
+*/
+
+int
+find_close_empty(int inv_index)
+{
+    int down;
+    int up;
+    int increment;
+
+    for (increment = 1 ; increment < (NUM_LETTERS / 2) ; increment++) {
+        down = inv_index - increment;
+        up = inv_index + increment;
+
+        if (down >= 0)
+            if (autoletter_inventory[down].obj == 0)
+                return down;
+
+        if (up < NUM_LETTERS)
+            if (autoletter_inventory[up].obj == 0)
+                return up;
+    }
+
+    /* should never get here */
+
+    return 0;
+}
+
+[bobby@localhost inventoryarray]$ time ./array
+
+real    0m8.556s
+user    0m8.551s
+sys     0m0.000s
+
+not a ton faster with the new find_empty.
+
+[bobby@localhost bobbyhack]$ git log
+commit 2b38d3cbb360b7bd634930b723e237ec49323716
+Author: bobbydurrett <bobby@bobbydurrettdba.com>
+Date:   Fri Jul 3 07:41:18 2020 -0700
+
+    updated status
+
+Last commit before this mega change.
+
+removing
+
+autoletter_adjust
+autoletter_swap
+autoletter_should_swap
+autoletter_reorder_invent
+
+replace these typical uses:
+
+invent.c:    autoletter_adjust_all();
+invent.c:    autoletter_reorder_invent();
+
+invent.c:    autoletter_adjust(obj);
+invent.c:    autoletter_reorder_invent();
+
+with
+
+autoletter_adjust_all();
+
+pretty much works. Needs more testing to verify all the cases.
+

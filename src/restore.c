@@ -714,8 +714,6 @@ unsigned int *stuckid, *steedid;
 
     autoletter_adjust_all();
 
-    autoletter_reorder_invent();
-
     return TRUE;
 }
 

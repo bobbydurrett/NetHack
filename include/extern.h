@@ -1072,10 +1072,6 @@ E void FDECL(carry_obj_effects, (struct obj *));
 E const char *FDECL(currency, (long));
 E void FDECL(silly_thing, (const char *, struct obj *));
 
-/* Bobby Durrett autoletter */
-
-E void NDECL(autoletter_reorder_invent);
-
 /* ### ioctl.c ### */
 
 #if defined(UNIX) || defined(__BEOS__)
@@ -1832,7 +1828,6 @@ E boolean FDECL(add_autoletter, (char *));
 E int NDECL(num_autoletter_options);
 E boolean FDECL(get_autoletter, (int, char *, char *, int *));
 E int FDECL(lookup_autoletter, (char *));
-E void FDECL(autoletter_adjust, (struct obj *));
 E void NDECL(autoletter_adjust_all);
 
 /* ### pager.c ### */
