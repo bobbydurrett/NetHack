@@ -2660,5 +2660,35 @@ about 18 microseconds per loop
 
 will using an inventory array be faster, cleaner?
 
+changed blindfold to X
 
+[bobby@localhost inventoryarray]$ time ./linkedlists
+
+real    0m17.501s
+user    0m17.493s
+sys     0m0.000s
+
+
+rewrote autoletter_adjust_all.
+
+still need to write
+
+/*
+
+void
+autoletter_relink()
+
+Loop through the autoletter_inventory array skipping any empty entry and
+relink the entire inventory linked list based on the order they appear in the array.
+
+Skip gold entry if there is one.
+
+Output a notice for any entry with autoletter_changed true. */
+
+void
+autoletter_relink()
+{
+}
+
+need to go over the algorithm and make sure the if's and brackets all match correctly.
 
