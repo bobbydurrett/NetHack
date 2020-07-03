@@ -7794,7 +7794,7 @@ autoletter_adjust_all()
 
                                 autoletter_inventory[inv_index].autoletter_changed = TRUE;
                             }
-                        } else {
+                        } else if (priority > autoletter_inventory[inv_index].priority) {
 
                             /* else if the current object has a lower priority than the existing object then. */
 
@@ -7814,7 +7814,71 @@ autoletter_adjust_all()
 
                             autoletter_inventory[close_empty].desired_letter = letter;
                             autoletter_inventory[close_empty].priority = priority;
-                        } /* new object has worse priority than existing one */
+                        } else if (priority == autoletter_inventory[inv_index].priority) {
+
+                            /* existing object has same priority as new one */
+
+                            if ((obj->invlet) == letter) {
+
+                                /* new object already has the letter so keep it
+                                   same as priority < case */
+                                /* move the existing object in the autoletter_inventory slot for the desired letter to
+                                   the closest empty slot and set the object's letter to that slot's letter */
+
+                                int close_empty = find_empty(inv_index);
+
+                                /* exit if impossible condition happens */
+
+                                if (close_empty < 0)
+                                    return;
+
+                                struct obj *moved_obj = autoletter_inventory[inv_index].obj;
+
+                                autoletter_inventory[close_empty].obj = moved_obj;
+
+                                moved_obj->invlet = autoletter_inventory_letter(close_empty);
+
+                                autoletter_inventory[close_empty].desired_letter = autoletter_inventory[inv_index].desired_letter;
+                                autoletter_inventory[close_empty].priority = autoletter_inventory[inv_index].priority;
+
+                                /* set the moved object's autoletter_changed to false */
+
+                                autoletter_inventory[close_empty].autoletter_changed = FALSE;
+
+                                /* put the current object in the in the entry and change the object's letter to the
+                                desired letter and set autoletter_changed to True if that object's letter was not already
+                                the desired letter */
+
+                                autoletter_inventory[inv_index].obj = obj;
+                                autoletter_inventory[inv_index].desired_letter = letter;
+                                autoletter_inventory[inv_index].priority = priority;
+
+                                /* since object already has the desired letter do not notify of a change */
+
+                                autoletter_inventory[inv_index].autoletter_changed = FALSE;
+                            } else {
+
+                                /* new object was not already on the letter
+                                   same as priority > case */
+
+                                /* put the object in the nearest empty letter entry and change the object's letter
+                                to the letter for that slot */
+
+                                int close_empty = find_empty(inv_index);
+
+                                /* exit if impossible condition happens */
+
+                                if (close_empty < 0)
+                                    return;
+
+                                autoletter_inventory[close_empty].obj = obj;
+
+                                obj->invlet = autoletter_inventory_letter(close_empty);
+
+                                autoletter_inventory[close_empty].desired_letter = letter;
+                                autoletter_inventory[close_empty].priority = priority;
+                            } /* not already on letter */
+                        } /* same priority */
                     } /* target entry has object put there by autoletter */
                 } /* target not empty */
             } /* obj in autoletter array */

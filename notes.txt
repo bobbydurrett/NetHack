@@ -2857,3 +2857,32 @@ autoletter_adjust_all();
 
 pretty much works. Needs more testing to verify all the cases.
 
+failed:
+
+wished for lamp
+
+identified as oil lamp
+
+wished for magic lamp (unidentified)
+
+                               Tools
+                               e - an uncursed oil lamp
+                               l - a lamp
+ 
+switched
+ 
+      Adjusting lamp to letter l.  l - a lamp.
+      For what do you wish? magic lamp
+      l - an uncursed oil lamp.
+      Adjusting lamp to letter l.  l - a lamp.
+      For what do you wish? lamp
+
+I think this is due to the order that these are in the list
+
+may need a tweak to autoletter_adjust_all to keep the previous
+letter there?
+
+added code for == priority and notifications
+
+
+
