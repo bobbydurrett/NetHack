@@ -2644,5 +2644,21 @@ run autoletter_adjust_all bunch of times.
 Then rewrite it all with inventory array
 and see if it is faster and works.
 
+setup my test to do my 36 item inventory from
+alt org and to use my real options
+
+ran 1000000 loops:
+
+[bobby@localhost inventoryarray]$ gcc -o linkedlists linkedlists.c -Wall
+[bobby@localhost inventoryarray]$ time ./linkedlists
+
+real    0m17.946s
+user    0m17.829s
+sys     0m0.015s
+
+about 18 microseconds per loop
+
+will using an inventory array be faster, cleaner?
+
 
 
