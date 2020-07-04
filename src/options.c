@@ -7573,6 +7573,8 @@ array is filled.
 void
 not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
 {
+    write_debug_file("not_in_array_target_not_empty\n");
+
     /* target not empty */
 
     if (autoletter_inventory[inv_index].desired_letter != '\0') {
@@ -7635,6 +7637,8 @@ to a letter based on the autoletter options.
 void
 not_in_array(struct obj *obj, int obj_index)
 {
+    write_debug_file("not_in_array\n");
+
     /* if the autoletter_inventory entry for that object's letter is empty */
 
     int inv_index = autoletter_inventory_index(obj->invlet);
@@ -7670,6 +7674,8 @@ array.
 void
 in_array_target_autoletter_higher(struct obj *obj, int obj_index, int inv_index, char letter, int priority)
 {
+    write_debug_file("in_array_target_autoletter_higher\n");
+
     /* move the existing object in the autoletter_inventory slot for the desired letter to
        the closest empty slot and set the object's letter to that slot's letter */
 
@@ -7712,7 +7718,13 @@ in_array_target_autoletter_higher(struct obj *obj, int obj_index, int inv_index,
         /* set autoletter_changed to True */
 
         autoletter_inventory[inv_index].autoletter_changed = TRUE;
+    } else {
+
+        /* clear if set to TRUE by previous occupant */
+
+        autoletter_inventory[inv_index].autoletter_changed = FALSE;
     }
+
 }
 
 /*
@@ -7733,6 +7745,8 @@ array.
 void
 in_array_target_autoletter_lower(struct obj *obj, int obj_index, int inv_index, char letter, int priority)
 {
+    write_debug_file("in_array_target_autoletter_lower\n");
+
     /* else if the current object has a lower priority than the existing object then. */
 
     /* put the object in the nearest empty letter entry and change the object's letter
@@ -7771,6 +7785,8 @@ array.
 void
 in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, char letter, int priority)
 {
+    write_debug_file("in_array_target_autoletter_equal\n");
+
     /* existing object has same priority as new one */
 
     if ((obj->invlet) == letter) {
@@ -7849,6 +7865,8 @@ type is in the autoletter array.
 void
 in_array_target_autoletter(struct obj *obj, int obj_index, int inv_index, char letter, int priority)
 {
+    write_debug_file("in_array_target_autoletter\n");
+
     /* current object was put there by autoletter */
 
     /* else if current object has higher priority (lower number) than existing object then */
@@ -7881,6 +7899,8 @@ autoletter array and the target element of the inventory array is occupied.
 void
 in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index, char letter, int priority)
 {
+    write_debug_file("in_array_target_not_empty\n");
+
     /* else if the autoletter_inventory has an existing entry then */
 
     /* if the existing object has no desired letter (not in autoletter_array) then */
@@ -7945,6 +7965,8 @@ is another object of higher or equal priority already there
 void
 in_array(struct obj *obj, int obj_index)
 {
+    write_debug_file("in_array\n");
+
     /* else if object is in autoletter_array then */
 
     char letter = autoletter_array[obj_index].letter;
@@ -7998,6 +8020,8 @@ Does not reorder the inventory list after swapping.
 void
 autoletter_adjust_all()
 {
+    write_debug_file("autoletter_adjust_all\n");
+
     /* set autoletter_changed to false for entire array and put 0 or NULL in all
     entries. */
 
@@ -8017,6 +8041,7 @@ autoletter_adjust_all()
     for (obj = invent; obj; obj = obj->nobj)
         /* skip $ */
         if (isalpha(obj->invlet)) {
+
             /* lookup current object in autoletter_array */
 
             /* Get name or type of object */
