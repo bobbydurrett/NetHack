@@ -6989,7 +6989,7 @@ typedef struct inventory_struct {
 
 static inventory_type autoletter_inventory[NUM_LETTERS];  /* One entry per inventory letter */
 
-static int next_empty = 0;                                /* Index of next empty entry in inventory array */
+static int next_empty;                                    /* Index of next empty entry in inventory array */
 
 /* functions to save, lookup, etc. from array. */
 
@@ -8021,6 +8021,10 @@ autoletter_adjust_all()
         autoletter_inventory[i].priority = 0;
         autoletter_inventory[i].autoletter_changed = FALSE;
     }
+
+    /* Set empty starting point to first element of inventory array. */
+
+    next_empty = 0;
 
     /* Loop through the inventory looking at each a-zA-Z lettered object. Skip gold. */
 

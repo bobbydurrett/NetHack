@@ -2933,3 +2933,161 @@ updated comments
 seems to be working pretty well. Need to look 
 for other bugs.
 
+7/4/2020
+
+There is some bug where inventory gets lost.
+
+Was trying to fill inventory with lamps and suddenly only one was left!
+
+Test:
+
+start new game and drop all inventory.
+
+Then start wishing for lamp one after another.
+
+1
+
+l - a lamp
+
+2
+
+a - a lamp
+l - a lamp
+
+3
+
+a - a lamp
+b - a lamp
+l - a lamp
+
+4
+
+b - a lamp
+c - a lamp
+d - a lamp
+l - a lamp
+
+Why didn't lamp a stay in place?
+
+5
+
+d - a lamp
+e - a lamp
+f - a lamp
+g - a lamp
+l - a lamp
+
+Have we lost the first three slots?
+
+6
+
+g - a lamp
+h - a lamp
+i - a lamp
+j - a lamp
+k - a lamp
+l - a lamp
+
+7
+
+k - a lamp
+l - a lamp
+m - a lamp
+n - a lamp
+o - a lamp
+p - a lamp
+q - a lamp
+
+8
+
+l - a lamp
+q - a lamp
+r - a lamp
+s - a lamp
+t - a lamp
+u - a lamp
+v - a lamp
+w - a lamp
+
+9
+
+l - a lamp
+w - a lamp
+x - a lamp
+y - a lamp
+z - a lamp
+A - a lamp
+B - a lamp
+C - a lamp
+D - a lamp
+
+10
+
+l - a lamp
+D - a lamp
+E - a lamp
+F - a lamp
+G - a lamp
+H - a lamp
+I - a lamp
+J - a lamp
+K - a lamp
+L - a lamp
+
+11
+
+l - a lamp
+L - a lamp
+M - a lamp
+N - a lamp
+O - a lamp
+P - a lamp
+Q - a lamp
+R - a lamp
+S - a lamp
+T - a lamp
+U - a lamp
+
+12
+
+l - a lamp
+U - a lamp
+V - a lamp
+W - a lamp
+X - a lamp
+Y - a lamp
+Z - a lamp
+
+13
+
+Adjusting lamp to letter l.  l - a lamp.
+
+l - a lamp
+
+I think this is just a bug in the empty thing.
+
+Have to reset the start point. Funny.
+
+First 52 wishes worked well.
+
+But on the 53rd I get this:
+
+# - a lamp.
+
+But it is not in the list.
+
+same with wand of wishing
+
+This seems to be a bug I introduced.
+
+In 3.6.6 it gives this message:
+
+Oops!  The oil lamp drops to the floor!
+
+So, need to fix this so wishing for the 53rd lamp
+gives the Oops! message.
+
+
+
+
+
