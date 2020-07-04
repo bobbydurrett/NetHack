@@ -6991,6 +6991,8 @@ static inventory_type autoletter_inventory[NUM_LETTERS];  /* One entry per inven
 
 static int next_empty;                                    /* Index of next empty entry in inventory array */
 
+static struct obj *pound_obj;                             /* object with # inventory letter with full inventory */
+
 /* functions to save, lookup, etc. from array. */
 
 /*
@@ -7557,6 +7559,13 @@ autoletter_relink()
     /* add null to last pointer to end list */
 
     last_updated->nobj = 0;
+
+    /* add # object to end of list if it exists */
+
+    if (pound_obj != 0) {
+        last_updated->nobj = pound_obj;
+        pound_obj->nobj = 0;
+    }
 }
 
 /*
@@ -8026,12 +8035,16 @@ autoletter_adjust_all()
 
     next_empty = 0;
 
+    /* zero out pound object for inventory letter # */
+
+    pound_obj = 0;
+
     /* Loop through the inventory looking at each a-zA-Z lettered object. Skip gold. */
 
     struct obj *obj;
 
     for (obj = invent; obj; obj = obj->nobj)
-        /* skip $ */
+        /* skip $ and # */
         if (isalpha(obj->invlet)) {
 
             /* lookup current object in autoletter_array */
@@ -8057,6 +8070,11 @@ autoletter_adjust_all()
                 in_array(obj, obj_index);
 
             } /* obj in autoletter array */
+        } else if ((obj->invlet) == '#') {
+
+            /* extra object in full list */
+
+            pound_obj = obj;
         }
 
     /* After the first loop is done loop through the autoletter_inventory array skipping any empty entry and

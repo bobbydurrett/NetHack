@@ -3087,7 +3087,85 @@ Oops!  The oil lamp drops to the floor!
 So, need to fix this so wishing for the 53rd lamp
 gives the Oops! message.
 
+bobbyhack branch without autoletter merged in yet
+gives the same Oops! message so this is a bug
+we introduced with autoletter
 
+[bobby@localhost src]$ grep Oops! *.c | grep "to the floor"
+mkobj.c:                                          : "Oops!  %s to the floor!",
+zap.c:                            : "Oops!  %s to the floor!");
 
+mkobj.c
 
+            obj = hold_another_object(obj,
+                                      u.uswallow
+                                        ? "Oops!  %s out of your reach!"
+                                        : (Is_airlevel(&u.uz)
+                                           || Is_waterlevel(&u.uz)
+                                           || levl[u.ux][u.uy].typ < IRONBARS
+                                           || levl[u.ux][u.uy].typ >= ICE)
+                                          ? "Oops!  %s away from you!"
+                                          : "Oops!  %s to the floor!",
+                                      The(aobjnam(obj, "slip")), (char *) 0);
+
+zap.c in makewish()
+
+    /* KMH, conduct */
+    u.uconduct.wishes++;
+
+    if (otmp != &zeroobj) {
+        const char
+            *verb = ((Is_airlevel(&u.uz) || u.uinwater) ? "slip" : "drop"),
+            *oops_msg = (u.uswallow
+                         ? "Oops!  %s out of your reach!"
+                         : (Is_airlevel(&u.uz) || Is_waterlevel(&u.uz)
+                            || levl[u.ux][u.uy].typ < IRONBARS
+                            || levl[u.ux][u.uy].typ >= ICE)
+                            ? "Oops!  %s away from you!"
+                            : "Oops!  %s to the floor!");
+
+        /* The(aobjnam()) is safe since otmp is unidentified -dlc */
+        (void) hold_another_object(otmp, oops_msg,
+                                   The(aobjnam(otmp, verb)),
+                                   (const char *) 0);
+        u.ublesscnt += rn1(100, 50); /* the gods take notice */
+
+looks like hold_another_object does the actual check and pline
+
+invent.c
+
+        if (inv_cnt(FALSE) > 52 || ((obj->otyp != LOADSTONE || !obj->cursed)
+                                    && near_capacity() > prev_encumbr)) {
+            /* undo any merge which took place */
+            if (obj->quan > oquan)
+                obj = splitobj(obj, oquan);
+            goto drop_it;
+            
+hack.c
+
+int
+inv_cnt(incl_gold)
+boolean incl_gold;
+{
+    register struct obj *otmp = invent;
+    register int ct = 0;
+
+    while (otmp) {
+        if (incl_gold || otmp->invlet != GOLD_SYM)
+            ct++;
+        otmp = otmp->nobj;
+    }
+    return ct;
+}
+
+This all fails because this code depends on inventory temporarily going over
+52 and then being removed.
+
+Save # object in main loop and add back in relink.
+
+static struct obj *pound_obj; 
+
+fixed.
+
+just saved and added back # letter
 
