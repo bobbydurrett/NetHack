@@ -3183,3 +3183,48 @@ maybe # is at front
 gold_obj
 
 fixed.
+
+OPTIONS=autoletter:b:blindfold
+OPTIONS=autoletter:l:magic lamp:1
+OPTIONS=autoletter:l:lamp:2
+OPTIONS=autoletter:l:oil lamp:2
+OPTIONS=autoletter:l:brass lantern:2
+OPTIONS=autoletter:k:key
+OPTIONS=autoletter:k:skeleton key
+OPTIONS=autoletter:m:mirror
+OPTIONS=autoletter:m:looking glass
+OPTIONS=autoletter:w:magic whistle:1
+OPTIONS=autoletter:w:whistle:2
+OPTIONS=autoletter:p:pick-axe
+OPTIONS=autoletter:u:unicorn horn
+OPTIONS=autoletter:h:bag of holding:1
+OPTIONS=autoletter:h:oilskin sack:2
+OPTIONS=autoletter:h:sack:3
+OPTIONS=autoletter:h:bag:4
+
+adjusting and dropping and restoring
+does not give a message.
+
+gets adjusted as you drop them.
+
+got an infinite loop. Trying
+
+OPTIONS=autoletter:S:scroll of magic mapping
+
+two different groups of magic mapping scrolls
+neither of which are set to S
+
+hangs here
+
+Restoring save file...
+NetHack, Copyright 1985-2020
+         By Stichting Mathematisch Centrum and M. Stephenson.
+         Version 3.6.6-0 Unix post-release, built Jul  4 10:54:31 2020.
+         See license for details.
+
+Yikes!
+
+
+
+
+
