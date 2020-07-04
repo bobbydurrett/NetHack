@@ -7426,8 +7426,10 @@ autoletter_inventory_index(char letter)
         return letter - 'a';
     else if (isupper(letter))
         return (letter - 'A') + 26;
-    else
+    else {
+        pline("Invalid letter autoletter_inventory_index");
         return 0;
+    }
 }
 
 /*
@@ -7452,6 +7454,8 @@ find_empty(int inv_index)
 
     /* should never get here */
 
+    pline("No empty letter find_empty");
+
     return -1;
 }
 
@@ -7472,8 +7476,10 @@ autoletter_inventory_letter(int index)
         return index + 'a';
     else if ((index >= (NUM_LETTERS / 2)) && (index < NUM_LETTERS))
         return index - 26 + 'A';
-    else
+    else {
+        pline("Invalid index autoletter_inventory_letter");
         return '\0';
+    }
 }
 
 
