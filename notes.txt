@@ -2926,3 +2926,10 @@ Yikes.
 Need to move the autoletter_adjust_all code into
 functions so it is not so large and hard to follow.
 
+took out debugging
+
+updated comments
+
+seems to be working pretty well. Need to look 
+for other bugs.
+
