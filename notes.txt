@@ -3169,3 +3169,17 @@ fixed.
 
 just saved and added back # letter
 
+add inventory_count for sanity check.
+
+Inventory count mismatch in autoletter_relink
+
+got this will inventory full of lamps and gold pieces
+then wish for another lamp
+
+gold is being lost somehow
+
+maybe # is at front
+
+gold_obj
+
+fixed.

@@ -6993,6 +6993,10 @@ static int next_empty;                                    /* Index of next empty
 
 static struct obj *pound_obj;                             /* object with # inventory letter with full inventory */
 
+static struct obj *gold_obj;                              /* object with $ inventory letter with full inventory */
+
+static int inventory_count;                               /* Number of objects in inventory before autoletter_adjust_all */
+
 /* functions to save, lookup, etc. from array. */
 
 /*
@@ -7489,6 +7493,9 @@ void
 autoletter_relink()
 {
     int curr_entry;
+    int relink_inventory_count; /* sanity check */
+
+    relink_inventory_count = 0;
 
     /* first first non-empty entry */
 
@@ -7515,17 +7522,23 @@ autoletter_relink()
 
     /* point to first entry */
 
-    if (invent->invlet == '$') {
+    if (gold_obj != 0) {
 
         /* point gold object next pointer to first letter object */
 
+        invent = gold_obj;
+
         invent->nobj = last_updated;
+
+        relink_inventory_count += 2;
 
     } else {
 
         /* set invent to pointer to first letter object */
 
         invent = last_updated;
+
+        relink_inventory_count++;
     }
 
     /* loop through the rest of the array linking in
@@ -7548,6 +7561,10 @@ autoletter_relink()
 
             last_updated = next_obj;
 
+            /* add to count */
+
+            relink_inventory_count++;
+
             /* notify that letter changed based on autoletter */
 
             if (autoletter_inventory[curr_entry].autoletter_changed) {
@@ -7565,6 +7582,13 @@ autoletter_relink()
     if (pound_obj != 0) {
         last_updated->nobj = pound_obj;
         pound_obj->nobj = 0;
+        relink_inventory_count++;
+    }
+
+    /* sanity check of inventory object counts */
+
+    if (relink_inventory_count != inventory_count) {
+        pline("Inventory count mismatch in autoletter_relink");
     }
 }
 
@@ -8039,11 +8063,24 @@ autoletter_adjust_all()
 
     pound_obj = 0;
 
+    /* zero out gold object for inventory letter $ */
+
+    gold_obj = 0;
+
+    /* zero out count of inventory objects */
+
+    inventory_count = 0;
+
     /* Loop through the inventory looking at each a-zA-Z lettered object. Skip gold. */
 
     struct obj *obj;
 
-    for (obj = invent; obj; obj = obj->nobj)
+    for (obj = invent; obj; obj = obj->nobj) {
+
+        /* add up number of objects before this transformation */
+
+        inventory_count++;
+
         /* skip $ and # */
         if (isalpha(obj->invlet)) {
 
@@ -8075,7 +8112,13 @@ autoletter_adjust_all()
             /* extra object in full list */
 
             pound_obj = obj;
+        } else if ((obj->invlet) == '$') {
+
+            /* extra object in full list */
+
+            gold_obj = obj;
         }
+    }
 
     /* After the first loop is done loop through the autoletter_inventory array skipping any empty entry and
     relinking the entire inventory linked list based on the order they appear in the array.
