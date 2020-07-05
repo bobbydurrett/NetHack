@@ -432,6 +432,8 @@ unsigned cxn_flags; /* bitmask of CXN_xxx values */
     boolean pluralize = (obj->quan != 1L) && !(cxn_flags & CXN_SINGULAR);
     boolean known, dknown, bknown;
 
+    write_debug_file("In xname_flags\n");
+
     buf = nextobuf() + PREFIX; /* leave room for "17 -3 " */
     if (Role_if(PM_SAMURAI) && Japanese_item_name(typ))
         actualn = Japanese_item_name(typ);
@@ -737,6 +739,9 @@ unsigned cxn_flags; /* bitmask of CXN_xxx values */
 
     if (!strncmpi(buf, "the ", 4))
         buf += 4;
+
+    write_debug_file("End of xname_flags\n");
+
     return buf;
 }
 
@@ -4360,6 +4365,7 @@ char *
 autoletter_name_type(obj)
 struct obj *obj;
 {
+    write_debug_file("In autoletter_name_type\n");
     if (has_oname(obj))
         return(obj->oextra->oname);
 

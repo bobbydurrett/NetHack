@@ -7400,12 +7400,25 @@ autoletter_notify(struct obj *obj ,char letter)
     char buffer[80];
     int bytes_formatted;
 
+    write_debug_file("In autoletter_notify\n");
+
+    write_debug_file_char("letter = %c\n",letter);
+
     bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", autoletter_name_type(obj),letter);
+
+    write_debug_file_int("bytes_formatted = %d\n",bytes_formatted);
+
+    write_debug_file_str("buffer = %s\n", buffer);
+
+    write_debug_file("Middle autoletter_notify\n");
 
     /* pline if no error formatting */
 
     if (bytes_formatted > 0)
         pline(buffer);
+
+    write_debug_file("End autoletter_notify\n");
+
 }
 
 /*
@@ -7501,6 +7514,8 @@ autoletter_relink()
     int curr_entry;
     int relink_inventory_count; /* sanity check */
 
+    write_debug_file("Start autoletter_relink\n");
+
     relink_inventory_count = 0;
 
     /* first first non-empty entry */
@@ -7509,6 +7524,10 @@ autoletter_relink()
         if (autoletter_inventory[curr_entry].obj != 0)
             break;
     }
+
+    write_debug_file("first for loop\n");
+
+    write_debug_file_int("after first loop curr_entry = %d\n",curr_entry);
 
     /* check for empty array */
 
@@ -7553,31 +7572,53 @@ autoletter_relink()
 
     for (curr_entry++; curr_entry < NUM_LETTERS ; curr_entry++) {
 
+        write_debug_file_int("curr_entry = %d\n", curr_entry);
+
         /* curr_entry is next object */
 
         struct obj *next_obj = autoletter_inventory[curr_entry].obj;
 
+        write_debug_file("location 1\n");
+
         if (next_obj != 0) {
+
+            write_debug_file("location 2\n");
 
             /* link previous object with current one */
 
             last_updated->nobj = next_obj;
 
+            write_debug_file("location 3\n");
+
             /* advance current object to previous for next loop */
 
             last_updated = next_obj;
+
+            write_debug_file("location 4\n");
+
 
             /* add to count */
 
             relink_inventory_count++;
 
+            write_debug_file("location 5\n");
+
             /* notify that letter changed based on autoletter */
 
             if (autoletter_inventory[curr_entry].autoletter_changed) {
+                write_debug_file("location 6\n");
+
+                write_debug_file_obj(last_updated);
+
                 autoletter_notify(last_updated, last_updated->invlet);
+
+                write_debug_file("location 7\n");
             }
         }
     }
+
+    write_debug_file("second for loop\n");
+
 
     /* add null to last pointer to end list */
 
@@ -7596,6 +7637,8 @@ autoletter_relink()
     if (relink_inventory_count != inventory_count) {
         pline("Inventory count mismatch in autoletter_relink");
     }
+
+    write_debug_file("End autoletter_relink\n");
 }
 
 /*

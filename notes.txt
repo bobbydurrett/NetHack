@@ -3224,7 +3224,90 @@ NetHack, Copyright 1985-2020
 
 Yikes!
 
+/*    if (bytes_formatted > 0)
+        pline(buffer); */
+        
+blowing up in pline in autoletter_notify
+
+/*    if (bytes_formatted > 0)
+        pline(buffer); */
+
+commented out and it works.
+
+Need to think about how to fix.
+
+bug:
+
+cp .nethackrc.fullwithmyautoletter .nethackrc
+
+bobbyhack -D
+
+Setup like this as only inventory:
+
+h - 2 blessed scrolls of magic mapping
+j - an uncursed scroll of magic mapping
+
+Save game
+
+cp .nethackrcloop .nethackrc
+
+in debug window
+
+./cleartail.sh
+
+start game
+
+bobbyhack -D
+
+hangs here:
+
+Restoring save file...
+NetHack, Copyright 1985-2020
+         By Stichting Mathematisch Centrum and M. Stephenson.
+         Version 3.6.6-0 Unix post-release, built Jul  4 20:24:01 2020.
+         See license for details.
 
 
+debug ends here:
+
+location 1
+curr_entry = 43
+location 1
+curr_entry = 44
+location 1
+location 2
+location 3
+location 4
+location 5
+location 6
+Inventory letter = S
+No object name
+In inventory
+object type number = 313
+Object class name = magic mapping
+Object class description = ELAM EBOW
+simple_typename(obj->otyp) = scroll of magic mapping
+In xname_flags
+End of xname_flags
+cxname_singular(obj) = scroll of magic mapping
+In autoletter_name_type
+In xname_flags
+End of xname_flags
+autoletter_name_type(obj) = scroll of magic mapping
+In autoletter_notify
+letter = S
+In autoletter_name_type
+In xname_flags
+End of xname_flags
+bytes_formatted = 46
+buffer = Adjusting scroll of magic mapping to letter S.
+Middle autoletter_notify
+
+Kill game
+
+[bobby@localhost src]$ ps -ef | grep bobbyhack
+bobby     8935  1485 99 20:30 pts/0    00:00:47 /home/bobby/nethack/games/lib/bobbyhackdir/bobbyhack -D
+bobby     8938  1611  0 20:31 pts/1    00:00:00 grep bobbyhack
+[bobby@localhost src]$ kill -9 8935
 
 
