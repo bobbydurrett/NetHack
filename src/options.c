@@ -7436,7 +7436,7 @@ autoletter_inventory_index(char letter)
 /*
 
 int
-find_empty(int inv_index)
+find_empty()
 
 find the next empty autoletter_inventory entry
 
@@ -7447,7 +7447,7 @@ returns -1 on failure which should not happen
 */
 
 int
-find_empty(int inv_index)
+find_empty()
 {
     for (; next_empty < NUM_LETTERS ; next_empty++)
         if (autoletter_inventory[next_empty].obj == 0)
@@ -7624,7 +7624,7 @@ not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
         /* put the current object in an empty letter entry and
            change the object's letter to the letter for that slot */
 
-        int empty_index = find_empty(inv_index);
+        int empty_index = find_empty();
 
         /* exit if impossible condition happens */
 
@@ -7643,7 +7643,7 @@ not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
         /* move the object in the slot to an empty letter and change its letter to match
         the new slot */
 
-        int empty_index = find_empty(inv_index);
+        int empty_index = find_empty();
 
         /* exit if impossible condition happens */
 
@@ -7713,7 +7713,7 @@ in_array_target_autoletter_higher(struct obj *obj, int obj_index, int inv_index,
     /* move the existing object in the autoletter_inventory slot for the desired letter to
        the closest empty slot and set the object's letter to that slot's letter */
 
-    int empty_index = find_empty(inv_index);
+    int empty_index = find_empty();
 
     /* exit if impossible condition happens */
 
@@ -7783,7 +7783,7 @@ in_array_target_autoletter_lower(struct obj *obj, int obj_index, int inv_index, 
     /* put the object in an empty letter entry and change the object's letter
     to the letter for that slot */
 
-    int empty_index = find_empty(inv_index);
+    int empty_index = find_empty();
 
     /* exit if impossible condition happens */
 
@@ -7824,7 +7824,7 @@ in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, 
            move the existing object in the autoletter_inventory slot for the desired letter to
            an empty slot and set the object's letter to that slot's letter */
 
-        int empty_index = find_empty(inv_index);
+        int empty_index = find_empty();
 
         /* exit if impossible condition happens */
 
@@ -7862,7 +7862,7 @@ in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, 
            put the object in an empty letter entry and change the object's letter
            to the letter for that slot */
 
-        int empty_index = find_empty(inv_index);
+        int empty_index = find_empty();
 
         /* exit if impossible condition happens */
 
@@ -7935,7 +7935,7 @@ in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index, char le
         desired letter to an empty slot and set the object's letter
         to that slot's letter */
 
-        int empty_index = find_empty(inv_index);
+        int empty_index = find_empty();
 
         /* exit if impossible condition happens */
 

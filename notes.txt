@@ -3310,4 +3310,81 @@ bobby     8935  1485 99 20:30 pts/0    00:00:47 /home/bobby/nethack/games/lib/bo
 bobby     8938  1611  0 20:31 pts/1    00:00:00 grep bobbyhack
 [bobby@localhost src]$ kill -9 8935
 
+7/5/2020
+
+Took out debug statements to get rid of the clutter. 
+
+Trying with no other autoletter options
+
+Start game with no options.
+
+After setting up add the one for magic mapping to S
+
+Still hangs
+
+[bobby@localhost ~]$ diff .nethackrc .nethackrcsimplefails
+7a8
+> OPTIONS=autoletter:S:scroll of magic mapping
+
+just the one option.
+
+Try with only 2 uncursed scrolls
+
+g - 2 uncursed scrolls of magic mapping
+
+Restoring save file...  Adjusting scroll of magic mapping to letter S.
+
+works
+
+Try with 1 blessed scroll and 1 uncursed scroll
+
+Fails.
+
+so it has nothing to do with stacking as far as I can tell.
+
+Try with lower case letter s instead of S
+
+OPTIONS=autoletter:s:scroll of magic mapping
+
+hangs.
+
+So, has nothing to do with upper case.
+
+Next thing is try two non-scrolls like
+uncursed and blessed oil lamp.
+not stackable.
+
+e - a blessed oil lamp
+f - an uncursed oil lamp
+
+save game
+
+OPTIONS=autoletter:l:oil lamp
+
+hangs
+
+seems like it is my equal priority section.
+
+Try it with
+
+OPTIONS=autoletter:l:oil lamp:2
+
+a - a blessed oil lamp
+m - an uncursed oil lamp
+
+hangs.
+
+does not happen when I drop a higher priority object and it has to pick on.
+
+Happens on the restore only so far.
+
+
+
+
+
+
+
+
+
+
 
