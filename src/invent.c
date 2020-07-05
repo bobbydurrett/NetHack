@@ -947,7 +947,7 @@ struct obj *obj;
 
     /* Bobby Durrett autoletter */
 
-    autoletter_adjust_all();
+    autoletter_adjust_all(TRUE);
 
     update_inventory();
     return obj;
@@ -1161,7 +1161,7 @@ register struct obj *obj;
 
     /* Bobby Durrett apply autoletter options after removing obj */
 
-    autoletter_adjust_all();
+    autoletter_adjust_all(TRUE);
 
     /* end autoletter */
 
@@ -2390,7 +2390,7 @@ boolean learning_id; /* true if we just read unknown identify scroll */
     /* Bobby Durrett - added to apply autoletter options after
        several items identified */
 
-    autoletter_adjust_all();
+    autoletter_adjust_all(TRUE);
 
     update_inventory();
 }

@@ -3378,7 +3378,21 @@ does not happen when I drop a higher priority object and it has to pick on.
 
 Happens on the restore only so far.
 
+void
+autoletter_adjust_all(boolean notify)
+{
+    /* set global to turn messages off or on */
 
+    autoletter_notify = notify;
+
+just turn pline off on restores
+
+
+had to change the global to
+
+autoletter_pline
+
+Fixed bug.
 
 
 

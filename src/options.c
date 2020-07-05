@@ -6997,6 +6997,8 @@ static struct obj *gold_obj;                              /* object with $ inven
 
 static int inventory_count;                               /* Number of objects in inventory before autoletter_adjust_all */
 
+static boolean autoletter_pline;                          /* True if we use pline() to notify about letter adjustments */
+
 /* functions to save, lookup, etc. from array. */
 
 /*
@@ -7402,9 +7404,10 @@ autoletter_notify(struct obj *obj ,char letter)
 
     bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", autoletter_name_type(obj),letter);
 
-    /* pline if no error formatting */
+    /* pline if no error formatting
+       and if pline() use enabled */
 
-    if (bytes_formatted > 0)
+    if ((bytes_formatted > 0) && autoletter_pline)
         pline(buffer);
 
 }
@@ -8035,7 +8038,7 @@ in_array(struct obj *obj, int obj_index)
 /*
 
 void
-autoletter_adjust_all()
+autoletter_adjust_all(boolean notify)
 
 Loops through the inventory linked list once
 updating the autoletter_inventory array with the
@@ -8046,11 +8049,18 @@ After updating autoletter_inventory, which is an array representation
 of the inventory linked list, rebuild the inventory list using the
 entries in the array.
 
+notify is true if you want to call pline() to display messages about
+letters being assigned. Needs to be false during restores.
+
 */
 
 void
-autoletter_adjust_all()
+autoletter_adjust_all(boolean notify)
 {
+    /* set global to turn messages off or on */
+
+    autoletter_pline = notify;
+
     /* set autoletter_changed to false for entire array and put 0 or NULL in all
     entries. */
 

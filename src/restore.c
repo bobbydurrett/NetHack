@@ -710,9 +710,9 @@ unsigned int *stuckid, *steedid;
     iflags.perm_invent = defer_perm_invent;
 
     /* Bobby Durrett - added to apply autoletter options after
-       game restore. */
+       game restore. Don't use pline() here */
 
-    autoletter_adjust_all();
+    autoletter_adjust_all(FALSE);
 
     return TRUE;
 }

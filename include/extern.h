@@ -1828,7 +1828,7 @@ E boolean FDECL(add_autoletter, (char *));
 E int NDECL(num_autoletter_options);
 E boolean FDECL(get_autoletter, (int, char *, char *, int *));
 E int FDECL(lookup_autoletter, (char *));
-E void NDECL(autoletter_adjust_all);
+E void FDECL(autoletter_adjust_all, (boolean));
 
 /* ### pager.c ### */
 
