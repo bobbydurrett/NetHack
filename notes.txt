@@ -3394,11 +3394,21 @@ autoletter_pline
 
 Fixed bug.
 
+want to make sure none of these default
+
+    struct obj *obj;                                    /* pointer to inventory object */
+    char desired_letter;                                /* letter that autoletter wants to assign to obj */
+    int priority;                                       /* priority if there are multiple entries same letter 1 highest */
+    boolean autoletter_changed;                         /* true if object letter changed based on autoletter option */
 
 
 
+        autoletter_inventory[empty_index].obj = obj;
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
+        autoletter_inventory[empty_index].autoletter_changed = FALSE;
 
+added ifs for autoletter_pline everywhere I used pline
 
-
-
+made all the autoletter_inventory settings explicit for all the conditions
 

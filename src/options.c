@@ -7431,7 +7431,8 @@ autoletter_inventory_index(char letter)
     else if (isupper(letter))
         return (letter - 'A') + 26;
     else {
-        pline("Invalid letter autoletter_inventory_index");
+        if (autoletter_pline)
+            pline("Invalid letter autoletter_inventory_index");
         return 0;
     }
 }
@@ -7457,8 +7458,8 @@ find_empty()
             return next_empty;
 
     /* should never get here */
-
-    pline("No empty letter find_empty");
+    if (autoletter_pline)
+        pline("No empty letter find_empty");
 
     return -1;
 }
@@ -7481,7 +7482,8 @@ autoletter_inventory_letter(int index)
     else if ((index >= (NUM_LETTERS / 2)) && (index < NUM_LETTERS))
         return index - 26 + 'A';
     else {
-        pline("Invalid index autoletter_inventory_letter");
+        if (autoletter_pline)
+            pline("Invalid index autoletter_inventory_letter");
         return '\0';
     }
 }
@@ -7597,7 +7599,7 @@ autoletter_relink()
 
     /* sanity check of inventory object counts */
 
-    if (relink_inventory_count != inventory_count) {
+    if ((relink_inventory_count != inventory_count) && autoletter_pline) {
         pline("Inventory count mismatch in autoletter_relink");
     }
 
@@ -7635,6 +7637,9 @@ not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
             return;
 
         autoletter_inventory[empty_index].obj = obj;
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
+        autoletter_inventory[empty_index].autoletter_changed = FALSE;
 
         obj->invlet = autoletter_inventory_letter(empty_index);
     }
@@ -7656,12 +7661,20 @@ not_in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index)
         struct obj *moved_obj = autoletter_inventory[inv_index].obj;
 
         autoletter_inventory[empty_index].obj = moved_obj;
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
+        autoletter_inventory[empty_index].autoletter_changed = FALSE;
+
 
         moved_obj->invlet = autoletter_inventory_letter(empty_index);
 
         /* put the current object in the now empty slot and leave its letter unchanged. */
 
         autoletter_inventory[inv_index].obj = obj;
+        autoletter_inventory[inv_index].desired_letter = '\0';
+        autoletter_inventory[inv_index].priority = 0;
+        autoletter_inventory[inv_index].autoletter_changed = FALSE;
+
     } /* case where target not an autoletter option and want to keep letter for current obj */
 }
 
@@ -7688,6 +7701,10 @@ not_in_array(struct obj *obj, int obj_index)
         /* put that object (pointer) in the entry. object letter is unchanged. */
 
         autoletter_inventory[inv_index].obj = obj;
+        autoletter_inventory[inv_index].desired_letter = '\0';
+        autoletter_inventory[inv_index].priority = 0;
+        autoletter_inventory[inv_index].autoletter_changed = FALSE;
+
     } /* end of case where target is empty */
     else {
 
@@ -7729,8 +7746,12 @@ in_array_target_autoletter_higher(struct obj *obj, int obj_index, int inv_index,
 
     moved_obj->invlet = autoletter_inventory_letter(empty_index);
 
-    autoletter_inventory[empty_index].desired_letter = autoletter_inventory[inv_index].desired_letter;
-    autoletter_inventory[empty_index].priority = autoletter_inventory[inv_index].priority;
+    /* moved autoletter entry should have these cleared so they
+       do not block an autoletter into the new letter */
+
+    autoletter_inventory[empty_index].desired_letter = '\0';
+    autoletter_inventory[empty_index].priority = 0;
+    autoletter_inventory[empty_index].autoletter_changed = FALSE;
 
     /* set the moved object's autoletter_changed to false */
 
@@ -7797,8 +7818,12 @@ in_array_target_autoletter_lower(struct obj *obj, int obj_index, int inv_index, 
 
     obj->invlet = autoletter_inventory_letter(empty_index);
 
-    autoletter_inventory[empty_index].desired_letter = letter;
-    autoletter_inventory[empty_index].priority = priority;
+    /* lower priority autoletter entry should have these cleared so they
+       do not block an autoletter into the new letter */
+
+    autoletter_inventory[empty_index].desired_letter = '\0';
+    autoletter_inventory[empty_index].priority = 0;
+    autoletter_inventory[empty_index].autoletter_changed = FALSE;
 }
 
 /*
@@ -7823,7 +7848,7 @@ in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, 
     if ((obj->invlet) == letter) {
 
         /* new object already has the letter so keep it
-           same as priority < case
+           same as priority > case
            move the existing object in the autoletter_inventory slot for the desired letter to
            an empty slot and set the object's letter to that slot's letter */
 
@@ -7840,11 +7865,11 @@ in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, 
 
         moved_obj->invlet = autoletter_inventory_letter(empty_index);
 
-        autoletter_inventory[empty_index].desired_letter = autoletter_inventory[inv_index].desired_letter;
-        autoletter_inventory[empty_index].priority = autoletter_inventory[inv_index].priority;
+        /* displace autoletter entry should have these cleared so they
+           do not block an autoletter into the new letter */
 
-        /* set the moved object's autoletter_changed to false */
-
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
         autoletter_inventory[empty_index].autoletter_changed = FALSE;
 
         /* put the current object in the in the entry and change the object's letter to the
@@ -7876,8 +7901,13 @@ in_array_target_autoletter_equal(struct obj *obj, int obj_index, int inv_index, 
 
         obj->invlet = autoletter_inventory_letter(empty_index);
 
-        autoletter_inventory[empty_index].desired_letter = letter;
-        autoletter_inventory[empty_index].priority = priority;
+        /* not used autoletter entry should have these cleared so they
+           do not block an autoletter into the new letter */
+
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
+        autoletter_inventory[empty_index].autoletter_changed = FALSE;
+
     } /* not already on letter */
 }
 
@@ -7951,12 +7981,20 @@ in_array_target_not_empty(struct obj *obj, int obj_index, int inv_index, char le
 
         moved_obj->invlet = autoletter_inventory_letter(empty_index);
 
+        autoletter_inventory[empty_index].desired_letter = '\0';
+        autoletter_inventory[empty_index].priority = 0;
+        autoletter_inventory[empty_index].autoletter_changed = FALSE;
+
         /* put the current object in the in the entry and change the object's
         letter to the desired letter */
 
         autoletter_inventory[inv_index].obj = obj;
         autoletter_inventory[inv_index].desired_letter = letter;
         autoletter_inventory[inv_index].priority = priority;
+
+        /* Make sure this starts as FALSE as expected */
+
+        autoletter_inventory[inv_index].autoletter_changed = FALSE;
 
         /* see if the object's letter does not match the desired letter */
 
@@ -8013,6 +8051,10 @@ in_array(struct obj *obj, int obj_index)
         autoletter_inventory[inv_index].obj = obj;
         autoletter_inventory[inv_index].desired_letter = letter;
         autoletter_inventory[inv_index].priority = priority;
+
+        /* Make sure this starts as FALSE as expected */
+
+        autoletter_inventory[inv_index].autoletter_changed = FALSE;
 
         /* see if the object's letter does not match the desired letter */
 
