@@ -1772,7 +1772,7 @@ E int FDECL(shiny_obj, (CHAR_P));
 
 /* Bobby Durrett autoletter function */
 
-E char *FDECL(autoletter_name_type, (struct obj *));
+E void FDECL(autoletter_name_type, (struct obj *, char *, int));
 
 /* ### options.c ### */
 

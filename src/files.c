@@ -4851,7 +4851,11 @@ write_debug_file_obj(struct obj *obj)
 
     write_debug_file_str("cxname_singular(obj) = %s\n",cxname_singular(obj));
 
-    write_debug_file_str("autoletter_name_type(obj) = %s\n",autoletter_name_type(obj));
+    char buf[80];
+
+    autoletter_name_type(obj, buf, 80);
+
+    write_debug_file_str("autoletter_name_type(obj) = %s\n",buf);
 }
 
 /*files.c*/

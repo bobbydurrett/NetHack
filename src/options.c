@@ -7401,15 +7401,17 @@ autoletter_notify(struct obj *obj ,char letter)
 {
     char buffer[80];
     int bytes_formatted;
+    char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
 
-    bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", autoletter_name_type(obj),letter);
+    autoletter_name_type(obj, object_type_or_name, MAX_OBJ_TYPE_NAME_LEN);
+
+    bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", object_type_or_name,letter);
 
     /* pline if no error formatting
        and if pline() use enabled */
 
     if ((bytes_formatted > 0) && autoletter_pline)
         pline(buffer);
-
 }
 
 /*
@@ -8137,6 +8139,8 @@ autoletter_adjust_all(boolean notify)
 
     for (obj = invent; obj; obj = obj->nobj) {
 
+        write_debug_file_obj(obj);
+
         /* add up number of objects before this transformation */
 
         inventory_count++;
@@ -8148,7 +8152,9 @@ autoletter_adjust_all(boolean notify)
 
             /* Get name or type of object */
 
-            char *object_type_or_name = autoletter_name_type(obj);
+            char object_type_or_name[MAX_OBJ_TYPE_NAME_LEN];
+
+            autoletter_name_type(obj, object_type_or_name, MAX_OBJ_TYPE_NAME_LEN);
 
             /* look up the object name or type to see if we
             have a matching autoletter option */

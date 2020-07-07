@@ -4344,10 +4344,11 @@ boolean *weightformatted_p;
 
 /* Bobby Durrett code for autoletter option.
 
-char *
-autoletter_name_type(obj)
+void
+autoletter_name_type(obj, buf, bufsize)
 
-Takes an object and returns its name in priority order.
+Takes an object and returns its name in priority order in the
+supplied buffer buf of size bufsize)
 
 If it is an artifact or named by the user return that name. (My Lamp)
 
@@ -4355,16 +4356,23 @@ If it is unnamed and undiscovered return that type. (lamp)
 
 If it is unnamed and discovered return that type. (magic lamp)
 
+
+
 */
 
-char *
-autoletter_name_type(obj)
+void
+autoletter_name_type(obj, buf, bufsize)
 struct obj *obj;
+char *buf;
+int bufsize;
 {
-    if (has_oname(obj))
-        return(obj->oextra->oname);
-
-    return xname_flags(obj, CXN_SINGULAR);
+    if (has_oname(obj)) {
+        strncpy(buf, obj->oextra->oname, bufsize);
+    } else {
+        char *p = xname_flags(obj, CXN_SINGULAR);
+        strncpy(buf, p , bufsize);
+        releaseobuf(p);
+    }
 }
 
 /*objnam.c*/

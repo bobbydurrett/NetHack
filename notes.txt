@@ -3412,3 +3412,130 @@ added ifs for autoletter_pline everywhere I used pline
 
 made all the autoletter_inventory settings explicit for all the conditions
 
+7/6/20
+
+thinking about how I handle strings
+
+char *
+autoletter_name_type(obj)
+struct obj *obj;
+{
+    if (has_oname(obj))
+        return(obj->oextra->oname);
+
+    return xname_flags(obj, CXN_SINGULAR);
+}
+
+/*objnam.c*/
+
+returning a pointer copied from obj->oextra->oname or
+
+returned from xname_flags - how does other code use
+xname_flags or xname
+
+char *
+xname(obj)
+struct obj *obj;
+{
+    return xname_flags(obj, CXN_NORMAL);
+}
+
+xname just wraps it
+
+xname_flags returns buf:
+
+    return buf;
+}
+
+allocated here:
+
+    buf = nextobuf() + PREFIX; /* leave room for "17 -3 " */
+
+/* manage a pool of BUFSZ buffers, so callers don't have to */
+static char NEARDATA obufs[NUMOBUF][BUFSZ];
+static int obufidx = 0;
+
+STATIC_OVL char *
+nextobuf()
+{
+    obufidx = (obufidx + 1) % NUMOBUF;
+    return obufs[obufidx];
+}
+
+BUFSZ is pretty big I think
+
+#define BUFSZ 256  /* for getlin buffers */
+
+So xname_flags is returning a pointer to one of these buffs
+
+/* put the most recently allocated buffer back if possible */
+STATIC_OVL void
+releaseobuf(bufp)
+char *bufp;
+{
+    /* caller may not know whether bufp is the most recently allocated
+       buffer; if it isn't, do nothing; note that because of the somewhat
+       obscure PREFIX handling for object name formatting by xname(),
+       the pointer our caller has and is passing to us might be into the
+       middle of an obuf rather than the address returned by nextobuf() */
+    if (bufp >= obufs[obufidx]
+        && bufp < obufs[obufidx] + sizeof obufs[obufidx]) /* obufs[][BUFSZ] */
+        obufidx = (obufidx - 1 + NUMOBUF) % NUMOBUF;
+}
+
+puts the buffer back
+
+example
+
+            p = makesingular(u_str + sizeof detect_SP - 1);
+            Strcat(strcpy(buf, p), SP_detection);
+            /* caller may be looping through objects[], so avoid
+               churning through all the obufs */
+            releaseobuf(p);
+            
+in wishymatch
+
+options.c my code
+
+            char *object_type_or_name = autoletter_name_type(obj);
+
+            /* look up the object name or type to see if we
+            have a matching autoletter option */
+
+            int obj_index = lookup_autoletter(object_type_or_name);
+
+void
+autoletter_notify(struct obj *obj ,char letter)
+{
+    char buffer[80];
+    int bytes_formatted;
+
+    bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", autoletter_name_type(obj),letter);
+
+    /* pline if no error formatting
+       and if pline() use enabled */
+
+    if ((bytes_formatted > 0) && autoletter_pline)
+        pline(buffer);
+
+}
+
+this is where it was hanging until I added autoletter_pline
+
+could change autoletter_name_type to take a character buffer as the second argument.
+
+instead of these returns
+
+        return(obj->oextra->oname);
+
+    return xname_flags(obj, CXN_SINGULAR);
+
+copy into the buffer
+
+and free the xname_flags buffer
+
+Not sure this really did anything but clutter my code.
+
+But at least it gets the name or type copied into a new buffer as quickly as 
+possible.
+
