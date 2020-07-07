@@ -4373,6 +4373,12 @@ int bufsize;
         strncpy(buf, p , bufsize);
         releaseobuf(p);
     }
+
+    /* put zero byte at end of buffer in case
+       strncpy did not put there for bufsize
+       output */
+
+    buf[bufsize - 1] = '\0';
 }
 
 /*objnam.c*/
