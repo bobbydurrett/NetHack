@@ -8144,8 +8144,6 @@ autoletter_adjust_all(boolean notify)
 
     for (obj = invent; obj; obj = obj->nobj) {
 
-        write_debug_file_obj(obj);
-
         /* add up number of objects before this transformation */
 
         inventory_count++;

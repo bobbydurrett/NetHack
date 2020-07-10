@@ -2764,6 +2764,9 @@ boolean youattack, allow_cancel_kill, self_cancel;
         if (youdefend) {
             context.botl = 1; /* potential AC change */
             find_ac();
+
+            /* Bobby Durrett autoletter */
+            autoletter_adjust_all(TRUE);
         }
     }
 

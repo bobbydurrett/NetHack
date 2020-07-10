@@ -3539,3 +3539,60 @@ Not sure this really did anything but clutter my code.
 But at least it gets the name or type copied into a new buffer as quickly as 
 possible.
 
+7/9/20
+
+testing cancellation
+
+also took out debug write
+
+OPTIONS=autoletter:O:potion of object detection
+
+I guess cancel it
+
+O - an uncursed potion of object detection
+
+f - an uncursed potion of water
+g - an uncursed potion of water
+h - an uncursed potion of water
+O - an uncursed potion of water
+
+OPTIONS=autoletter:W:potion of water:1
+
+i - a potion of object detection
+
+after zapping cancellation:
+
+i - a potion of water
+
+Did not work....
+
+Should be like naming
+
+        if (obj) {
+            do_oname(obj);
+            /* Bobby Durrett autoletter */
+            autoletter_adjust_all(TRUE);
+        }
+
+probably zap.c
+
+        case WAN_CANCELLATION:
+        case SPE_CANCELLATION:
+            cancel_item(obj);
+
+        if (youdefend) {
+            context.botl = 1; /* potential AC change */
+            find_ac();
+            
+            /* Bobby Durrett autoletter */
+            autoletter_adjust_all(TRUE);
+        }
+
+I think this is where you zap yourself.
+
+Adjusting potion of water to letter W.
+
+W - an uncursed potion of water
+
+works
+
