@@ -3614,4 +3614,12 @@ The water nymph stole a blessed magic lamp.
 You hit the water nymph.  Adjusting oil lamp to letter l.
 You begin bashing monsters with your bare hands.
 
+reran preformance check
 
+[bobby@localhost inventoryarray]$ time ./array2
+
+real    0m8.074s
+user    0m8.055s
+sys     0m0.015s
+
+Still 8 seconds not bad.
