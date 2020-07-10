@@ -6973,7 +6973,7 @@ typedef struct autoletter_struct {
     int priority;                                       /* priority if there are multiple entries same letter 1 highest */
 } autoletter_type;
 
-static autoletter_type autoletter_array[MAX_AUTO_OPTIONS]; /* Simple unordered array of options */
+static autoletter_type autoletter_array[MAX_AUTO_OPTIONS]; /* Array of options sorted object type or name */
 static int num_autoletter = 0;                             /* Number of options inserted into array */
 
 /* Number of letters a-zA-Z */
@@ -7406,6 +7406,11 @@ autoletter_notify(struct obj *obj ,char letter)
     autoletter_name_type(obj, object_type_or_name, MAX_OBJ_TYPE_NAME_LEN);
 
     bytes_formatted = snprintf(buffer, 80, "Adjusting %s to letter %c.", object_type_or_name,letter);
+
+    /* Make sure the last byte is null in case buffer is full */
+
+    buffer[79] = '\0';
+
 
     /* pline if no error formatting
        and if pline() use enabled */
