@@ -3596,3 +3596,22 @@ W - an uncursed potion of water
 
 works
 
+also thinking about breaking items.
+
+say with fire.
+
+
+OPTIONS=autoletter:W:potion of water:2
+OPTIONS=autoletter:W:potion of holy water:1
+
+works. No change required.
+
+stealing my n pretty much work. order of messages is weird
+
+ Message History
+
+The water nymph stole a blessed magic lamp.
+You hit the water nymph.  Adjusting oil lamp to letter l.
+You begin bashing monsters with your bare hands.
+
+
