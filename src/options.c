@@ -7308,7 +7308,7 @@ parse_autoletter(char *opts,char *letter,char *object_type_or_name, int *priorit
 
         /* point to the string priority number */
 
-        char *rest_of_str = at_object + i + 1;
+        rest_of_str = at_object + i + 1;
 
         int j;
 
