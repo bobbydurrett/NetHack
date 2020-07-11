@@ -3643,6 +3643,9 @@ I wonder if this is like the one with pline on
 game restore when you have two saved objects
 that are not set to the right letter.
 
+Kind of want to go back and really understand the 
+pline loop also.
+
 in this case I had a blessed and uncursed food ration
 
 I ate the named one and boom. Infinite loop
@@ -3658,5 +3661,26 @@ eat r and it hangs
 
 tight loop in top.
 
-I need to look at this and go back to the restore loop.
- 
+infinite loop in relink
+
+It is in autoletter_notify.
+Most likely this is the same pline bug as before.
+Will have to address it.
+
+If I can fix it I can put back the output on restore
+possibly.
+
+In inventory
+object type number = 269
+Object class name = food ration
+Object class description = (null)
+simple_typename(obj->otyp) = food ration
+cxname_singular(obj) = food ration
+autoletter_name_type(obj) = food ration
+Before autoletter_notify
+Before pline
+
+Same problem. Going to have to fix it.
+
+Can get rid of the autoletter_pline option
+and fix the real bug whatever it is.
