@@ -3729,5 +3729,21 @@ the notification messages.
 
 The big thing here was to use the dump core option to see the call stack.
 
+7/11/2020
 
+doesn't work when potion diluted to water
+
+OPTIONS=autoletter:r:potion of object detection
+OPTIONS=autoletter:s:potion of water
+
+dipping works but not falling onto a pool.
+
+trap.c
+            if (carried(obj)) {
+                autoletter_adjust_all(TRUE);
+                update_inventory();
+            }
+
+works. also found a bug in my loop fix. was 
+still notifying on the first object.
 

@@ -7534,12 +7534,6 @@ autoletter_relink()
 
     struct obj *last_updated = autoletter_inventory[curr_entry].obj;
 
-    /* notify that letter changed based on autoletter */
-
-    if (autoletter_inventory[curr_entry].autoletter_changed) {
-        autoletter_notify(last_updated, last_updated->invlet);
-    }
-
     /* point to first entry */
 
     if (gold_obj != 0) {

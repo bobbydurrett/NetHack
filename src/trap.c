@@ -3647,8 +3647,10 @@ boolean force;
             obj->dknown = 0;
             obj->blessed = obj->cursed = 0;
             obj->odiluted = 0;
-            if (carried(obj))
+            if (carried(obj)) {
+                autoletter_adjust_all(TRUE);
                 update_inventory();
+            }
             return ER_DAMAGED;
         } else if (obj->otyp != POT_WATER) {
             if (carried(obj))
