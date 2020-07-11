@@ -712,7 +712,7 @@ unsigned int *stuckid, *steedid;
     /* Bobby Durrett - added to apply autoletter options after
        game restore. Don't use pline() here */
 
-    autoletter_adjust_all(FALSE);
+    autoletter_adjust_all(TRUE);
 
     return TRUE;
 }

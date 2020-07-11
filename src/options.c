@@ -7416,9 +7416,7 @@ autoletter_notify(struct obj *obj ,char letter)
        and if pline() use enabled */
 
     if ((bytes_formatted > 0) && autoletter_pline) {
-        write_debug_file("Before pline\n");
         pline(buffer);
-        write_debug_file("After pline\n");
     }
 }
 
@@ -7514,8 +7512,6 @@ Output a notice for any entry with autoletter_changed true. */
 void
 autoletter_relink()
 {
-    write_debug_file("Enter autoletter_relink\n");
-
     int curr_entry;
     int relink_inventory_count; /* sanity check */
 
@@ -7528,14 +7524,10 @@ autoletter_relink()
             break;
     }
 
-    write_debug_file("After first loop looking for non empty entry\n");
-
     /* check for empty array */
 
     if (curr_entry >= NUM_LETTERS)
         return;
-
-    write_debug_file("After return\n");
 
     /* curr_entry is first element at this point
        use last_updated for rest of loop below */
@@ -7547,8 +7539,6 @@ autoletter_relink()
     if (autoletter_inventory[curr_entry].autoletter_changed) {
         autoletter_notify(last_updated, last_updated->invlet);
     }
-
-    write_debug_file("After autoletter_notify\n");
 
     /* point to first entry */
 
@@ -7575,21 +7565,13 @@ autoletter_relink()
     the rest of the elements. Keep track of the last one
     used */
 
-    write_debug_file("Just before main loop\n");
-
     for (curr_entry++; curr_entry < NUM_LETTERS ; curr_entry++) {
-
-        write_debug_file_int("curr_entry = %d\n",curr_entry);
 
         /* curr_entry is next object */
 
         struct obj *next_obj = autoletter_inventory[curr_entry].obj;
 
-        write_debug_file_long("next_obj = %ld\n",(long) next_obj);
-
         if (next_obj != 0) {
-
-            write_debug_file_obj(next_obj);
 
             /* link previous object with current one */
 
@@ -7602,18 +7584,8 @@ autoletter_relink()
             /* add to count */
 
             relink_inventory_count++;
-
-            /* notify that letter changed based on autoletter */
-
-            if (autoletter_inventory[curr_entry].autoletter_changed) {
-                write_debug_file("Before autoletter_notify\n");
-                autoletter_notify(last_updated, last_updated->invlet);
-                write_debug_file("After autoletter_notify\n");
-            }
         }
     }
-
-    write_debug_file("After main loop\n");
 
     /* add null to last pointer to end list */
 
@@ -7632,7 +7604,21 @@ autoletter_relink()
     if ((relink_inventory_count != inventory_count) && autoletter_pline) {
         pline("Inventory count mismatch in autoletter_relink");
     }
-    write_debug_file("Exit autoletter_relink\n");
+
+    /* output messages after inventory list rebuilt */
+
+    struct obj *curr_obj;
+
+    for (curr_entry = 0; curr_entry < NUM_LETTERS ; curr_entry++) {
+        /* notify that letter changed based on autoletter */
+
+        if (autoletter_inventory[curr_entry].autoletter_changed) {
+
+            curr_obj = autoletter_inventory[curr_entry].obj;
+
+            autoletter_notify(curr_obj, curr_obj->invlet);
+        }
+    }
 }
 
 /*
