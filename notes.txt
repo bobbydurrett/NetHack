@@ -3623,3 +3623,40 @@ user    0m8.055s
 sys     0m0.015s
 
 Still 8 seconds not bad.
+
+7/10/2020
+
+Testing
+
+OPTIONS=autoletter:f:potion of full healing
+
+does not seem to work. Really it just sees
+a diluted potion as different
+
+OPTIONS=autoletter:f:potion of full healing:1
+OPTIONS=autoletter:f:diluted potion of full healing:2
+
+works
+
+got another infinite loop.
+I wonder if this is like the one with pline on
+game restore when you have two saved objects
+that are not set to the right letter.
+
+in this case I had a blessed and uncursed food ration
+
+I ate the named one and boom. Infinite loop
+
+d - a blessed food ration
+r - an uncursed food ration
+
+OPTIONS=autoletter:r:food ration
+
+eat r and it hangs
+
+1872 bobby     20   0   15444   2120   1736 R 99.7  0.0   0:31.66 bobbyhack
+
+tight loop in top.
+
+I need to look at this and go back to the restore loop.
+ 
