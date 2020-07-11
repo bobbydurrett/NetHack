@@ -3747,3 +3747,8 @@ trap.c
 works. also found a bug in my loop fix. was 
 still notifying on the first object.
 
+Try to not make any more changes except bug fixes so I can
+call this version 1.0.
+
+
+
