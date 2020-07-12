@@ -3750,5 +3750,19 @@ still notifying on the first object.
 Try to not make any more changes except bug fixes so I can
 call this version 1.0.
 
+compiled it for windows. Could stick on blog page.
 
+C:\bobby\nethack\bhwin\NetHack\bin\Debug\Win32
+
+had to 
+
+set NETHACKOPTIONS=@C:\bobby\nethack\bhwin\NetHack\bin\Debug\Win32\.nethackrc
+
+1. write blog page description
+2. upload zip with CRC type number
+3. Put on patch db github branch
+4. post on USENET 
+5. merge into bobbyhack
+
+Not sure. Running low on motivation. :)
 
