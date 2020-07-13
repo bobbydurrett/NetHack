@@ -3758,11 +3758,13 @@ had to
 
 set NETHACKOPTIONS=@C:\bobby\nethack\bhwin\NetHack\bin\Debug\Win32\.nethackrc
 
-1. write blog page description
-2. upload zip with CRC type number
+1. write blog page description - done
+2. upload zip with CRC type number - done
 3. Put on patch db github branch
 4. post on USENET 
-5. merge into bobbyhack
+5. merge into bobbyhack - done
 
 Not sure. Running low on motivation. :)
+
+merged into bobbyhack. Sweet.
 
