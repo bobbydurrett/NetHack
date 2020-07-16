@@ -8109,6 +8109,11 @@ letters being assigned. Needs to be false during restores.
 void
 autoletter_adjust_all(boolean notify)
 {
+    /* do nothing if there are no autoletter options */
+
+    if (num_autoletter < 1)
+        return;
+
     /* set global to turn messages off or on */
 
     autoletter_pline = notify;
